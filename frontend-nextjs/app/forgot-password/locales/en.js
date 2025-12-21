@@ -1,0 +1,21 @@
+export const en = {
+  title: "Forgot Password",
+  emailPlaceholder: "Enter Email",
+  sendOtp: "Send OTP",
+  sending: "Sending...",
+  otpSentTo: "OTP sent to",
+  otpPlaceholder: "Enter OTP",
+  verifyOtp: "Verify OTP",
+  resendOtp: "Resend OTP",
+  newPasswordPlaceholder: "New Password",
+  confirmPasswordPlaceholder: "Confirm New Password",
+  resetPassword: "Reset Password",
+  rememberPassword: "Remember your password? ",
+  loginLink: "Login",
+  errorMissingEmail: "Please enter your email",
+  errorInvalidEmail: "Please enter a valid email address",
+  errorMissingOtp: "Please enter the OTP",
+  errorMissingAll: "Please fill in all fields",
+  errorMismatch: "Passwords do not match",
+  helperEnglishOnly: "Please type in English only"
+};

@@ -1,0 +1,21 @@
+export const ta = {
+  title: "கடவுச்சொல் மறந்துவிட்டதா",
+  emailPlaceholder: "மின்னஞ்சலை உள்ளிடவும்",
+  sendOtp: "OTP அனுப்புக",
+  sending: "அனுப்புகிறது...",
+  otpSentTo: "OTP இதற்கு அனுப்பப்பட்டது",
+  otpPlaceholder: "OTP உள்ளிடவும்",
+  verifyOtp: "OTP சரிபார்க்கவும்",
+  resendOtp: "OTP மீண்டும் அனுப்பவும்",
+  newPasswordPlaceholder: "புதிய கடவுச்சொல்",
+  confirmPasswordPlaceholder: "புதிய கடவுச்சொல்லை உறுதி செய்யவும்",
+  resetPassword: "கடவுச்சொல்லை புதுபிக்கவும்",
+  rememberPassword: "கடவுச்சொல் நினைவிருக்கிறதா? ",
+  loginLink: "உள்நுழைய",
+  errorMissingEmail: "உங்கள் மின்னஞ்சலை உள்ளிடவும்",
+  errorInvalidEmail: "சரியான மின்னஞ்சல் முகவரியை உள்ளிடவும்",
+  errorMissingOtp: "OTP உள்ளிடவும்",
+  errorMissingAll: "அனைத்து புலங்களையும் நிரப்பவும்",
+  errorMismatch: "கடவுச்சொற்கள் பொருந்தவில்லை",
+  helperEnglishOnly: "ஆங்கிலத்தில் மட்டும் தட்டச்சு செய்யவும்"
+};

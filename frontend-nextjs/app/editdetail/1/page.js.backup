@@ -1,0 +1,1123 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
+import Navigation from "../components/Navigation";
+
+export default function EditStep1() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const [form, setForm] = useState(defaultFormData);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  // Fetch user data from database when component mounts
+  useEffect(() => {
+    // Load data from localStorage first to ensure client-side consistency
+    const localData = loadFormData();
+    setForm(localData);
+
+    const fetchUserData = async () => {
+      try {
+        // Get email from URL params or localStorage
+        const emailFromUrl = searchParams.get("email");
+        const emailFromStorage = localStorage.getItem("userEmail");
+        const email = emailFromUrl || emailFromStorage;
+
+        if (!email) {
+          setLoading(false);
+          return;
+        }
+
+        // Fetch user details from backend
+        const response = await fetch(`http://localhost:5000/userdetails/${encodeURIComponent(email)}`);
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          // Merge fetched data with existing form data (prioritizing API data but keeping local updates if any)
+          // Note: We re-read loadFormData() here to get the latest state if needed, 
+          // but usually we want to merge API data into what we have.
+          const userData = result.data;
+          const mergedData = {
+            ...localData, // Start with local data
+            ...userData,  // API data overrides local data (or vice versa depending on requirement, usually API is source of truth on load)
+            email: userData.email || email,
+          };
+          // Remove password fields to prevent them from being part of the form state
+          delete mergedData.password;
+          delete mergedData.confirmPassword;
+
+          setForm(mergedData);
+          saveFormData(mergedData);
+        }
+      } catch (err) {
+        console.error("Error fetching user data:", err);
+        // Continue with localStorage data if fetch fails
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, [searchParams]);
+
+  useEffect(() => {
+    saveFormData(form);
+  }, [form]);
+
+  const getDivisionOptions = (temple) => {
+    if (temple === "Ilayatrangudi") {
+      return [
+        "Kazhani Vaasarkkudaiyar",
+        "Kinginikkurudaiyar",
+        "Okkurudaiyar",
+        "Pattanasamiyar",
+        "Perusenthrudaiyar",
+        "Sirusenthrudaiyar",
+        "Perumaruthurudaiyar",
+      ];
+    } else if (temple === "Mathur") {
+      return [
+        "Arumbakkur",
+        "Kannur",
+        "Karuppur",
+        "Kulathur",
+        "Mannur",
+        "Manalur",
+        "Uraiyur",
+      ];
+    } else if (temple === "Vairavan Kovil") {
+      return [
+        "Kazhani Vaasarkkudaiyar",
+        "Maruthenthirapuram",
+        "Periya vahuppu",
+        "Pilliyar vahuppu",
+        "Theyyanar vahuppu",
+      ];
+    }
+    return ["PIRIVU", "NO PIRIVU"];
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((p) => {
+      const updatedForm = { ...p, [name]: value };
+      if (name === "yourTemple") {
+        if (
+          [
+            "Nemam Kovil",
+            "Iluppakudi",
+            "Iraniyur",
+            "Pillaiyarpatti",
+            "Soorakudi",
+            "Velangudi",
+          ].includes(value)
+        ) {
+          updatedForm.yourDivision = "NO PIRIVU";
+
+    "A. Muthu Pattinam – 630101",
+    "A. Siruvayal – 630305",
+    "Alavakkottai – 630564",
+    "Amarapathiputhur – 630301",
+    "Arimalam – 622201",
+    "Ariyakkudi – 630202",
+    "Athangudi – 630101",
+    "Athikadu Thekkur – 630201",
+    "Avanipatti – 630205",
+    "Chockalingam Pudur – 630101",
+    "Chockanatha Puram – 630313",
+    "Devakottai – 630302",
+    "Kadiapatty – 622505",
+    "Kalaiyar Mangalam – 630557",
+    "Kallal – 630300",
+    "Kalluppatti – 630306",
+    "Kanadukathan – 630103",
+    "Kandanur – 630104",
+    "Kandavarayan Patti – 630203",
+    "Kandavarayan Patti – 630203",
+    "Karaikudi – 630001",
+    "Kilapungudi – 630552",
+    "Kilasaval Patti – 630205",
+    "Kollangudi Alagapuri – 630556",
+    "Konapet – 622503",
+    "Koppanapatti – 622401",
+    "Kothamangalam – 630105",
+    "Kottaiyur – 630106",
+    "Kottaiyur Alagapuri – 630106",
+    "Kulipirai – 622402",
+    "Kuruvikondan Patti – 622409",
+    "Madagupatti – 630553",
+    "Mahipalan Patti – 630217",
+    "Managiri – 630307",
+    "Mangalam – 630554",
+    "Melasivapuri – 622403",
+    "Mudalai Patti – 622409",
+    "Nachandu Patti – 622404",
+    "Nachiapuram – 630207",
+    "Nataraja Puram – 630550",
+    "Nattarasan Kottai – 630556",
+    "Nemathan Patti – 630111",
+    "Nerkuppai – 622405",
+    "O. Siruvayal – 630208",
+    "Okkur – 630557",
+    "P. Alagapuri – 630205",
+    "P. Karungulam – 630204",
+    "Paganeri – 630558",
+    "Palavangudi – 630208",
+    "Pallathur – 630107",
+    "Panagudi – 630555",
+    "Panaya Patti – 622406",
+    "Pattamangalam – 630310",
+    "Pillaiyarpatti – 630207",
+    "Pudu Patti – 622408",
+    "Puduvayal – 630108",
+    "Pulangkurichi – 622413",
+    "Ramachandra Puram – 622505",
+    "Rangiem – 622409",
+    "Rayavaram – 622506",
+    "Sakkandhi – 630562",
+    "Sembanur – 630313",
+    "Sevvur – 622417",
+    "Shanmuganatha Puram – 630314",
+    "Sholapuram – 630557",
+    "Siravayal – 630214",
+    "Sirukudal Patti – 630215",
+    "Thanichavoorani – 630314",
+    "Thenipatti – 630211",
+    "Ulagam Patti – 622410",
+    "V. Lakshimipuram – 622412",
+    "Valaya Patti – 622411",
+    "Vegu Patti – 622407",
+    "Venthan Patti – 622419",
+    "Vetriyur – 630321",
+    "Virachilai – 622412",
+    "Viramathi – 630212",
+  ];
+  const validate = () => {
+    if (!form.name.trim()) return "Name is required";
+    if (!form.gender) return "Gender is required";
+    if (!form.maritalStatus) return "Marital Status is required";
+    if (!form.fatherName.trim()) return "Father Name is required";
+    if (!form.fatherOccupation.trim()) return "Father Occupation is required";
+    if (!form.motherName.trim()) return "Mother Name is required";
+    if (!form.motherOccupation.trim()) return "Mother Occupation is required";
+    if (form.brothers === "") return "Number of Brothers is required";
+    if (form.sisters === "") return "Number of Sisters is required";
+    if (!form.yourTemple) return "Your Temple is required";
+    if (!form.yourDivision.trim()) return "Your Division is required";
+    if (!form.knownLanguages.trim()) return "Known Languages is required";
+    if (!form.nativePlace.trim()) return "Native Place is required";
+    if (!form.nativePlaceHouseName.trim())
+      return "Native Place House Name is required";
+    if (!form.presentResidence.trim()) return "Present Residence is required";
+    if (!form.pincode.trim()) return "Pincode is required";
+    if (!/^\d{6}$/.test(form.pincode))
+      return "Pincode must be a 6-digit number";
+    if (!form.profileCreatedBy) return "Profile Created By is required";
+    return "";
+  };
+  const next = () => {
+    const v = validate();
+    if (v) {
+      setError(v);
+      setTimeout(() => setError(""), 4000);
+      return;
+    }
+    router.push("/editdetail/2");
+  };
+  return (
+    <>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .form-container {
+            flex-direction: column !important;
+            gap: 5px !important;
+          }
+          .left-column, .right-column {
+            min-width: 100% !important;
+            margin: 0 !important;
+          }
+          .button-container {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .button-container button {
+            width: 100% !important;
+            margin: 10px auto !important;
+            max-width: 400px;
+          }
+          .field-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 5px !important;
+          }
+          .field-label {
+            text-align: left !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+          }
+          .field-input {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+        @media (max-width: 480px) {
+          h1 {
+            font-size: 22px !important;
+          }
+        }
+      `}</style>
+      <div style={styles.container}>
+      <h1 style={{ fontWeight: 'bold' }}>Edit Form </h1>
+      <br/>
+      <Navigation current={1} />
+      <h1> Step 1 - Basic Details</h1>
+      <br/>
+      <div style={styles.formContainer} className="form-container">
+        <div style={styles.leftColumn} className="left-column">
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="name"
+              value={form.name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Gender:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="gender"
+              value={form.gender || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Marital Status:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="maritalStatus"
+              value={form.maritalStatus || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="unmarried">unmarried</option>
+              <option value="widow">widow</option>
+              <option value="divorced">divorced</option>
+              <option value="widower">widower</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Father Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="fatherName"
+              value={form.fatherName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Father Occupation:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="fatherOccupation"
+              value={form.fatherOccupation || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Mother Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="motherName"
+              value={form.motherName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Mother Occupation:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="motherOccupation"
+              value={form.motherOccupation || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Number of Brothers:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="brothers"
+              value={form.brothers || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {[...Array(5).keys()].map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Number of Sisters:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="sisters"
+              value={form.sisters || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {[...Array(5).keys()].map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Your Temple:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="yourTemple"
+              value={form.yourTemple || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Nemam Kovil">Nemam Kovil</option>
+              <option value="Ilayatrangudi">Ilayatrangudi</option>
+              <option value="Iluppakudi">Iluppakudi</option>
+              <option value="Iraniyur">Iraniyur</option>
+              <option value="Mathur">Mathur</option>
+              <option value="Pillaiyarpatti">Pillaiyarpatti</option>
+              <option value="Soorakudi">Soorakudi</option>
+              <option value="Vairavan Kovil">Vairavan Kovil</option>
+              <option value="Velangudi">Velangudi</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Your Division:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="yourDivision"
+              value={form.yourDivision || ""}
+              onChange={handleChange}
+              disabled={form.yourDivision === "NO PIRIVU"}
+            >
+              <option value="">Select</option>
+              {getDivisionOptions(form.yourTemple).map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Known Languages:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="knownLanguages"
+              value={form.knownLanguages || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Reference:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="reference"
+              value={form.reference || ""}
+              onChange={handleChange}
+              placeholder="NMS Group/Branch No."
+            />
+          </div>
+        </div>
+        <div style={styles.rightColumn} className="right-column">
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Native Place:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="nativePlace"
+              value={form.nativePlace || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {nativePlaceOptions.map((place, index) => (
+                <option key={index} value={place}>
+                  {place}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">House Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="nativePlaceHouseName"
+              value={form.nativePlaceHouseName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Present Residence:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="presentResidence"
+              value={form.presentResidence || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Pincode:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="pincode"
+              value={form.pincode || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Profile Created By:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="profileCreatedBy"
+              value={form.profileCreatedBy || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Self">Self</option>
+              <option value="Parents">Parents</option>
+              <option value="Brother">Brother</option>
+              <option value="Sister">Sister</option>
+              <option value="Friend">Friend</option>
+              <option value="Brother in Law">Brother in Law</option>
+              <option value="Sister in Law">Sister in Law</option>
+              <option value="Uncle">Uncle</option>
+              <option value="Mama">Mama</option>
+              <option value="Athtai">Athtai</option>
+              <option value="Chithi">Chithi</option>
+              <option value="Chithtappa">Chithtappa</option>
+              <option value="Periyamma">Periyamma</option>
+              <option value="Periyappa">Periyappa</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referred By:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referredBy"
+              value={form.referredBy || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <h5 style={styles.referralHeading}>Referral Details 1</h5>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Name"
+              value={form.referralDetails1Name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Phone:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Phone"
+              value={form.referralDetails1Phone || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Address:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Address"
+              value={form.referralDetails1Address || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <h4 style={styles.referralHeading2}>Referral Details 2</h4>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Name"
+              value={form.referralDetails2Name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Phone:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Phone"
+              value={form.referralDetails2Phone || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Address:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Address"
+              value={form.referralDetails2Address || ""}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
+      <p style={styles.infoMessage}>
+        Enter all fields or Enter NA for unknown fields
+      </p>
+      {error && <p style={styles.error}>{error}</p>}
+      <div style={styles.buttonContainer} className="button-container">
+        <button onClick={next} style={styles.button1}>
+          Next
+        </button>
+      </div>
+    </div>
+    </>
+  );
+}
+
+const nativePlaceOptions = [
+    "A. Muthu Pattinam – 630101",
+    "A. Siruvayal – 630305",
+    "Alavakkottai – 630564",
+    "Amarapathiputhur – 630301",
+    "Arimalam – 622201",
+    "Ariyakkudi – 630202",
+    "Athangudi – 630101",
+    "Athikadu Thekkur – 630201",
+    "Avanipatti – 630205",
+    "Chockalingam Pudur – 630101",
+    "Chockanatha Puram – 630313",
+    "Devakottai – 630302",
+    "Kadiapatty – 622505",
+    "Kalaiyar Mangalam – 630557",
+    "Kallal – 630300",
+    "Kalluppatti – 630306",
+    "Kanadukathan – 630103",
+    "Kandanur – 630104",
+    "Kandavarayan Patti – 630203",
+    "Kandavarayan Patti – 630203",
+    "Karaikudi – 630001",
+    "Kilapungudi – 630552",
+    "Kilasaval Patti – 630205",
+    "Kollangudi Alagapuri – 630556",
+    "Konapet – 622503",
+    "Koppanapatti – 622401",
+    "Kothamangalam – 630105",
+    "Kottaiyur – 630106",
+    "Kottaiyur Alagapuri – 630106",
+    "Kulipirai – 622402",
+    "Kuruvikondan Patti – 622409",
+    "Madagupatti – 630553",
+    "Mahipalan Patti – 630217",
+    "Managiri – 630307",
+    "Mangalam – 630554",
+    "Melasivapuri – 622403",
+    "Mudalai Patti – 622409",
+    "Nachandu Patti – 622404",
+    "Nachiapuram – 630207",
+    "Nataraja Puram – 630550",
+    "Nattarasan Kottai – 630556",
+    "Nemathan Patti – 630111",
+    "Nerkuppai – 622405",
+    "O. Siruvayal – 630208",
+    "Okkur – 630557",
+    "P. Alagapuri – 630205",
+    "P. Karungulam – 630204",
+    "Paganeri – 630558",
+    "Palavangudi – 630208",
+    "Pallathur – 630107",
+    "Panagudi – 630555",
+    "Panaya Patti – 622406",
+    "Pattamangalam – 630310",
+    "Pillaiyarpatti – 630207",
+    "Pudu Patti – 622408",
+    "Puduvayal – 630108",
+    "Pulangkurichi – 622413",
+    "Ramachandra Puram – 622505",
+    "Rangiem – 622409",
+    "Rayavaram – 622506",
+    "Sakkandhi – 630562",
+    "Sembanur – 630313",
+    "Sevvur – 622417",
+    "Shanmuganatha Puram – 630314",
+    "Sholapuram – 630557",
+    "Siravayal – 630214",
+    "Sirukudal Patti – 630215",
+    "Thanichavoorani – 630314",
+    "Thenipatti – 630211",
+    "Ulagam Patti – 622410",
+    "V. Lakshimipuram – 622412",
+    "Valaya Patti – 622411",
+    "Vegu Patti – 622407",
+    "Venthan Patti – 622419",
+    "Vetriyur – 630321",
+    "Virachilai – 622412",
+    "Viramathi – 630212",
+  ];
+  const validate = () => {
+    if (!form.name.trim()) return "Name is required";
+    if (!form.gender) return "Gender is required";
+    if (!form.maritalStatus) return "Marital Status is required";
+    if (!form.fatherName.trim()) return "Father Name is required";
+    if (!form.fatherOccupation.trim()) return "Father Occupation is required";
+    if (!form.motherName.trim()) return "Mother Name is required";
+    if (!form.motherOccupation.trim()) return "Mother Occupation is required";
+    if (form.brothers === "") return "Number of Brothers is required";
+    if (form.sisters === "") return "Number of Sisters is required";
+    if (!form.yourTemple) return "Your Temple is required";
+    if (!form.yourDivision.trim()) return "Your Division is required";
+    if (!form.knownLanguages.trim()) return "Known Languages is required";
+    if (!form.nativePlace.trim()) return "Native Place is required";
+    if (!form.nativePlaceHouseName.trim())
+      return "Native Place House Name is required";
+    if (!form.presentResidence.trim()) return "Present Residence is required";
+    if (!form.pincode.trim()) return "Pincode is required";
+    if (!/^\d{6}$/.test(form.pincode))
+      return "Pincode must be a 6-digit number";
+    if (!form.profileCreatedBy) return "Profile Created By is required";
+    return "";
+  };
+  const next = () => {
+    const v = validate();
+    if (v) {
+      setError(v);
+      setTimeout(() => setError(""), 4000);
+      return;
+    }
+    router.push("/editdetail/2");
+  };
+  return (
+    <>
+      <style jsx>{`
+        @media (max-width: 768px) {
+          .form-container {
+            flex-direction: column !important;
+            gap: 5px !important;
+          }
+          .left-column, .right-column {
+            min-width: 100% !important;
+            margin: 0 !important;
+          }
+          .button-container {
+            flex-direction: column !important;
+            gap: 10px !important;
+          }
+          .button-container button {
+            width: 100% !important;
+            margin: 10px auto !important;
+            max-width: 400px;
+          }
+          .field-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 5px !important;
+          }
+          .field-label {
+            text-align: left !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+          }
+          .field-input {
+            max-width: 100% !important;
+            width: 100% !important;
+          }
+        }
+        @media (max-width: 480px) {
+          h1 {
+            font-size: 22px !important;
+          }
+        }
+      `}</style>
+      <div style={styles.container}>
+      <h1 style={{ fontWeight: 'bold' }}>Edit Form </h1>
+      <br/>
+      <Navigation current={1} />
+      <h1> Step 1 - Basic Details</h1>
+      <br/>
+      <div style={styles.formContainer} className="form-container">
+        <div style={styles.leftColumn} className="left-column">
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="name"
+              value={form.name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Gender:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="gender"
+              value={form.gender || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Marital Status:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="maritalStatus"
+              value={form.maritalStatus || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="unmarried">unmarried</option>
+              <option value="widow">widow</option>
+              <option value="divorced">divorced</option>
+              <option value="widower">widower</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Father Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="fatherName"
+              value={form.fatherName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Father Occupation:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="fatherOccupation"
+              value={form.fatherOccupation || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Mother Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="motherName"
+              value={form.motherName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Mother Occupation:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="motherOccupation"
+              value={form.motherOccupation || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Number of Brothers:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="brothers"
+              value={form.brothers || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {[...Array(5).keys()].map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Number of Sisters:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="sisters"
+              value={form.sisters || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {[...Array(5).keys()].map((i) => (
+                <option key={i} value={i}>
+                  {i}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Your Temple:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="yourTemple"
+              value={form.yourTemple || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Nemam Kovil">Nemam Kovil</option>
+              <option value="Ilayatrangudi">Ilayatrangudi</option>
+              <option value="Iluppakudi">Iluppakudi</option>
+              <option value="Iraniyur">Iraniyur</option>
+              <option value="Mathur">Mathur</option>
+              <option value="Pillaiyarpatti">Pillaiyarpatti</option>
+              <option value="Soorakudi">Soorakudi</option>
+              <option value="Vairavan Kovil">Vairavan Kovil</option>
+              <option value="Velangudi">Velangudi</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Your Division:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="yourDivision"
+              value={form.yourDivision || ""}
+              onChange={handleChange}
+              disabled={form.yourDivision === "NO PIRIVU"}
+            >
+              <option value="">Select</option>
+              {getDivisionOptions(form.yourTemple).map((option, index) => (
+                <option key={index} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Known Languages:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="knownLanguages"
+              value={form.knownLanguages || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Reference:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="reference"
+              value={form.reference || ""}
+              onChange={handleChange}
+              placeholder="NMS Group/Branch No."
+            />
+          </div>
+        </div>
+        <div style={styles.rightColumn} className="right-column">
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Native Place:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="nativePlace"
+              value={form.nativePlace || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              {nativePlaceOptions.map((place, index) => (
+                <option key={index} value={place}>
+                  {place}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">House Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="nativePlaceHouseName"
+              value={form.nativePlaceHouseName || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Present Residence:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="presentResidence"
+              value={form.presentResidence || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Pincode:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="pincode"
+              value={form.pincode || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Profile Created By:</label>
+            <select
+              style={styles.fieldInput}
+              className="field-input"
+              name="profileCreatedBy"
+              value={form.profileCreatedBy || ""}
+              onChange={handleChange}
+            >
+              <option value="">Select</option>
+              <option value="Self">Self</option>
+              <option value="Parents">Parents</option>
+              <option value="Brother">Brother</option>
+              <option value="Sister">Sister</option>
+              <option value="Friend">Friend</option>
+              <option value="Brother in Law">Brother in Law</option>
+              <option value="Sister in Law">Sister in Law</option>
+              <option value="Uncle">Uncle</option>
+              <option value="Mama">Mama</option>
+              <option value="Athtai">Athtai</option>
+              <option value="Chithi">Chithi</option>
+              <option value="Chithtappa">Chithtappa</option>
+              <option value="Periyamma">Periyamma</option>
+              <option value="Periyappa">Periyappa</option>
+            </select>
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referred By:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referredBy"
+              value={form.referredBy || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <h5 style={styles.referralHeading}>Referral Details 1</h5>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Name"
+              value={form.referralDetails1Name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Phone:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Phone"
+              value={form.referralDetails1Phone || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Address:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails1Address"
+              value={form.referralDetails1Address || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <h4 style={styles.referralHeading2}>Referral Details 2</h4>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Name:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Name"
+              value={form.referralDetails2Name || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Phone:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Phone"
+              value={form.referralDetails2Phone || ""}
+              onChange={handleChange}
+            />
+          </div>
+          <div style={styles.fieldRow} className="field-row">
+            <label style={styles.fieldLabel} className="field-label">Referral Address:</label>
+            <input
+              style={styles.fieldInput}
+              className="field-input"
+              name="referralDetails2Address"
+              value={form.referralDetails2Address || ""}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
+      {error && <p style={{ color: "red" }}>{error}</p>}
+      <p
+        style={{
+          textAlign: "center",
+          marginTop: "20px",
+          fontSize: "14px",
+          color: "red",
+        }}
+      >
+        Enter all fields or Enter NA for unknown fields
+      </p>
+      <div style={styles.formContainer} className="button-container">
+        <div style={styles.leftColumn}></div>
+        <div style={styles.rightColumn}>
+          <button style={styles.editDetailButton} onClick={next}>
+            Next
+          </button>
+        </div>
+      </div>
+
+    </div>
+    </>
+  );
+}
+```

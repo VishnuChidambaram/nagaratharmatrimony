@@ -1,0 +1,305 @@
+:root {
+  --page-bg: #ffffff;
+  --page-text: #000000;
+  --header-bg: #f8f9fa;
+  --header-text: #000000;
+  --menu-bg: #ffffff;
+  --menu-text: #000000;
+  --menu-border: #ddd;
+  --menu-item-bg: #f0f0f0;
+  --card-bg: #ffffff;
+  --card-text: #000000;
+  --input-bg: #ffffff;
+  --input-text: #000000;
+  --input-border: #ccc;
+  --input-placeholder: #999;
+  --button-bg:#000000;
+  --button-text: #ffffff;
+  --link-color: #0070f3;
+  --error-text: red;
+  --success-text: green;
+  --container-bg: #f5f5f5;
+  --menu-button-bg: #e0e0e0;
+  --menu-button-text: #000;
+}
+
+/* Hide Next.js Dev Indicators & Toasts */
+[data-nextjs-toast],
+[data-nextjs-toast-errors-parent],
+nextjs-portal,
+#nextjs-dev-indicator {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+body.dark {
+  --page-bg: #121212;
+  --page-text: #ffffff;
+  --header-bg: #1f1f1f;
+  --header-text: #ffffff;
+  --menu-bg: #1f1f1f;
+  --menu-text: #ffffff;
+  --menu-border: #333;
+  --menu-item-bg: #333;
+  --card-bg: #1e1e1e;
+  --card-text: #ffffff;
+  --input-bg: #333;
+  --input-text: #ffffff;
+  --input-border: #555;
+  --input-placeholder: #aaa;
+  --button-bg: #000000;
+  --button-text: #ffffff;
+  --link-color: #4da3ff;
+  --container-bg: #000000;
+  --menu-button-bg: #333;
+  --menu-button-text: #fff;
+}
+
+ h1 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  }
+  h2 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  } 
+  h3 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  }     
+  h4 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  }
+  h5 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  }
+  h6 {
+    font-size: clamp(16px, 3.5vw, 20px);font-weight: 100;
+  }
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--page-bg);
+  color: var(--page-text);
+  font-family: "Arial", sans-serif;
+}
+
+/* Hide scrollbars for webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbars for Firefox */
+* {
+  scrollbar-width: none;
+  box-sizing: border-box;
+}
+
+.disclaimer-bar {
+  width: 100%;
+  height: 32px;
+  background: var(--card-bg);
+  color: var(--card-text);
+  padding: 8px 0;
+  overflow: hidden; /* Hide overflow */
+  border-bottom: 1px solid var(--menu-border);
+  display: flex;
+  align-items: center;
+}
+
+.disclaimer-text {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%; /* Start from right side */
+  animation: scroll-left 12s linear infinite;
+}
+
+@keyframes scroll-left {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.login-input {
+  width: 90%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 6px;
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--input-text);
+  font-family: "Arial", sans-serif;
+}
+
+.login-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--link-color);
+}
+
+.form-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+}
+
+.chart-cell {
+  border: 1px solid var(--input-border);
+  text-align: center;
+  vertical-align: middle;
+  padding: 40px;
+  width: 100%;
+  height: 100%;
+  color: var(--card-text);
+}
+
+@media (max-width: 768px) {
+  .chart-cell {
+    padding: 10px;
+  }
+}
+
+/* Mobile Typography & Touch Targets */
+@media (max-width: 480px) {
+  body {
+    font-size: 14px;
+  }
+  
+  h1 {
+    font-size: clamp(16px, 3.5vw, 20px);
+  }
+  
+  h2 {
+    font-size: clamp(18px, 4vw, 24px);
+  }
+  
+  h3 {
+    font-size: clamp(16px, 3.5vw, 20px);
+  }
+  
+  h4 {
+    font-size: clamp(14px, 3vw, 18px);
+  }
+  
+  /* Ensure minimum touch targets */
+  button, 
+  input[type="button"], 
+  input[type="submit"],
+  .button {
+    min-height: 44px;
+    min-width: 44px;
+    padding: 12px 16px;
+  }
+  
+  /* Improve input fields for mobile */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea {
+    min-height: 44px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}
+
+/* Tablet adjustments */
+@media (max-width: 768px) {
+  h1 {
+    font-size: clamp(24px, 6vw, 32px);
+  }
+  
+  h2 {
+    font-size: clamp(20px, 5vw, 28px);
+  }
+  
+  /* Ensure buttons are touch-friendly */
+  button,
+  .button {
+    min-height: 44px;
+    padding: 10px 14px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 320px) {
+  body {
+    font-size: 13px;
+  }
+  
+  h1 {
+    font-size: 18px;
+  }
+  
+  h2 {
+    font-size: 16px;
+  }
+  
+  h3 {
+    font-size: 14px;
+  }
+}
+
+/* Animation Utilities */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -20px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes fadeInLeft {
+  from {
+    opacity: 0;
+    transform: translate3d(-20px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.animate-fade-in-down {
+  animation: fadeInDown 0.5s ease-out forwards;
+}
+
+.animate-fade-in-left {
+  animation: fadeInLeft 0.5s ease-out forwards;
+}
+
+@keyframes blob {
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
+}
+
+.animate-blob {
+  animation: blob 7s infinite;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}

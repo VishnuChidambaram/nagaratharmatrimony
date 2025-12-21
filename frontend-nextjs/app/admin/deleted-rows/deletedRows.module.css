@@ -1,0 +1,93 @@
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--page-bg);
+  color: var(--page-text);
+  font-family: "Arial", sans-serif;
+  position: relative; /* Added for LanguageToggle positioning */
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  background: var(--page-bg);
+  min-height: 60px;
+  border-bottom: 1px solid var(--input-border);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 20px;
+}
+
+.headerTitle {
+  margin: 0;
+  font-size: 24px;
+  color: var(--page-text);
+  font-weight: bold;
+}
+
+.contentArea {
+  padding: 20px;
+  flex: 1;
+}
+
+.userList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.userCard {
+  background: var(--card-bg);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden;
+  border: 1px solid var(--input-border);
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.userActions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  color: white;
+  min-width: 100px;
+  text-align: center;
+}
+
+.btnRestore {
+  background: #28a745;
+}
+
+.btnDelete {
+  background: #dc3545;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  color: var(--page-text);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
