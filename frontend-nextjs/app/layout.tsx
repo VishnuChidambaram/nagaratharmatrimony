@@ -98,7 +98,7 @@ function LanguageEffects() {
 }
 
 // Prevent Inspect Element and Right Click
-/*function PreventInspect() {
+function PreventInspect() {
   useEffect(() => {
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -125,7 +125,7 @@ function LanguageEffects() {
   }, []);
 
   return null;
-}*/
+}
 
 import { API_URL } from "@/app/utils/config";
 import { clearFormData } from "@/app/register/styles";
