@@ -1,0 +1,9 @@
+open vscode 
+open terminal
+enter command ---> cd frontend-nextjs --->cd frontend-nextjs --->npm run dev
+
+open new terminal 
+
+enter command  ---> cd backend-express ---> node server.js
+
+then click the link  http://localhost:3000

@@ -1,0 +1,93 @@
+## Plan to Create MySQL Database Fields for Registration (All Pages)
+
+### Information Gathered
+From `FormContext.js`, the full list of registration fields across all pages includes the initial fields from `Field_Names.txt` plus additional ones like personal details, education, occupation, physical attributes, astrological data, contact info, and preferences. Some fields are complex (e.g., `houses` as an array of 12 strings, `planets` as an object with keys like sun, moon, etc.). I have consolidated these into unique fields for the database schema, assuming a single `users` table. For complex fields like arrays/objects, suggest storing as JSON or separate tables if needed, but for simplicity, use TEXT for JSON-serialized data.
+
+Unique fields identified (with suggested data types):
+- name (VARCHAR(255))
+- email (VARCHAR(255), UNIQUE)
+- phone (VARCHAR(20))
+- maritalStatus (ENUM('Single', 'Married', 'Divorced', 'Widowed'))
+- fatherName (VARCHAR(255))
+- motherName (VARCHAR(255))
+- knownLanguages (TEXT)
+- yourTemple (VARCHAR(255))
+- yourDivision (VARCHAR(255))
+- reference (VARCHAR(255))  // NMS Group/Branch No.
+- profileCreatedBy (VARCHAR(255))
+- password (VARCHAR(255))  // Hashed
+- confirmPassword (VARCHAR(255))  // Not stored in DB, for validation only
+- gender (ENUM('Male', 'Female', 'Other'))
+- fatherOccupation (VARCHAR(255))
+- motherOccupation (VARCHAR(255))
+- nativePlace (VARCHAR(255))
+- houseNameAddress (TEXT)
+- presentResidence (TEXT)
+- brothers (INT)
+- sisters (INT)
+- referredBy (VARCHAR(255))
+- referralDetails1Name (VARCHAR(255))
+- referralDetails1Phone (VARCHAR(20))
+- referralDetails1Address (TEXT)
+- referralDetails2Name (VARCHAR(255))
+- referralDetails2Phone (VARCHAR(20))
+- referralDetails2Address (TEXT)
+- educationQualification (VARCHAR(255))
+- otherEducation (TEXT)
+- occupationBusiness (VARCHAR(255))
+- otherOccupation (TEXT)
+- workingPlace (VARCHAR(255))
+- educationDetails (TEXT)
+- workDetails (TEXT)
+- incomeType (VARCHAR(255))
+- income (DECIMAL(10,2))
+- height (VARCHAR(50))  // e.g., "5'6\""
+- complexion (VARCHAR(50))
+- weight (DECIMAL(5,2))  // in kg or lbs
+- diet (VARCHAR(50))
+- specialCases (VARCHAR(255))
+- specialCasesDetails (TEXT)
+- zodiacSign (VARCHAR(50))
+- ascendant (VARCHAR(50))
+- birthStar (VARCHAR(50))
+- Dosham (VARCHAR(50))
+- placeOfBirth (VARCHAR(255))
+- dateOfBirth (DATE)  // Combine year, month, day
+- timeOfBirth (TIME)  // Combine hours, minutes, seconds
+- DisaiType (VARCHAR(50))
+- disaiRemain (VARCHAR(50))
+- houses (TEXT)  // JSON array of 12 strings
+- planets (TEXT)  // JSON object
+- phonePrimary (VARCHAR(20))
+- phoneAlternate (VARCHAR(20))
+- addressLine1 (VARCHAR(255))
+- addressLine2 (VARCHAR(255))
+- city (VARCHAR(100))
+- state (VARCHAR(100))
+- pincode (VARCHAR(20))
+- country (VARCHAR(100))
+- prefAgeFrom (INT)
+- prefAgeTo (INT)
+- prefHeightFrom (VARCHAR(50))
+- prefHeightTo (VARCHAR(50))
+- prefEducation (VARCHAR(255))
+- prefOccupation (VARCHAR(255))
+- prefLocation (VARCHAR(255))
+- updated (TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+
+### Plan
+1. **Design the Table Schema**: Define data types for each field based on expected input (e.g., VARCHAR for text, DATE for DOB, ENUM for fixed options). Combine related fields (e.g., DOB components into one DATE field). For arrays/objects, use TEXT to store JSON.
+2. **Create the SQL CREATE TABLE Statement**: Write the SQL to create the `users` table with all fields, including an auto-increment primary key (user_id).
+3. **Add Constraints and Indexes**: Add UNIQUE constraint on EMAIL, and indexes on frequently queried fields like EMAIL and updated for performance.
+4. **Handle Password Security**: Note that passwords should be hashed before storage (e.g., using bcrypt in the application code, not in DB). Do not store confirmPassword.
+5. **Test the Schema**: Optionally, create the table in a MySQL instance and insert sample data to verify.
+
+### Dependent Files to be Edited
+- None (this is a database schema plan; no code files need editing yet).
+
+### Followup Steps
+- Implement the schema in your MySQL database.
+- Update application code (e.g., backend registration endpoint) to insert data into these fields, serializing complex fields to JSON.
+- Test registration flow with sample data across all pages.
+
+If this updated plan covers all pages and looks good, let me know if you'd like me to proceed with generating the SQL script or making any adjustments.

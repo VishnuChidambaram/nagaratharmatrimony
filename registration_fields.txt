@@ -1,0 +1,96 @@
+REGISTRATION PAGE - ALL FIELDS
+
+Step 1: Basic Details
+---------------------
+Name                   *
+Gender                 *
+Create Password        *
+Confirm Password       *
+Marital Status         *
+Father Name            *
+Father Occupation   
+Mother Name            *
+Mother Occupation 
+No. of Brothers 
+No. of Brothers Married 
+No. of Sisters
+No. of Sisters Married 
+Your Temple 
+Your Division 
+Known Languages 
+Native Place 
+Native Place House Name
+Present Residence 
+Present Pincode 
+Profile Created By 
+Referred By 
+Reference Details 
+Referral 1 Name
+Referral 1 Phone 
+Referral 1 Address 
+Referral 2 Name 
+Referral 2 Phone 
+Referral 2 Address
+
+Step 2: Education & Occupation
+------------------------------
+Education Qualification 
+Other Education 
+Education Details 
+Occupation / Business 
+Other Occupation 
+Working Place
+Work Details 
+Income 
+
+Step 3: Physical Attributes
+---------------------------
+Height 
+Complexion 
+Weight 
+Diet 
+Special Cases 
+Special Cases Details
+
+Step 4: Astrology Details
+-------------------------
+Zodiac Sign (Rasi)  
+Ascendant (Lagnam) 
+Birth Star 
+Dosham 
+Place of Birth 
+Date of Birth
+Time of Birth 
+Dasa Type 
+Dasa Balance 
+
+Step 5: Horoscope Chart
+-----------------------
+Rasi Chart 
+Amsam Chart 
+
+Step 6: Contact Details
+-----------------------
+Full Street Address
+City 
+State 
+District 
+Country 
+Postal Code 
+Phone Number
+Other Phone Number 
+WhatsApp No. 
+Email 
+Upload Photos 
+
+Step 7: Partner Preference
+--------------------------
+Education Qualification 
+Education Details 
+Complexion 
+Personal Preference 
+Work After Marriage 
+From Age
+To Age
+From Height 
+To Height
