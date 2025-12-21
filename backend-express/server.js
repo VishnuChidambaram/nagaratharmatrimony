@@ -27,7 +27,8 @@ const allowedOrigins = [
 ];
 
 if (process.env.FRONTEND_URL) {
-  allowedOrigins.push(process.env.FRONTEND_URL);
+  const envOrigins = process.env.FRONTEND_URL.split(",").map(url => url.trim().replace(/\/$/, ""));
+  allowedOrigins.push(...envOrigins);
 }
 
 app.use(
@@ -35,10 +36,14 @@ app.use(
     origin: function (origin, callback) {
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        return callback(new Error("The CORS policy for this site does not allow access from the specified Origin."), false);
+      
+      const normalizedOrigin = origin.replace(/\/$/, "");
+      if (allowedOrigins.includes(normalizedOrigin)) {
+        return callback(null, true);
+      } else {
+        console.warn(`CORS blocked for origin: ${origin}`);
+        return callback(new Error("CORS policy blocked this request."), false);
       }
-      return callback(null, true);
     },
     credentials: true,
   })
