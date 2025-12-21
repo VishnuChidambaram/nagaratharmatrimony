@@ -86,6 +86,8 @@ export default function Login() {
         
         if (typeof window !== "undefined") {
           localStorage.setItem("userEmail", email);
+          // Set cookie for middleware (not httpOnly as it's set by client-side JS)
+          document.cookie = `userEmail=${email}; path=/; max-age=86400; samesite=lax`;
         }
         window.localStorage.setItem("userEmail", email);
 

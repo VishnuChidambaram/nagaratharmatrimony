@@ -78,6 +78,8 @@ export default function AdminLogin() {
       
       if (typeof window !== "undefined") {
         localStorage.setItem("adminEmail", email);
+        // Set cookie for middleware
+        document.cookie = `adminEmail=${email}; path=/; max-age=86400; samesite=lax`;
       }
       window.localStorage.setItem("adminEmail", email); 
 

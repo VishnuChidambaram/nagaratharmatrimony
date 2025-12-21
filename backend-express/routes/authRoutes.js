@@ -195,8 +195,8 @@ router.post("/admin/login", async (req, res) => {
     // Set httpOnly cookie with admin email
     res.cookie("adminEmail", admin.email, {
       httpOnly: true,
-      secure: false, // Set to true in production with HTTPS
-      sameSite: "lax",
+      secure: true, // Required for cross-site sameSite: none
+      sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     });
 
@@ -252,8 +252,8 @@ router.post("/login", async (req, res) => {
       // Set httpOnly cookie with user email
       res.cookie("userEmail", user.email, {
         httpOnly: true,
-        secure: false, // Set to true in production with HTTPS
-        sameSite: "lax",
+        secure: true, // Required for cross-site sameSite: none
+        sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
         maxAge: 24 * 60 * 60 * 1000, // 24 hours
       });
       return res.json({
