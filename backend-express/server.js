@@ -68,7 +68,9 @@ async function initDB() {
     console.log("Connected to MySQL database");
 
     // Sync the model with the database
-    await db.sequelize.sync({ alter: true });
+    // Removed { alter: true } to prevent TiDB unique constraint errors on restart
+    // If you need to update schema, do it manually or use migrations
+    await db.sequelize.sync();
 
     // Insert sample data if table is empty
   } catch (error) {
