@@ -24,11 +24,14 @@ const allowedOrigins = [
   "http://localhost:3000",
   "http://169.254.156.216:3000",
   "http://192.168.1.2:3000",
+  "https://nagaratharmatrimony.vercel.app", // Explicitly adding this to be safe
 ];
 
 if (process.env.FRONTEND_URL) {
   const envOrigins = process.env.FRONTEND_URL.split(",").map(url => url.trim().replace(/\/$/, ""));
-  allowedOrigins.push(...envOrigins);
+  envOrigins.forEach(o => {
+    if (!allowedOrigins.includes(o)) allowedOrigins.push(o);
+  });
 }
 
 console.log("CORS Configuration: Allowed Origins ->", allowedOrigins);
@@ -36,16 +39,16 @@ console.log("CORS Configuration: Allowed Origins ->", allowedOrigins);
 app.use(
   cors({
     origin: function (origin, callback) {
+      console.log(`CORS Request - Origin: ${origin}`);
       // Allow requests with no origin (like mobile apps or curl requests)
       if (!origin) return callback(null, true);
       
       const normalizedOrigin = origin.replace(/\/$/, "");
       if (allowedOrigins.includes(normalizedOrigin)) {
+        console.log(`CORS Allowed: ${normalizedOrigin}`);
         return callback(null, true);
       } else {
-        console.warn(`CORS blocked for origin: ${origin}. Expected one of: ${allowedOrigins.join(", ")}`);
-        // Instead of returning an error which might stop header processing, 
-        // we just return false to let the browser handle the block normally.
+        console.warn(`CORS Blocked: Origin ${origin} (Normalized: ${normalizedOrigin}) not in ${JSON.stringify(allowedOrigins)}`);
         return callback(null, false);
       }
     },
