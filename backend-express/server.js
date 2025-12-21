@@ -31,6 +31,8 @@ if (process.env.FRONTEND_URL) {
   allowedOrigins.push(...envOrigins);
 }
 
+console.log("CORS Configuration: Allowed Origins ->", allowedOrigins);
+
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -41,11 +43,14 @@ app.use(
       if (allowedOrigins.includes(normalizedOrigin)) {
         return callback(null, true);
       } else {
-        console.warn(`CORS blocked for origin: ${origin}`);
-        return callback(new Error("CORS policy blocked this request."), false);
+        console.warn(`CORS blocked for origin: ${origin}. Expected one of: ${allowedOrigins.join(", ")}`);
+        // Instead of returning an error which might stop header processing, 
+        // we just return false to let the browser handle the block normally.
+        return callback(null, false);
       }
     },
     credentials: true,
+    optionsSuccessStatus: 200 // Some legacy browsers (IE11, various SmartTVs) choke on 204
   })
 );
 app.use(express.json({ limit: "10mb" }));
