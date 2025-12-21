@@ -300,7 +300,7 @@ export default function RootLayout({
       >
         <LanguageProvider>
         <LanguageEffects />
-        {/*<PreventInspect />*/}
+        <PreventInspect />
         <NotificationToast />
         {/* Global Header */}
         <header
