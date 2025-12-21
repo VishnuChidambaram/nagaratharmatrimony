@@ -7,6 +7,7 @@ import { dirname } from "path";
 import fs from "fs";
 import { fileTypeFromBuffer } from "file-type";
 import bcrypt from "bcrypt";
+import cookieParser from "cookie-parser";
 import db from "./models/index.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -18,9 +19,27 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+app.use(cookieParser());
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://169.254.156.216:3000",
+  "http://192.168.1.2:3000",
+];
+
+if (process.env.FRONTEND_URL) {
+  allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://169.254.156.216:3000", "http://192.168.1.2:3000"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        return callback(new Error("The CORS policy for this site does not allow access from the specified Origin."), false);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   })
 );
