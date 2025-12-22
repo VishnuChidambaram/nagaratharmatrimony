@@ -18,7 +18,7 @@ export const styles = {
     transform: "translate(-50%, -50%)",
   },
   input: {
-    width: "100%",
+    width: "500px",
     maxWidth: "500px",
     padding: "12px",
     margin: "10px auto",
