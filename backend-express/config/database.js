@@ -1,5 +1,23 @@
 import { Sequelize } from "sequelize";
 import "dotenv/config";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const sslConfig = {
+  require: true,
+  rejectUnauthorized: false // Fallback
+};
+
+// Check for CA certificate
+const caCertPath = path.join(__dirname, "../../isrgrootx1.pem");
+if (fs.existsSync(caCertPath)) {
+  sslConfig.ca = fs.readFileSync(caCertPath);
+  sslConfig.rejectUnauthorized = true; // More secure if CA is provided
+}
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -14,10 +32,7 @@ const sequelize = new Sequelize(
     },
     logging: console.log,
     dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false
-      }
+      ssl: sslConfig
     }
   }
 );
