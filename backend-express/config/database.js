@@ -7,16 +7,18 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const sslConfig = {
+const isLocalhost = process.env.DB_HOST === "localhost" || process.env.DB_HOST === "127.0.0.1";
+
+const sslConfig = isLocalhost ? false : {
   require: true,
-  rejectUnauthorized: false // Fallback
+  rejectUnauthorized: false
 };
 
-// Check for CA certificate
-const caCertPath = path.join(__dirname, "../../isrgrootx1.pem");
-if (fs.existsSync(caCertPath)) {
-  sslConfig.ca = fs.readFileSync(caCertPath);
-  sslConfig.rejectUnauthorized = true; // More secure if CA is provided
+if (!isLocalhost) {
+  const caCertPath = path.join(__dirname, "../../isrgrootx1.pem");
+  if (fs.existsSync(caCertPath)) {
+    sslConfig.ca = fs.readFileSync(caCertPath);
+  }
 }
 
 const sequelize = new Sequelize(
