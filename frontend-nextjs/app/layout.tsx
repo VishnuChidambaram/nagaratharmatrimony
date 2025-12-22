@@ -285,7 +285,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.png" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased ${bodyClass}`}
@@ -352,9 +351,19 @@ export default function RootLayout({
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "20px",
+              gap: "10px",
             }}
           >
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              style={{ 
+                height: "40px", 
+                width: "40px", 
+                borderRadius: "50%",
+                objectFit: "cover" 
+              }} 
+            />
             <div
               style={{
                 fontSize: "26px",
