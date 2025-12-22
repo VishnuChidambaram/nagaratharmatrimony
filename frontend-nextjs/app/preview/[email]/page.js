@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { API_URL } from "../../utils/config";
+import { getPhotoUrl } from "../../utils/photoUtils";
 
 export default function PreviewDetail() {
   const { email } = useParams();
@@ -152,21 +153,24 @@ export default function PreviewDetail() {
             </h2>
 
             {/* Image */}
-            {detailData.photo && (
-              <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                <img
-                  src={`${API_URL}/uploads/${detailData.photo.replace(/\\/g, "/")}`}
-                  alt={detailData.name}
-                  style={{
-                    width: "120px",
-                    height: "120px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                    border: "2px solid var(--input-border)",
-                  }}
-                />
-              </div>
-            )}
+            {(() => {
+              const photoUrl = getPhotoUrl(detailData);
+              return photoUrl ? (
+                <div style={{ textAlign: "center", marginBottom: "20px" }}>
+                  <img
+                    src={photoUrl}
+                    alt={detailData.name}
+                    style={{
+                      width: "120px",
+                      height: "120px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                      border: "2px solid var(--input-border)",
+                    }}
+                  />
+                </div>
+              ) : null;
+            })()}
 
             {/* Details */}
             <div style={{ display: "grid", gap: "15px" }}>
@@ -216,14 +220,11 @@ export default function PreviewDetail() {
                     : "N/A"}
                 </span>
               </div>
-              {detailData.imagePath && (
+              {detailData.imagePath && !detailData.photo && (
                 <div>
                   <strong style={{ color: "#555" }}>Image:</strong>{" "}
                   <a
-                    href={`${API_URL}/uploads/${detailData.imagePath.replace(
-                      /\\/g,
-                      "/"
-                    )}`}
+                    href={getPhotoUrl(detailData)}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "#007bff", textDecoration: "none" }}

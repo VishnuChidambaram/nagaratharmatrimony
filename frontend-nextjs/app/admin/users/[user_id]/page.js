@@ -7,6 +7,7 @@ import styles from "../../dashboard/dashboard.module.css";
 import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/translations";
 import { API_URL } from "../../../utils/config";
+import { getPhotoUrls } from "../../../utils/photoUtils";
 
 // Field Groups matching Registration Pages
 const FIELD_GROUPS = {
@@ -195,31 +196,7 @@ function UserDetailCard({ user, editFormData, onSave, onCancel, onInputChange })
                         
                         // Display photo(s)
                         if (field.key === "photo") {
-                            const photoData = user[field.key];
-                            let photoUrls = [];
-                            
-                            if (photoData) {
-                              try {
-                                let photoPaths = [];
-                                if (typeof photoData === 'string' && photoData.startsWith('[')) {
-                                  photoPaths = JSON.parse(photoData);
-                                } else if (Array.isArray(photoData)) {
-                                  photoPaths = photoData;
-                                } else {
-                                  photoPaths = [photoData];
-                                }
-                                
-                                photoUrls = photoPaths.map(photoPath => {
-                                  if (!photoPath) return null;
-                                  if (photoPath.startsWith('http')) return photoPath;
-                                  if (photoPath.startsWith('/')) return `${API_URL}${photoPath}`;
-                                  return `${API_URL}/${photoPath}`;
-                                }).filter(url => url !== null);
-                                
-                              } catch (error) {
-                                console.error('Error parsing photo data:', error);
-                              }
-                            }
+                            const photoUrls = getPhotoUrls(user);
                             
                             return photoUrls.length > 0 ? (
                               <div style={{ display: "flex", gap: "15px", overflowX: "auto", paddingBottom: "10px" }}>

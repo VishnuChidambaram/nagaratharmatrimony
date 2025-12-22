@@ -5,6 +5,7 @@ import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
 import LanguageToggle from "../components/LanguageToggle";
 import { API_URL } from "../utils/config";
+import { getPhotoUrl, getPhotoUrls } from "../utils/photoUtils";
 
 
 export default function Dashboard() {
@@ -159,32 +160,6 @@ export default function Dashboard() {
     );
   });
 
-  const getPhotos = (item) => {
-    let photos = [];
-    let photoPath = item.photo;
-    if (photoPath && typeof photoPath === 'string' && photoPath.startsWith("[")) {
-      try {
-        photos = JSON.parse(photoPath);
-      } catch (e) {
-        console.error("Error parsing photo path", e);
-        photos = [photoPath];
-      }
-    } else if (photoPath) {
-       photos = [photoPath];
-    }
-    
-    // Fallback to imagePath if photo is not found and photos array is empty
-    if (photos.length === 0 && item.imagePath) {
-        photos = [item.imagePath];
-    }
-
-    return photos.map(p => {
-        if (!p) return null;
-        if (p.startsWith('http')) return p;
-        const cleanPath = p.replace(/\\/g, "/").replace(/^\/+/, "");
-        return `${API_URL}/${cleanPath}`;
-    }).filter(p => p);
-  };
 
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
@@ -775,35 +750,8 @@ export default function Dashboard() {
                         const userEmail = localStorage.getItem("userEmail");
                         const isOwnCard = userEmail && item.email === userEmail;
 
-                        const getPhotos = (item) => {
-                          let photos = [];
-                          let photoPath = item.photo;
-                          if (photoPath && typeof photoPath === 'string' && photoPath.startsWith("[")) {
-                            try {
-                              photos = JSON.parse(photoPath);
-                            } catch (e) {
-                              console.error("Error parsing photo path", e);
-                              photos = [photoPath];
-                            }
-                          } else if (photoPath) {
-                             photos = [photoPath];
-                          }
-                          
-                          // Fallback to imagePath if photo is not found and photos array is empty
-                          if (photos.length === 0 && item.imagePath) {
-                              photos = [item.imagePath];
-                          }
-
-                          return photos.map(p => {
-                              if (!p) return null;
-                              if (p.startsWith('http')) return p;
-                              const cleanPath = p.replace(/\\/g, "/").replace(/^\/+/, "");
-                              return `${API_URL}/${cleanPath}`;
-                          }).filter(p => p);
-                        };
-
-                        const allPhotos = getPhotos(item);
-                        const mainPhoto = allPhotos.length > 0 ? allPhotos[0] : "https://via.placeholder.com/80";
+                        const allPhotos = getPhotoUrls(item);
+                        const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
 
                         const handlePhotoSelect = async (selectedPhotoUrl) => {
                             if (!isOwnCard) return;
@@ -1165,32 +1113,6 @@ export default function Dashboard() {
 
               {/* Image */}
               {(() => {
-                  const getPhotoUrl = (item) => {
-                    if (!item) return null;
-                    let photoPath = item.photo;
-                    if (photoPath && typeof photoPath === 'string' && photoPath.startsWith("[")) {
-                      try {
-                        const photos = JSON.parse(photoPath);
-                        photoPath = photos.length > 0 ? photos[0] : null;
-                      } catch (e) {
-                        console.error("Error parsing photo path", e);
-                      }
-                    }
-                    
-                    // Fallback to imagePath if photo is not found
-                    photoPath = photoPath || item.imagePath;
-
-                    if (photoPath) {
-                       if (photoPath.startsWith('http')) {
-                          return photoPath;
-                       }
-                       // Remove leading slash if present to avoid double slash
-                       const cleanPath = photoPath.replace(/\\/g, "/").replace(/^\/+/, "");
-                       return `${API_URL}/${cleanPath}`;
-                    }
-                    return null;
-                  };
-
                   const imageUrl = getPhotoUrl(selectedUser);
 
                   if (imageUrl) {
@@ -1875,47 +1797,7 @@ export default function Dashboard() {
                     {t("All Photos")}
                   </h3>
                    {(() => {
-                        const getPhotoUrls = (item) => {
-                          let photoUrls = [];
-                          const photoData = item.photo;
-
-                          if (photoData) {
-                             try {
-                                let photoPaths = [];
-                                if (typeof photoData === 'string' && photoData.startsWith('[')) {
-                                  photoPaths = JSON.parse(photoData);
-                                } else if (typeof photoData === 'string') {
-                                   photoPaths = [photoData];
-                                }
-
-                                photoUrls = photoPaths.map(photoPath => {
-                                  if (!photoPath) return null;
-                                  if (photoPath.startsWith('http')) {
-                                    return photoPath;
-                                  }
-                                  // Remove leading slash if present to avoid double slash
-                                  const cleanPath = photoPath.replace(/\\/g, "/").replace(/^\/+/, "");
-                                  return `${API_URL}/${cleanPath}`;
-                                }).filter(url => url !== null);
-
-                             } catch (e) {
-                               console.error("Error parsing photo paths for gallery", e);
-                             }
-                          }
-                          // Also check imagePath if photo is empty, though usually photo handles parsing now
-                          if (photoUrls.length === 0 && item.imagePath) {
-                              const path = item.imagePath;
-                              if (path.startsWith('http')) {
-                                  photoUrls.push(path);
-                              } else {
-                                  const cleanPath = path.replace(/\\/g, "/").replace(/^\/+/, "");
-                                  photoUrls.push(`${API_URL}/${cleanPath}`);
-                              }
-                          }
-                          return photoUrls;
-                        };
-
-                        const allPhotos = getPhotoUrls(selectedUser);
+                    const allPhotos = getPhotoUrls(selectedUser);
 
                         if (allPhotos.length > 0) {
                             const userEmail = localStorage.getItem("userEmail");

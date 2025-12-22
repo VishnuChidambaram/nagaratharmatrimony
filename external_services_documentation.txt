@@ -1,0 +1,37 @@
+# External Services Documentation - Nagarathar Matrimony
+
+This document lists the external websites, services, and APIs used in the project and the reasons for their integration.
+
+1. Google Input Tools API
+   - URL: https://inputtools.google.com/request
+   - Usage: Used in the frontend `TamilInput` component.
+   - Purpose: Provides real-time Tamil transliteration suggestions, allowing users to type in Tamil using English phonetics (e.g., typing "amma" and getting "அம்மா").
+
+2. Google Apps Script (Email Bridge)
+   - URL: https://script.google.com/macros/s/... (Configured via EMAIL_BRIDGE_URL in .env)
+   - Usage: Used by the backend to send transaction emails (OTPs, etc.).
+   - Purpose: Acts as a bridge to bypass port blocks on hosting providers (like Render) that restrict traditional SMTP (port 587/465) access.
+
+3. Cloudinary
+   - URL: https://cloudinary.com
+   - Usage: Image storage and optimization.
+   - Purpose: Stores user profile photos and handles dynamic image resizing and delivery.
+
+4. TiDB Cloud
+   - URL: https://tidbcloud.com
+   - Usage: Scalable MySQL-compatible database.
+   - Purpose: Hosts the application's relational data, providing high availability and performance.
+
+5. Vercel
+   - URL: https://vercel.com
+   - Usage: Hosting platform for the frontend.
+   - Purpose: Deploys the Next.js application with optimized performance and global CDN support.
+
+6. Render
+   - URL: https://render.com
+   - Usage: Hosting platform for the backend.
+   - Purpose: Deploys the Express.js server and handles API requests.
+
+7. Google Fonts (Aesthetics)
+   - Usage: Typography.
+   - Purpose: Standard web-safe fonts and potential future Google Font imports for a premium look and feel.

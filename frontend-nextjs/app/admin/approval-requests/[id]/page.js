@@ -6,6 +6,7 @@ import { useLanguage } from "../../../hooks/useLanguage";
 import { translations } from "../../../utils/translations";
 import LanguageToggle from "../../../components/LanguageToggle";
 import { API_URL } from "../../../utils/config";
+import { getPhotoUrls } from "../../../utils/photoUtils";
 
 export default function ReviewRequest() {
   const { id } = useParams();
@@ -144,37 +145,14 @@ export default function ReviewRequest() {
 
   const renderFieldValue = (val, key) => {
     if (key === "photo") {
-      // Handle photo field - stored as JSON array string in database
-      let photoArray = val;
+      // Create a dummy object for getPhotoUrls
+      const item = { photo: val };
+      const photoUrls = getPhotoUrls(item);
       
-      // If it's a string, try to parse it as JSON
-      if (typeof val === "string") {
-        try {
-          photoArray = JSON.parse(val);
-        } catch (e) {
-          // If it's not JSON, treat it as a single photo path
-          photoArray = [val];
-        }
-      }
-      
-      // Now handle the array
-      if (photoArray && Array.isArray(photoArray) && photoArray.length > 0) {
+      if (photoUrls && photoUrls.length > 0) {
         return (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
-            {photoArray.map((photo, idx) => {
-              let photoSrc = "";
-              
-              if (typeof photo === "string") {
-                // Server-stored photo path
-                photoSrc = photo.startsWith("http") 
-                  ? photo 
-                  : `${API_URL}/${photo.replace(/\\/g, "/")}`;
-              } else if (photo instanceof File || photo instanceof Blob) {
-                // Newly uploaded photo (File/Blob)
-                photoSrc = URL.createObjectURL(photo);
-              }
-              
-              return photoSrc ? (
+            {photoUrls.map((photoSrc, idx) => (
                 <img
                   key={idx}
                   src={photoSrc}
@@ -186,12 +164,11 @@ export default function ReviewRequest() {
                     border: "1px solid var(--input-border)",
                   }}
                   onError={(e) => {
-                    console.error("Failed to load photo:", photo);
+                    console.error("Failed to load photo:", photoSrc);
                     e.target.style.display = "none";
                   }}
                 />
-              ) : null;
-            })}
+            ))}
           </div>
         );
       }

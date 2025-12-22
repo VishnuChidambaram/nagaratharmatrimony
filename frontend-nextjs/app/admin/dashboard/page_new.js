@@ -6,6 +6,7 @@ import AdminMenu from "../AdminMenu";
 import ConfirmationModal from "../components/ConfirmationModal";
 import styles from "./dashboard.module.css";
 import { API_URL } from "../../utils/config";
+import { getPhotoUrl } from "../../utils/photoUtils";
 
   // Field Groups matching Registration Pages
   const FIELD_GROUPS = {
@@ -208,58 +209,43 @@ import { API_URL } from "../../utils/config";
                      {(() => {
                        if (!user[field.key]) return "-";
                        
-                       // Display photo as image
-                       if (field.key === "photo") {
-                         const photoPath = user[field.key];
-                         let photoUrl = "";
-                         
-                         if (photoPath) {
-                           // Handle different path formats
-                           if (photoPath.startsWith('http')) {
-                             photoUrl = photoPath; // Full URL
-                           } else if (photoPath.startsWith('/')) {
-                             photoUrl = `${API_URL}${photoPath}`; // Absolute path
-                           } else {
-                             photoUrl = `${API_URL}/${photoPath}`; // Relative path
-                           }
-                         }
-                         
-                         console.log('Photo URL:', photoUrl, 'Original path:', photoPath);
-                         
-                         return photoUrl ? (
-                           <img 
-                             src={photoUrl}
-                             alt="User Photo"
-                             style={{ 
-                               maxWidth: "150px", 
-                               maxHeight: "150px", 
-                               borderRadius: "8px",
-                               objectFit: "cover",
-                               border: "1px solid var(--input-border)",
-                               display: "block"
-                             }}
-                             onError={(e) => {
-                               console.error('Image load error for:', e.target.src);
-                               e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"><rect width="150" height="150" fill="%23ddd"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999">No Photo</text></svg>';
-                             }}
-                             onLoad={() => console.log('Photo loaded successfully:', photoUrl)}
-                           />
-                         ) : (
-                           <div style={{ 
-                             width: "150px", 
-                             height: "150px", 
-                             border: "1px solid var(--input-border)",
-                             borderRadius: "8px",
-                             display: "flex",
-                             alignItems: "center",
-                             justifyContent: "center",
-                             background: "#f0f0f0",
-                             color: "#999"
-                           }}>
-                             No Photo
-                           </div>
-                         );
-                       }
+                        // Display photo as image
+                        if (field.key === "photo") {
+                          const photoUrl = getPhotoUrl(user);
+                          
+                          return photoUrl ? (
+                            <img 
+                              src={photoUrl}
+                              alt="User Photo"
+                              style={{ 
+                                maxWidth: "150px", 
+                                maxHeight: "150px", 
+                                borderRadius: "8px",
+                                objectFit: "cover",
+                                border: "1px solid var(--input-border)",
+                                display: "block"
+                              }}
+                              onError={(e) => {
+                                console.error('Image load error for:', e.target.src);
+                                e.target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="150" height="150"><rect width="150" height="150" fill="%23ddd"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%23999">No Photo</text></svg>';
+                              }}
+                            />
+                          ) : (
+                            <div style={{ 
+                              width: "150px", 
+                              height: "150px", 
+                              border: "1px solid var(--input-border)",
+                              borderRadius: "8px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              background: "#f0f0f0",
+                              color: "#999"
+                            }}>
+                              No Photo
+                            </div>
+                          );
+                        }
                        
                        // Format Date of Birth as DD-MM-YYYY
                        if (field.key === "dateOfBirth") {
