@@ -154,6 +154,7 @@ export default function ReviewRequest() {
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
             {photoUrls.map((photoSrc, idx) => (
                 <img
+                  loading="lazy"
                   key={idx}
                   src={photoSrc}
                   alt={`Photo ${idx + 1}`}

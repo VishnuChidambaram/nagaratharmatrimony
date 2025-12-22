@@ -158,6 +158,7 @@ export default function PreviewDetail() {
               return photoUrl ? (
                 <div style={{ textAlign: "center", marginBottom: "20px" }}>
                   <img
+                    loading="lazy"
                     src={photoUrl}
                     alt={detailData.name}
                     style={{

@@ -818,6 +818,7 @@ export default function Dashboard() {
                         return (
                             <div style={{ display: 'flex', flexDirection: 'column', marginRight: "15px" }}>
                                 <img
+                                  loading="lazy"
                                   src={mainPhoto}
                                   alt={item.name}
                                   style={{
@@ -841,6 +842,7 @@ export default function Dashboard() {
                                     <div style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap', maxWidth: '100px' }}>
                                         {allPhotos.slice(1).map((photo, idx) => (
                                             <img 
+                                                loading="lazy"
                                                 key={idx}
                                                 src={photo}
                                                 alt="thumb"
@@ -1119,6 +1121,7 @@ export default function Dashboard() {
                       return (
                         <div style={{ textAlign: "center", marginBottom: "20px" }}>
                           <img
+                            loading="lazy"
                             className="profile-photo"
                             src={imageUrl}
                             alt={selectedUser.name}
@@ -1813,6 +1816,7 @@ export default function Dashboard() {
                                 }}>
                                   {allPhotos.map((photoUrl, index) => (
                                     <img 
+                                      loading="lazy"
                                       key={index}
                                       src={photoUrl}
                                       alt={`User Photo ${index + 1}`}
@@ -1938,19 +1942,20 @@ export default function Dashboard() {
                   {!isPrivacyMode && (
                     <>
                       <img
-                    src={selectedImage}
-                    alt="Full size"
-                    style={{
-                      maxWidth: "100%",
-                      maxHeight: "70vh", // Reduced to make room for inputs
-                      borderRadius: "8px",
-                      boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-                      backgroundColor: "white",
-                      display: "block",
-                      filter: isBlur ? "blur(20px)" : "none",
-                      transition: "filter 0.3s ease"
-                    }}
-                  />
+                        loading="lazy"
+                        src={selectedImage}
+                        alt="Full size"
+                        style={{
+                          maxWidth: "100%",
+                          maxHeight: "70vh", // Reduced to make room for inputs
+                          borderRadius: "8px",
+                          boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
+                          backgroundColor: "white",
+                          display: "block",
+                          filter: isBlur ? "blur(20px)" : "none",
+                          transition: "filter 0.3s ease"
+                        }}
+                      />
                   
                   {isBlur && (
                       <div style={{

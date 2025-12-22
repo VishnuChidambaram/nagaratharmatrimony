@@ -1293,6 +1293,7 @@ export default function Step6() {
                     }}
                   >
                     <img
+                      loading="lazy"
                       src={url}
                       alt={`Photo ${index + 1}`}
                       style={{

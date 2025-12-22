@@ -722,6 +722,7 @@ export default function Step8() {
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
                           {form[k].map((photo, idx) => (
                             <img
+                              loading="lazy"
                               key={idx}
                               src={
                                 typeof photo === "string"
@@ -744,6 +745,7 @@ export default function Step8() {
                         </div>
                       ) : k === "photo" && form[k] ? (
                         <img
+                          loading="lazy"
                           src={
                             typeof form[k] === "string"
                               ? form[k]
@@ -771,6 +773,7 @@ export default function Step8() {
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
                           {form[k].map((photo, idx) => (
                             <img
+                              loading="lazy"
                               key={idx}
                               src={
                                 typeof photo === "string"
@@ -793,6 +796,7 @@ export default function Step8() {
                         </div>
                       ) : k === "photo" && form[k] ? (
                         <img
+                          loading="lazy"
                           src={
                             typeof form[k] === "string"
                               ? form[k]

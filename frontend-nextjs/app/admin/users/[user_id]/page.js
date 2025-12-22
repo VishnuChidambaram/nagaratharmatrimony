@@ -202,6 +202,7 @@ function UserDetailCard({ user, editFormData, onSave, onCancel, onInputChange })
                               <div style={{ display: "flex", gap: "15px", overflowX: "auto", paddingBottom: "10px" }}>
                                 {photoUrls.map((photoUrl, index) => (
                                   <img 
+                                    loading="lazy"
                                     key={index}
                                     src={photoUrl}
                                     alt={`User Photo ${index + 1}`}

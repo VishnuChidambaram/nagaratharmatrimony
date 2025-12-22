@@ -215,6 +215,7 @@ import { getPhotoUrl } from "../../utils/photoUtils";
                           
                           return photoUrl ? (
                             <img 
+                              loading="lazy"
                               src={photoUrl}
                               alt="User Photo"
                               style={{ 

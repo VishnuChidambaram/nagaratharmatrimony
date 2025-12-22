@@ -433,6 +433,7 @@ export default function EditStep8() {
                 
                 return photoSrc ? (
                   <img
+                    loading="lazy"
                     key={idx}
                     src={photoSrc}
                     alt={`Photo ${idx + 1}`}
@@ -467,6 +468,7 @@ export default function EditStep8() {
          
          return photoSrc ? (
             <img
+              loading="lazy"
               src={photoSrc}
               alt="Photo"
               style={{
