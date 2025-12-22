@@ -304,8 +304,8 @@ router.get("/check-auth", (req, res) => {
 router.post("/logout", (req, res) => {
   res.clearCookie("userEmail", {
     httpOnly: true,
-    secure: false, // Match the settings used when setting the cookie
-    sameSite: "lax",
+    secure: true, 
+    sameSite: "none",
   });
   res.json({ success: true, message: "Logged out successfully" });
 });
@@ -313,8 +313,8 @@ router.post("/logout", (req, res) => {
 router.post("/admin/logout", (req, res) => {
   res.clearCookie("adminEmail", {
     httpOnly: true,
-    secure: false, // Match the settings used when setting the cookie
-    sameSite: "lax",
+    secure: true, 
+    sameSite: "none",
   });
   res.json({ success: true, message: "Admin logged out successfully" });
 });
