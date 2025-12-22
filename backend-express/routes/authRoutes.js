@@ -7,19 +7,35 @@ import db from "../models/index.js";
 
 const router = express.Router();
 
-// Email transporter
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false, // Use STARTTLS
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  connectionTimeout: 10000, // 10 seconds
-});
+// Email bridge function to bypass Render SMTP block
+async function sendEmailViaBridge(to, subject, text) {
+  const url = process.env.EMAIL_BRIDGE_URL;
+  if (!url) {
+    console.error("EMAIL_BRIDGE_URL is not set");
+    return false;
+  }
 
-// Multer for file uploads
+  const payload = {
+    to,
+    subject,
+    text,
+    key: process.env.EMAIL_BRIDGE_KEY || "MATRIMONY_SECRET_2025"
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const result = await response.json();
+    return result.success;
+  } catch (error) {
+    console.error("Bridge Error:", error);
+    return false;
+  }
+}
+
 // Multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -91,22 +107,15 @@ router.post("/send-email-otp", async (req, res) => {
       expiration,
     });
 
-    const mailOptions = {
-      from: "noreply@yourapp.com",
-      to: email,
-      subject: "Email Verification OTP",
-      text: `Your OTP for email verification is: ${otp}. It will expire in 10 minutes.`,
-    };
-
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Email send error:", error);
-        res.json({ success: false, message: "Failed to send OTP" });
-      } else {
-        console.log("OTP sent:", otp);
-        res.json({ success: true, message: "OTP sent to your email" });
-      }
-    });
+    const success = await sendEmailViaBridge(email, "Email Verification OTP", `Your OTP for email verification is: ${otp}. It will expire in 10 minutes.`);
+    
+    if (success) {
+      console.log("OTP sent via bridge:", otp);
+      res.json({ success: true, message: "OTP sent to your email" });
+    } else {
+      console.error("Bridge failed to send email");
+      res.json({ success: false, message: "Failed to send OTP" });
+    }
   } catch (error) {
     console.error("Send email OTP error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -537,22 +546,15 @@ router.post("/forgot-password", async (req, res) => {
       expiration,
     });
 
-    const mailOptions = {
-      from: "noreply@yourapp.com",
-      to: email,
-      subject: "Password Reset OTP",
-      text: `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`,
-    };
+    const success = await sendEmailViaBridge(email, "Password Reset OTP", `Your OTP for password reset is: ${otp}. It will expire in 10 minutes.`);
 
-    transporter.sendMail(mailOptions, (error, info) => {
-      if (error) {
-        console.error("Email send error:", error);
-        res.json({ success: false, message: "Failed to send OTP" });
-      } else {
-        console.log("OTP sent:", otp);
-        res.json({ success: true, message: "OTP sent to your email" });
-      }
-    });
+    if (success) {
+      console.log("OTP sent via bridge:", otp);
+      res.json({ success: true, message: "OTP sent to your email" });
+    } else {
+      console.error("Bridge failed to send email");
+      res.json({ success: false, message: "Failed to send OTP" });
+    }
   } catch (error) {
     console.error("Forgot password error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
