@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import TamilInput from "@/app/components/TamilInput";
 import TamilPopup from "@/app/components/TamilPopup";
 import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
@@ -839,8 +840,7 @@ export default function EditStep8() {
             width: 300px !important;
             margin: 5px auto !important;
           }
-        }
-          
+
           .email-verification-row {
             flex-direction: column !important;
             gap: 10px !important;
@@ -964,7 +964,7 @@ export default function EditStep8() {
         )}
         <div style={{ marginBottom: 10, textAlign: "center" }}>
           <label style={{ display: "block", marginBottom: 5 }}>{t("Email", language)}:</label>
-          <div
+            <div
             className="email-verification-row"
             style={{
               display: "flex",
@@ -973,13 +973,13 @@ export default function EditStep8() {
               gap: "20px",
             }}
           >
-            <input
-              type="email"
-              value={form.email ?? ""}
-              readOnly
-              style={{...styles.input24, cursor: "pointer", backgroundColor: "var(--input-bg)", color: "var(--card-text)"}}
+            <TamilInput
+              name="email"
+              value={form.email || ""}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+              style={styles.input241}
               placeholder={t("Enter your email", language)}
-              onClick={() => handleFieldClick("email")}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
             />
             {!otpSent && (
               <button
@@ -1008,7 +1008,7 @@ export default function EditStep8() {
             )}
             </div>
           </div>
-          {clickedField === "email" && <WarningMessage />}
+
 
         {otpSent && !otpVerified && (
              <div
@@ -1021,14 +1021,15 @@ export default function EditStep8() {
                 marginBottom: 5,
               }}
             >
-              <input
-                type="text"
-                placeholder={t("Enter OTP", language)}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                style={styles.input1}
-                maxLength={4}
-              />
+            <TamilInput
+              name="otp"
+              placeholder={t("Enter OTP", language)}
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
+              style={styles.input241}
+              maxLength={4}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
+            />
               <button style={styles.input123} onClick={handleVerifyOtp}>
                 {t("Verify OTP", language)}
               </button>
