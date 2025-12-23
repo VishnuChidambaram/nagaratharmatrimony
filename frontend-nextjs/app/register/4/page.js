@@ -132,6 +132,15 @@ export default function Step4() {
             font-size: 22px !important;
           }
         }
+        
+        .date-label {
+            margin: 10px 20px 0px 10px;
+        } 
+        @media (max-width: 768px) {
+           .date-label {
+             margin: 20px 0px 0px 40px !important;
+           }
+        }
       `}</style>
       <div style={styles.container}>
       <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
@@ -269,13 +278,14 @@ export default function Step4() {
             }}
           >
             <label
+              className="date-label"
               style={{
-                margin: "10px 0px 0px 40px",
+                margin: "10px 20px 0px 40px",
                 fontWeight: "bold",
                 whiteSpace: "nowrap",
               }}
             >
-              {t("Date of Birth", language)}:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              {t("Date of Birth", language)}:
             </label>
             <input
               style={styles.input1}

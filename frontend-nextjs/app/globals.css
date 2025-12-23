@@ -303,3 +303,28 @@ body {
 .animation-delay-2000 {
   animation-delay: 2s;
 }
+
+/* Registration Form Mobile Sizing Override */
+@media (max-width: 768px) {
+  .form-container input:not([type="checkbox"]):not([type="radio"]):not(.field-input):not(.small-input):not(.field-inputrow),
+  .form-container select:not(.field-input):not(.small-input):not(.field-inputrow),
+  .form-container textarea:not(.field-input):not(.small-input):not(.field-inputrow),
+  .left-column input:not([type="checkbox"]):not([type="radio"]):not(.field-input):not(.small-input):not(.field-inputrow),
+  .left-column select:not(.field-input):not(.small-input):not(.field-inputrow),
+  .right-column input:not([type="checkbox"]):not([type="radio"]):not(.field-input):not(.small-input):not(.field-inputrow),
+  .right-column select:not(.field-input):not(.small-input):not(.field-inputrow) {
+     width: 100% !important;
+     max-width: 500px !important;
+     min-width: 0 !important;
+     margin-left: auto !important;
+     margin-right: auto !important;
+  }
+  
+  /* Ensure wrapper divs also conform */
+  .left-column > div:not(.field-row), .right-column > div:not(.field-row) {
+     max-width: 500px !important;
+     width: 100% !important;
+     margin-left: auto !important;
+     margin-right: auto !important;
+  }
+}
