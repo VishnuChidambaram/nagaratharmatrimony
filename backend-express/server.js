@@ -70,7 +70,12 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Health check route for Render/monitoring
 app.get("/api/health", (req, res) => {
-  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  res.status(200).json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    dbStatus: db.sequelize ? "initialized" : "not_initialized"
+  });
 });
 
 // Routes
@@ -97,7 +102,9 @@ async function initDB(retries = 5) {
       retries -= 1;
       if (retries === 0) {
         console.error("Max retries reached. Database connection failed.");
-        throw error;
+        // We don't throw here to allow the server to keep running, 
+        // but it will be in a "broken" state for DB-dependent routes.
+        return;
       }
       console.log("Waiting 5 seconds before next attempt...");
       await new Promise(resolve => setTimeout(resolve, 5000));
@@ -105,10 +112,12 @@ async function initDB(retries = 5) {
   }
 }
 
-await initDB();
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on port ${PORT}`);
   console.log("Cookie parser middleware initialized");
+  
+  // Initialize DB after server starts listening
+  await initDB();
 });
+
