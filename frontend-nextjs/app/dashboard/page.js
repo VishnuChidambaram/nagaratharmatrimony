@@ -1087,11 +1087,12 @@ export default function Dashboard() {
                 e.stopPropagation();
               }}
               style={{
-                marginTop: "100px",
+                marginTop: "90px",
                 width: "800px",
                 maxWidth: "95%",
-                maxHeight: "90vh",
+                maxHeight: "80vh",
                 overflowY: "auto",
+                marginBottom:"auto"
               }}
             >
               <button
