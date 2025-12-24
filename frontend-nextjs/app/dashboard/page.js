@@ -218,10 +218,9 @@ export default function Dashboard() {
          setData(prevData => prevData.map(u => u.email === selectedImageOwner.email ? {...u, photoPassword: newPhotoPassword} : u));
          
          // Close the modal
-         setSelectedImage(null);
-         setIsPrivacyMode(false);
-         setImagePasswordInput("");
-         // setIsImageUnlocked(false); // No longer needed
+          setSelectedImage(null);
+          setIsPrivacyMode(false);
+          setImagePasswordInput("");
       } else {
         setNotification({
              type: "error",
@@ -749,7 +748,7 @@ export default function Dashboard() {
                   >
                     {(() => {
                         const userEmail = localStorage.getItem("userEmail");
-                        const isOwnCard = userEmail && item.email === userEmail;
+                        const isOwnCard = userEmail && item.email && userEmail.toLowerCase() === item.email.toLowerCase();
 
                         const allPhotos = getPhotoUrls(item);
                         const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
@@ -833,10 +832,9 @@ export default function Dashboard() {
                                   }}
                                     onClick={(e) => {
                                     e.stopPropagation();
-                                    setSelectedImage(mainPhoto);
-                                    setSelectedImageOwner(item);
-                                    // setIsImageUnlocked(false);
-                                    setIsPrivacyMode(false);
+                                     setSelectedImage(mainPhoto);
+                                     setSelectedImageOwner(item);
+                                     setIsPrivacyMode(false);
                                   }}
                                 />
                                 {isOwnCard && allPhotos.length > 1 && (
@@ -858,11 +856,10 @@ export default function Dashboard() {
                                                 }}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    setSelectedImage(photo);
-                                                    setSelectedImageOwner(item);
-                                                    setIsImageUnlocked(false);
-                                                    handlePhotoSelect(photo);
-                                                    setIsPrivacyMode(false);
+                                                     setSelectedImage(photo);
+                                                     setSelectedImageOwner(item);
+                                                     handlePhotoSelect(photo);
+                                                     setIsPrivacyMode(false);
                                                 }}
                                                 onMouseEnter={(e) => e.target.style.opacity = 1}
                                                 onMouseLeave={(e) => e.target.style.opacity = 0.7}
@@ -1033,11 +1030,11 @@ export default function Dashboard() {
                     >
                       {t("More Detail")}
                     </button>
-                    {localStorage.getItem("userEmail") === item.email && (
+                    {(localStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            const photos = getPhotos(item);
+                            const photos = getPhotoUrls(item);
                             const mainPhoto = photos.length > 0 ? photos[0] : "https://via.placeholder.com/80";
                             setSelectedImage(mainPhoto);
                             setSelectedImageOwner(item);
@@ -1133,13 +1130,12 @@ export default function Dashboard() {
                               objectFit: "cover",
                               border: "2px solid var(--input-border)",
                               cursor: "pointer",
-                              filter: (selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email !== localStorage.getItem("userEmail") && !unlockedUsers.includes(selectedUser.email)) ? "blur(10px)" : "none"
+                               filter: (selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email?.toLowerCase() !== localStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email)) ? "blur(10px)" : "none"
                             }}
                             onClick={() => {
-                                setSelectedImage(imageUrl);
-                                setSelectedImageOwner(selectedUser);
-                                // setIsImageUnlocked(false);
-                                setIsPrivacyMode(false);
+                                 setSelectedImage(imageUrl);
+                                 setSelectedImageOwner(selectedUser);
+                                 setIsPrivacyMode(false);
                             }}
                           />
                         </div>
@@ -1832,10 +1828,9 @@ export default function Dashboard() {
                                         filter: isProtected ? "blur(10px)" : "none"
                                       }}
                                        onClick={() => {
-                                        setSelectedImage(photoUrl);
-                                        setSelectedImageOwner(selectedUser);
-                                        // setIsImageUnlocked(false);
-                                        setIsPrivacyMode(false);
+                                         setSelectedImage(photoUrl);
+                                         setSelectedImageOwner(selectedUser);
+                                         setIsPrivacyMode(false);
                                       }}
                                     />
                                   ))}
