@@ -50,6 +50,21 @@ router.get("/upload-details", async (req, res) => {
 
 router.get("/all-details", async (req, res) => {
   try {
+    // Check if user is authenticated (either regular user or admin)
+    // Regular user details are stored in 'userEmail' cookie
+    // Admin details are stored in 'adminEmail' cookie
+    const isAuth = req.cookies && (req.cookies.userEmail || req.cookies.adminEmail);
+
+    if (!isAuth) {
+      // If not authenticated, return empty data to "fix the page as empty in browser view"
+      return res.json({
+        success: true,
+        data: [],
+        count: 0,
+        message: "Authentication required to view all details"
+      });
+    }
+
     // Fetch ALL details from the database without any filter
     const allDetails = await db.UserDetail.findAll({
       where: { is_deleted: false }, // Only fetch non-deleted users
