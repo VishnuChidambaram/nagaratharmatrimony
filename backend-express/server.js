@@ -59,20 +59,22 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 
+// Health check route for Render/monitoring - moved earlier for faster availability
+app.get("/api/health", (req, res) => {
+  const timestamp = new Date().toISOString();
+  console.log(`[${timestamp}] Health check hit`);
+  res.status(200).json({ 
+    status: "ok", 
+    timestamp,
+    uptime: process.uptime(),
+    dbStatus: db.sequelize ? "initialized" : "not_initialized",
+    env: process.env.NODE_ENV || "development"
+  });
+});
+
 // Root route
 app.get("/", (req, res) => {
   res.send("Nagarathar Matrimony Backend is running.");
-});
-
-// Health check route for Render/monitoring
-app.get("/api/health", (req, res) => {
-  console.log(`Health check hit at ${new Date().toISOString()}`);
-  res.status(200).json({ 
-    status: "ok", 
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime(),
-    dbStatus: db.sequelize ? "initialized" : "not_initialized"
-  });
 });
 
 // Middleware to set Content-Disposition for uploads to display inline
@@ -120,11 +122,15 @@ async function initDB(retries = 5) {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, async () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, "0.0.0.0", async () => {
+  console.log(`Server is listening on 0.0.0.0:${PORT}`);
   console.log("Cookie parser middleware initialized");
   
   // Initialize DB after server starts listening
-  await initDB();
+  try {
+    await initDB();
+  } catch (err) {
+    console.error("Critical error during database initialization:", err);
+  }
 });
 
