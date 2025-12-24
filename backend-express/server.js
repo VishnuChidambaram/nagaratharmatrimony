@@ -68,6 +68,11 @@ app.use("/uploads", (req, res, next) => {
 // Serve static files from uploads directory
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Health check route for Render/monitoring
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use("/", authRoutes);
 app.use("/", userRoutes);
@@ -75,20 +80,28 @@ app.use("/", updateRequestRoutes);
 app.use("/", notificationRoutes);
 app.use("/", uploadRoutes);
 
-async function initDB() {
-  try {
-    await db.sequelize.authenticate();
-    console.log("Connected to MySQL database");
+async function initDB(retries = 5) {
+  while (retries > 0) {
+    try {
+      console.log(`Attempting database connection... (Retries left: ${retries})`);
+      console.log(`DB Host: ${process.env.DB_HOST}, User: ${process.env.DB_USER}, Database: ${process.env.DB_NAME}`);
+      
+      await db.sequelize.authenticate();
+      console.log("Connected to MySQL database successfully");
 
-    // Sync the model with the database
-    // Removed { alter: true } to prevent TiDB unique constraint errors on restart
-    // If you need to update schema, do it manually or use migrations
-    await db.sequelize.sync();
-
-    // Insert sample data if table is empty
-  } catch (error) {
-    console.error("Database connection failed:", error);
-    throw error;
+      // Sync the model with the database
+      await db.sequelize.sync();
+      return; // Success
+    } catch (error) {
+      console.error("Database connection attempt failed:", error.message);
+      retries -= 1;
+      if (retries === 0) {
+        console.error("Max retries reached. Database connection failed.");
+        throw error;
+      }
+      console.log("Waiting 5 seconds before next attempt...");
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
   }
 }
 

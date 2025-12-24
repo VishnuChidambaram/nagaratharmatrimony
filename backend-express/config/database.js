@@ -15,9 +15,14 @@ const sslConfig = isLocalhost ? false : {
 };
 
 if (!isLocalhost) {
-  const caCertPath = path.join(__dirname, "../../isrgrootx1.pem");
+  // Use path relative to this file's directory (config/database.js)
+  // Certificate should now be in backend-express/isrgrootx1.pem
+  const caCertPath = path.join(__dirname, "../isrgrootx1.pem");
   if (fs.existsSync(caCertPath)) {
+    console.log("Database: Found SSL CA certificate at", caCertPath);
     sslConfig.ca = fs.readFileSync(caCertPath);
+  } else {
+    console.warn("Database: SSL CA certificate NOT found at", caCertPath);
   }
 }
 
@@ -32,9 +37,15 @@ const sequelize = new Sequelize(
     define: {
       timestamps: false,
     },
-    logging: console.log,
+    logging: false, // Set to console.log for debugging
     dialectOptions: {
       ssl: sslConfig
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000,
+      idle: 10000
     }
   }
 );
