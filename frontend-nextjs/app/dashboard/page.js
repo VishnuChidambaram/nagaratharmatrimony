@@ -488,12 +488,13 @@ export default function Dashboard() {
             width: 100% !important;
             padding: 15px !important;
             padding-top: 50px !important;
-            margin: 0 !important;
+            margin: 10px !important;
+            margin-top: 100px !important;
             border-radius: 8px !important;
           }
           .modal-close {
             position: fixed !important;
-            top: 15px !important;
+            top: 65px !important;
             right: 15px !important;
             margin-top: 50px !important;
             padding: 10px 15px !important;
