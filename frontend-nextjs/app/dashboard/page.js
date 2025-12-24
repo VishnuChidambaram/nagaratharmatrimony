@@ -583,7 +583,8 @@ export default function Dashboard() {
           .dashboard-header h1 {
             font-size: 20px !important;
             width: 100%;
-            margin: 0 !important;
+            margin-top: 20px !important;
+            margin-bottom: 0 !important;
           }
 
           .dashboard-header input[type="text"] {
