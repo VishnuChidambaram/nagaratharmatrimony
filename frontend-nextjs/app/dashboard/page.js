@@ -1087,6 +1087,7 @@ export default function Dashboard() {
                 e.stopPropagation();
               }}
               style={{
+                marginTop: "100px",
                 width: "800px",
                 maxWidth: "95%",
                 maxHeight: "90vh",
