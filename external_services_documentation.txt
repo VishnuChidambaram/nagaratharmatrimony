@@ -35,3 +35,10 @@ This document lists the external websites, services, and APIs used in the projec
 7. Google Fonts (Aesthetics)
    - Usage: Typography.
    - Purpose: Standard web-safe fonts and potential future Google Font imports for a premium look and feel.
+
+8. Keeping Render Backend Alive (Free Tier)
+   - Method: Use an external monitoring service (e.g., [UptimeRobot](https://uptimerobot.com) or [cron-job.org](https://cron-job.org)).
+   - Target URL: `https://your-render-backend-url.onrender.com/api/health`
+   - Configuration: Set the service to ping the target URL every 10-14 minutes.
+   - Purpose: Prevents Render's free tier from spinning down (sleeping) due to 15 minutes of inactivity. This avoids the 2-3 minute "cold start" delay for users.
+   - Note: This consumes Render's 750 free instance hours per month. Running one service 24/7 is within this limit (24 * 31 = 744 hours).
