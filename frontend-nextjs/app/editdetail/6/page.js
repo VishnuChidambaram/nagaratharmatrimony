@@ -1252,13 +1252,15 @@ export default function Page() {
           <div style={styles.fieldRow} className="field-row">
             <label style={styles.fieldLabel} className="field-label">{t("Other Phone Number", language)}:</label>
             <input
-              style={styles.fieldInput}
+              style={{...styles.fieldInput, cursor: "pointer"}}
               className="field-input"
               value={form.otherPhone ?? ""}
-              onChange={(e) => setForm({ ...form, otherPhone: e.target.value })}
-              placeholder={t("Other Phone Number", language)}
+              readOnly
+              onClick={() => handleFieldClick("otherPhone")}
+              title={t("You want to change it? Send email with information", language)}
             />
           </div>
+          {clickedField === "otherPhone" && <WarningMessage />}
           <div style={styles.fieldRow} className="field-row">
             <label style={styles.fieldLabel} className="field-label">{t("WhatsApp No.", language)}:</label>
             <input

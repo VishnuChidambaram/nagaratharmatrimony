@@ -36,12 +36,17 @@ export default function EditStep8() {
 
   const WarningMessage = () => (
     <div style={{
-      color: "#856404",
+      width: "80%",
       backgroundColor: "#fff3cd",
-      borderColor: "#ffeeba",
-      padding: "5px",
-      borderRadius: "4px",
+      color: "#856404",
+      padding: "8px 12px",
+      borderRadius: "5px",
+      border: "1px solid #ffc107",
       marginTop: "5px",
+      marginBottom: "5px",
+      marginLeft: "auto",
+      marginRight: "auto",
+      fontWeight: "500",
       fontSize: "14px",
       textAlign: "center"
     }}>
@@ -962,51 +967,59 @@ export default function EditStep8() {
             {otpMessage}
           </div>
         )}
-        <div style={{ marginBottom: 10, textAlign: "center" }}>
-          <label style={{ display: "block", marginBottom: 5 }}>{t("Email", language)}:</label>
+          <div style={{ marginBottom: 10, textAlign: "center" }}>
+            <label style={{ display: "block", marginBottom: 5 }}>{t("Email", language)}:</label>
             <div
-            className="email-verification-row"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
-            <TamilInput
-              name="email"
-              value={form.email || ""}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              style={styles.input241}
-              placeholder={t("Enter your email", language)}
-              forcedLanguage={language === "ta" ? "ta" : "en"}
-            />
-            {!otpSent && (
-              <button
-                style={styles.input123}
-                onClick={handleSendOtp}
-                disabled={!form.email || isSendingOtp}
-              >
-                {isSendingOtp ? t("Sending...", language) : t("Send OTP", language)}
-              </button>
-            )}
-            {otpSent && !otpVerified && (
-              <button
-                style={{
-                  ...styles.input123,
-                  backgroundColor: "#6c757d",
-                }}
-                onClick={handleSendOtp}
-                disabled={resendCooldown > 0 || isSendingOtp}
-              >
-                {isSendingOtp
-                  ? t("Sending...", language)
-                  : resendCooldown > 0
-                  ? `${t("Resend OTP", language)} (${resendCooldown}s)`
-                  : t("Resend OTP", language)}
-              </button>
-            )}
+              className="email-verification-row"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                gap: "20px",
+              }}
+            >
+              <TamilInput
+                style={{ ...styles.input241, cursor: "pointer" }}
+                name="email"
+                value={form.email || ""}
+                readOnly
+                onClick={() => handleFieldClick("email")}
+                title={t("You want to change it? Send email with information", language)}
+                placeholder={t("Enter your email", language)}
+                forcedLanguage={language === "ta" ? "ta" : "en"}
+              />
+              {!otpSent && (
+                <button
+                  style={styles.input123}
+                  onClick={handleSendOtp}
+                  disabled={!form.email || isSendingOtp}
+                >
+                  {isSendingOtp ? t("Sending...", language) : t("Send OTP", language)}
+                </button>
+              )}
+              {otpSent && !otpVerified && (
+                <button
+                  style={{
+                    ...styles.input123,
+                    backgroundColor: "#6c757d",
+                  }}
+                  onClick={handleSendOtp}
+                  disabled={resendCooldown > 0 || isSendingOtp}
+                >
+                  {isSendingOtp
+                    ? t("Sending...", language)
+                    : resendCooldown > 0
+                    ? `${t("Resend OTP", language)} (${resendCooldown}s)`
+                    : t("Resend OTP", language)}
+                </button>
+              )}
             </div>
+            {/* Warning Message on New Line */}
+            {clickedField === "email" && (
+              <div style={{ marginTop: "10px" }}>
+                <WarningMessage />
+              </div>
+            )}
           </div>
 
 
