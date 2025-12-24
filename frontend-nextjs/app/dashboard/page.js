@@ -495,6 +495,7 @@ export default function Dashboard() {
             position: fixed !important;
             top: 15px !important;
             right: 15px !important;
+            margin-top: 50px !important;
             padding: 10px 15px !important;
             font-size: 16px !important;
             z-index: 1001 !important;
