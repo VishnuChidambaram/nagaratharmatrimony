@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import "./../editdetail.css";
 import TamilInput from "@/app/components/TamilInput";
 import TamilPopup from "@/app/components/TamilPopup";
 import LanguageToggle from "@/app/components/LanguageToggle";
@@ -87,55 +88,8 @@ export default function EditStep3() {
   };
   return (
     <>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .form-container {
-            flex-direction: column !important;
-            gap: 5px !important;
-          }
-          
-          .left-column, .right-column {
-            min-width: 100% !important;
-            margin: 0 !important;
-          }
-          
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-          
-          .field-row {
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 5px !important;
-          }
-          .field-label {
-            text-align: left !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            margin: 0 auto !important;
-          }
-          .field-input {
-            max-width:300px !important;
-            width: 300px !important;
-            margin: 5px auto !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
+      {/* Standardized CSS imported above */}
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
         </div>
@@ -146,13 +100,12 @@ export default function EditStep3() {
       <Navigation current={3} />
       <h1>{t("Step 3 - Physical Attributes", language)}</h1>
       <br/>
-      <div style={styles.formContainer} className="form-container">
-        <div style={styles.leftColumn} className="left-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Height", language)}:</label>
+      <div className="edit-form-container">
+        <div className="edit-left-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Height", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="height"
               value={form.height ?? ""}
               onChange={handle}
@@ -165,11 +118,10 @@ export default function EditStep3() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Complexion", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Complexion", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="complexion"
               value={form.complexion ?? ""}
               onChange={handle}
@@ -183,11 +135,10 @@ export default function EditStep3() {
               <option value="Black (karuppu)">{t("Black (karuppu)", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Weight", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Weight", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="weight"
               value={form.weight ?? ""}
               onChange={handle}
@@ -201,12 +152,11 @@ export default function EditStep3() {
             </select>
           </div>
         </div>
-        <div style={styles.rightColumn} className="right-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Diet", language)}:</label>
+        <div className="edit-right-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Diet", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="diet"
               value={form.diet ?? ""}
               onChange={handle}
@@ -216,11 +166,10 @@ export default function EditStep3() {
               <option value="Non-Vegetarian">{t("Non-Vegetarian", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Special Cases (Disability)", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Special Cases (Disability)", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="specialCases"
               value={form.specialCases ?? ""}
               onChange={handle}
@@ -230,11 +179,10 @@ export default function EditStep3() {
               <option value="No">{t("No", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Special Cases Details", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Special Cases Details", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="specialCasesDetails"
               value={form.specialCases === "No" ? "NA" : (form.specialCasesDetails ?? "")}
               onChange={handle}
@@ -245,49 +193,33 @@ export default function EditStep3() {
           </div>
         </div>
       </div>
-      {error && (
-        <p
-          style={{
-            textAlign: "center",
-            marginTop: "10px",
-            fontSize: "14px",
-            color: "red",
+      {error && <p className="edit-error-text">{error}</p>}
+      <div className="edit-button-container">
+        <button
+          className="edit-detail-previous-button"
+          onClick={async () => {
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/2");
           }}
         >
-          {error}
-        </p>
-      )}
-      <div style={styles.formContainer} className="button-container">
-        <div style={styles.leftColumn}>
-          <button
-            style={styles.editDetailPreviousButton}
-            onClick={async () => {
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/2");
-            }}
-          >
-            {t("Previous", language)}
-          </button>
-        </div>
-        <div style={styles.rightColumn}>
-          <button
-            style={styles.editDetailButton}
-            onClick={async () => {
-              const v = validate();
-              if (v) {
-                setError(v);
-                setTimeout(() => setError(""), 4000);
-                return;
-              }
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/4");
-            }}
-          >
-            {t("Next", language)}
-          </button>
-        </div>
+          {t("Previous", language)}
+        </button>
+        <button
+          className="edit-detail-button"
+          onClick={async () => {
+            const v = validate();
+            if (v) {
+              setError(v);
+              setTimeout(() => setError(""), 4000);
+              return;
+            }
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/4");
+          }}
+        >
+          {t("Next", language)}
+        </button>
       </div>
-
 
       <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
         {t("Go To Dashboard", language)} <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => router.push("/dashboard")}>{t("ClickHere", language)}</span>

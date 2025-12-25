@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import "./../editdetail.css";
 import LanguageToggle from "@/app/components/LanguageToggle";
 import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
@@ -1056,56 +1057,7 @@ export default function Page() {
 
   return (
     <>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .form-container {
-            flex-direction: column !important;
-            gap: 5px !important;
-          }
-          
-          .left-column, .right-column {
-            min-width: 100% !important;
-            margin: 0 !important;
-          }
-          
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-            margin-top: 20px !important;
-          }
-          
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-          
-          .field-row {
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 5px !important;
-          }
-          .field-label {
-            text-align: left !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            margin: 0 auto !important;
-          }
-          .field-input {
-            max-width:300px !important;
-            width: 300px !important;
-            margin: 5px auto !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
           </div>
@@ -1116,13 +1068,12 @@ export default function Page() {
       <Navigation current={6} />
       <h2>{t("Step 6 - Contact Details", language)}</h2>
       <br/>
-      <div style={styles.formContainer} className="form-container">
-        <div style={styles.leftColumn} className="left-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Full Street Address", language)}:</label>
+      <div className="edit-form-container">
+        <div className="edit-left-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Full Street Address", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="fullStreetAddress"
               value={form.fullStreetAddress ?? ""}
               onChange={(e) =>
@@ -1132,11 +1083,10 @@ export default function Page() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("City", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("City", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="city"
               value={form.city ?? ""}
               onChange={(e) => setForm({ ...form, city: e.target.value })}
@@ -1144,11 +1094,10 @@ export default function Page() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("State", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("State", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               value={form.state ?? ""}
               onChange={handleStateChange}
             >
@@ -1160,11 +1109,10 @@ export default function Page() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("District", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("District", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               value={form.district ?? ""}
               onChange={handleDistrictChange}
               disabled={!form.state}
@@ -1178,11 +1126,10 @@ export default function Page() {
                 ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Country", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Country", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               value={form.country ?? ""}
               onChange={(e) => setForm({ ...form, country: e.target.value })}
             >
@@ -1224,11 +1171,10 @@ export default function Page() {
               <option value="Vietnam">{t("Vietnam", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Postal Code", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Postal Code", language)}:</label>
             <input
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               value={form.postalCode ?? ""}
               onChange={(e) => setForm({ ...form, postalCode: e.target.value })}
               placeholder={t("Postal Code", language)}
@@ -1236,12 +1182,12 @@ export default function Page() {
             />
           </div>
         </div>
-        <div style={styles.rightColumn} className="right-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Phone Number", language)}:</label>
+        <div className="edit-right-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Phone Number", language)}:</label>
             <input
-              style={{...styles.fieldInput, cursor: "pointer"}}
-              className="field-input"
+              style={{cursor: "pointer"}}
+              className="edit-field-input"
               value={form.phone ?? ""}
               readOnly
               onClick={() => handleFieldClick("phone")}
@@ -1249,11 +1195,11 @@ export default function Page() {
             />
           </div>
           {clickedField === "phone" && <WarningMessage />}
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Other Phone Number", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Other Phone Number", language)}:</label>
             <input
-              style={{...styles.fieldInput, cursor: "pointer"}}
-              className="field-input"
+              style={{cursor: "pointer"}}
+              className="edit-field-input"
               value={form.otherPhone ?? ""}
               readOnly
               onClick={() => handleFieldClick("otherPhone")}
@@ -1261,11 +1207,11 @@ export default function Page() {
             />
           </div>
           {clickedField === "otherPhone" && <WarningMessage />}
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("WhatsApp No.", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("WhatsApp No.", language)}:</label>
             <input
-              style={{...styles.fieldInput, cursor: "pointer"}}
-              className="field-input"
+              style={{cursor: "pointer"}}
+              className="edit-field-input"
               value={form.whatsAppNo ?? ""}
               readOnly
               onClick={() => handleFieldClick("whatsapp")}
@@ -1273,11 +1219,11 @@ export default function Page() {
             />
           </div>
           {clickedField === "whatsapp" && <WarningMessage />}
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Email", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Email", language)}:</label>
             <input
-              style={{...styles.fieldInput, cursor: "pointer"}}
-              className="field-input"
+              style={{cursor: "pointer"}}
+              className="edit-field-input"
               value={form.email ?? ""}
               readOnly
               onClick={() => handleFieldClick("email")}
@@ -1300,11 +1246,10 @@ export default function Page() {
             </small>
           </div>
           
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Select Photos", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Select Photos", language)}:</label>
             <input
-              style={{...styles.fieldInput, flex: 'initial', width: '200px'}}
-              className="field-input"
+              className="edit-field-input"
               type="file"
               name="photos"
               onChange={handleFileChange}
@@ -1352,24 +1297,7 @@ export default function Page() {
                     <button
                       type="button"
                       onClick={() => removePhoto(index)}
-                      style={{
-                        position: "absolute",
-                        top: "5px",
-                        right: "5px",
-                        background: "rgba(255, 0, 0, 0.8)",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "50%",
-                        width: "25px",
-                        height: "25px",
-                        cursor: "pointer",
-                        fontSize: "16px",
-                        fontWeight: "bold",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        padding: "0",
-                      }}
+                      className="photo-delete-btn"
                     >
                       ×
                     </button>
@@ -1378,15 +1306,7 @@ export default function Page() {
               </div>
             ) : (
               <div
-                style={{
-                  padding: "20px",
-                  textAlign: "center",
-                  color: "#999",
-                  border: "2px dashed var(--input-border)",
-                  borderRadius: "6px",
-                  backgroundColor: "rgba(0,0,0,0.02)",
-                  fontSize: "14px"
-                }}
+                className="photo-empty-placeholder"
               >
                 📷 {t("No photos uploaded yet. Select photos above.", language)}
               </div>
@@ -1394,10 +1314,11 @@ export default function Page() {
           </div>
 
         </div>
-      <div style={styles.formContainer} className="button-container">
-        <div style={styles.leftColumn}>
+      <div className="edit-form-container button-container">
+        <div className="edit-left-column">
           <button
-            style={styles.editDetailPreviousButton}
+            style={{width: "80%"}}
+            className="edit-detail-previous-button"
             onClick={async () => {
               await saveFormData(form); // Save before navigating
               router.push("/editdetail/5");
@@ -1406,9 +1327,10 @@ export default function Page() {
             {t("Previous", language)}
           </button>
         </div>
-        <div style={styles.rightColumn}>
+        <div className="edit-right-column">
           <button
-            style={styles.editDetailButton}
+            style={{width: "80%"}}
+            className="edit-detail-button"
             onClick={async () => {
               if (!form.photos || form.photos.length === 0) {
                   setPhotoError(t("At least one photo is required", language));

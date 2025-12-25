@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import "./../editdetail.css";
 import TamilInput from "@/app/components/TamilInput";
 import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
@@ -265,50 +266,8 @@ export default function EditStep1() {
   };
   return (
     <>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .form-container {
-            flex-direction: column !important;
-            gap: 5px !important;
-          }
-          .left-column, .right-column {
-            min-width: 100% !important;
-            margin: 0 !important;
-          }
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-          .field-row {
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 5px !important;
-          }
-          .field-label {
-            text-align: left !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            margin: 0 auto !important;
-          }
-          .field-input {
-            max-width:300px !important;
-            width: 300px !important;
-            margin: 5px auto !important;
-          }
-        }
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
+      {/* Standardized CSS imported above */}
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
       </div>
@@ -319,13 +278,12 @@ export default function EditStep1() {
       <Navigation current={1} />
       <h1>{t("Step 1 - Basic Details", language)}</h1>
       <br/>
-      <div style={styles.formContainer} className="form-container">
-        <div style={styles.leftColumn} className="left-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Name", language)}:</label>
+      <div className="edit-form-container">
+        <div className="edit-left-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="name"
               value={form.name ?? ""}
               onChange={handleChange}
@@ -333,11 +291,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Gender", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Gender", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="gender"
               value={form.gender ?? ""}
               onChange={handleChange}
@@ -347,11 +304,10 @@ export default function EditStep1() {
               <option value="Female">{t("Female", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Marital Status", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Marital Status", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="maritalStatus"
               value={form.maritalStatus ?? ""}
               onChange={handleChange}
@@ -363,11 +319,10 @@ export default function EditStep1() {
               <option value="widower">{t("widower", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Father Name", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Father Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="fatherName"
               value={form.fatherName ?? ""}
               onChange={handleChange}
@@ -375,11 +330,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Father Occupation", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Father Occupation", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="fatherOccupation"
               value={form.fatherOccupation ?? ""}
               onChange={handleChange}
@@ -387,11 +341,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Mother Name", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Mother Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="motherName"
               value={form.motherName ?? ""}
               onChange={handleChange}
@@ -399,11 +352,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Mother Occupation", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Mother Occupation", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="motherOccupation"
               value={form.motherOccupation ?? ""}
               onChange={handleChange}
@@ -411,11 +363,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Number of Brothers", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Number of Brothers", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="brothers"
               value={form.brothers ?? ""}
               onChange={handleChange}
@@ -428,11 +379,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Married Number of Brothers", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Married Number of Brothers", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="brothersMarried"
               value={form.brothersMarried ?? ""}
               onChange={handleChange}
@@ -445,11 +395,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Number of Sisters", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Number of Sisters", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="sisters"
               value={form.sisters ?? ""}
               onChange={handleChange}
@@ -462,11 +411,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Married Number of Sisters", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Married Number of Sisters", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="sistersMarried"
               value={form.sistersMarried ?? ""}
               onChange={handleChange}
@@ -479,11 +427,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Your Temple", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Your Temple", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="yourTemple"
               value={form.yourTemple ?? ""}
               onChange={handleChange}
@@ -500,11 +447,10 @@ export default function EditStep1() {
               <option value="Velangudi">{t("Velangudi", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Your Division", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Your Division", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="yourDivision"
               value={form.yourDivision ?? ""}
               onChange={handleChange}
@@ -518,11 +464,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Known Languages", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Known Languages", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="knownLanguages"
               value={form.knownLanguages ?? ""}
               onChange={handleChange}
@@ -532,12 +477,11 @@ export default function EditStep1() {
           </div>
 
         </div>
-        <div style={styles.rightColumn} className="right-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Native Place", language)}:</label>
+        <div className="edit-right-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Native Place", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="nativePlace"
               value={form.nativePlace ?? ""}
               onChange={handleChange}
@@ -550,11 +494,10 @@ export default function EditStep1() {
               ))}
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Native Place House Name", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Native Place House Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="nativePlaceHouseName"
               value={form.nativePlaceHouseName ?? ""}
               onChange={handleChange}
@@ -562,11 +505,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Present Residence", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Present Residence", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="presentResidence"
               value={form.presentResidence ?? ""}
               onChange={handleChange}
@@ -574,22 +516,20 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Present Pincode", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Present Pincode", language)}:</label>
             <input
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="pincode"
               value={form.pincode ?? ""}
               onChange={handleChange}
               placeholder={t("Present Pincode", language)}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Profile Created By", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Profile Created By", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="profileCreatedBy"
               value={form.profileCreatedBy ?? ""}
               onChange={handleChange}
@@ -611,11 +551,10 @@ export default function EditStep1() {
               <option value="Periyappa">{t("Periyappa", language)}</option>
             </select>
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referred By", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referred By", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referredBy"
               value={form.referredBy ?? ""}
               onChange={handleChange}
@@ -623,11 +562,10 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Reference", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Reference", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="reference"
               value={form.reference ?? ""}
               onChange={handleChange}
@@ -635,12 +573,11 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <h5 style={styles.referralHeading}>{t("Referral Details 1", language)}</h5>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Name", language)}:</label>
+          <h5 className="edit-referral-heading">{t("Referral Details 1", language)}</h5>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails1Name"
               value={form.referralDetails1Name ?? ""}
               onChange={handleChange}
@@ -648,22 +585,20 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Phone", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Phone", language)}:</label>
             <input
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails1Phone"
               value={form.referralDetails1Phone ?? ""}
               onChange={handleChange}
               placeholder={t("Referral Phone", language)}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Address", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Address", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails1Address"
               value={form.referralDetails1Address ?? ""}
               onChange={handleChange}
@@ -671,12 +606,11 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <h4 style={styles.referralHeading2}>{t("Referral Details 2", language)}</h4>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Name", language)}:</label>
+          <h4 className="edit-referral-heading">{t("Referral Details 2", language)}</h4>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Name", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails2Name"
               value={form.referralDetails2Name ?? ""}
               onChange={handleChange}
@@ -684,22 +618,20 @@ export default function EditStep1() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Phone", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Phone", language)}:</label>
             <input
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails2Phone"
               value={form.referralDetails2Phone ?? ""}
               onChange={handleChange}
               placeholder={t("Referral Phone", language)}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Referral Address", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Referral Address", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="referralDetails2Address"
               value={form.referralDetails2Address ?? ""}
               onChange={handleChange}
@@ -709,9 +641,9 @@ export default function EditStep1() {
           </div>
         </div>
       </div>
-      {error && <p style={styles.error}>{error}</p>}
-      <div style={{...styles.buttonContainer, margin: '0 auto', maxWidth: '400px'}} className="button-container">
-        <button onClick={next} style={styles.editDetailButton}>
+      {error && <p className="edit-error-text">{error}</p>}
+      <div className="edit-button-container">
+        <button className="edit-single-button" onClick={next}>
           {t("Next", language)}
         </button>
       </div>

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import "./../editdetail.css";
 import LanguageToggle from "@/app/components/LanguageToggle";
 import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
@@ -147,163 +148,7 @@ export default function EditStep5() {
 
   return (
     <>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
-      <style>
-        {`
-          .step5-layout {
-            display: flex;
-            justify-content: space-between;
-            gap: 20;
-          }
-        .planet-row {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 13px;
-        }
-        .planet-row label {
-          margin-bottom: 0 !important;
-          flex: 1;
-        }
-        .input2 {
-          width: 150px;
-          padding: 4px;
-          border-radius: 6px;
-          border: 1px solid var(--input-border);
-          background: var(--input-bg);
-          color: var(--input-text);
-          font-size: 16px;
-        }
-        /* Mobile screen */
-        @media (max-width: 600px) {
-          .input2 {
-            width: 40%;
-          }
-        }
-          @media (max-width: 768px) {
-            .step5-layout {
-              flex-direction: column;
-            }
-
-            .planet-container {
-              flex-direction: column !important;
-              width: 100% !important;
-              max-width: 100% !important;
-            }
-            
-            .step5-layout > div {
-              flex: none !important;
-              width: 100% !important;
-            }
-          }
-
-          .rasi-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2px;
-            width: 100%;
-            max-width: 400px;
-            aspect-ratio: 1;
-            margin: 40px auto;
-            page-break-inside: avoid;
-            border: 1px solid var(--input-border);
-          }
-
-          .rasi-grid-container {
-            width: 100%;
-            margin: auto;
-            display: flex;
-            justify-content: center;
-            page-break-inside: avoid;
-          }
-
-
-          .rasi-grid > div {
-            border: 1px solid var(--input-border);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--card-bg);
-            color: var(--card-text);
-            text-align: center;
-            padding: 5px;
-            font-size: 12px;
-            min-height: 80px;
-            position: relative;
-          }
-
-          .center-box {
-            grid-column: 2 / span 2;
-            grid-row: 2 / span 2;
-            font-weight: bold;
-            font-size: 18px;
-            background: var(--card-bg);
-            color: var(--card-text);
-          }
-            @media (max-width: 600px) {
-            .rasi-grid {
-            max-width: 100% !important;
-            font-size: 10px !important;
-            width: 100% !important;
-            margin: 40px auto 0px auto;
-            }
-            .rasi-grid > div {
-            padding: 3px !important;
-            font-size: 10px !important;
-            min-height: 60px !important;
-            }
-            .center-box {
-            font-size: 14px !important;
-            }
-            }
-
-          @media print {
-            .rasi-grid {
-              width: 210mm;
-              height: 210mm;
-              page-break-inside: avoid;
-            }
-          }
-
-          .card {
-            margin: 40px 20px 20px 20px;
-            padding: 20px;
-            border: 1px solid var(--input-border);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: var(--card-bg);
-            color: var(--card-text);
-          }
-
-          @media (max-width: 600px) {
-            .card {
-              margin: 40px 20px 20px 20px;
-            }
-          }
-
-}
-        `}
-      </style>
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
           </div>
@@ -324,18 +169,13 @@ export default function EditStep5() {
               <div key={planet.key} className="planet-row">
                 <label
                   htmlFor={planet.key}
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    color: "var(--card-text)",
-                  }}
+                  className="planet-label"
                 >
                   {planet.label}
                 </label>
                 <select
                   id={planet.key}
                   className="input2"
-                  //style={styles.input2}
                   name={planet.key}
                   value={form[planet.key] ?? ""}
                   onChange={handle}
@@ -351,14 +191,7 @@ export default function EditStep5() {
           </div>
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div>
             <h2>{t("Chart for Rasi-ராசி", language)}</h2>
             <div className="rasi-grid">
@@ -395,17 +228,12 @@ export default function EditStep5() {
             {allPlanets.map((planet) => (
               <div key={"amsam-" + planet.key} className="planet-row">
                 <label
-                  style={{
-                    display: "block",
-                    marginBottom: "5px",
-                    color: "var(--card-text)",
-                  }}
+                  className="planet-label"
                 >
                   {planet.label}
                 </label>
                 <select
                   className="input2"
-                  //style={styles.input2}
                   name={"amsam_" + planet.key}
                   value={form["amsam_" + planet.key] ?? ""}
                   onChange={handle}
@@ -421,14 +249,7 @@ export default function EditStep5() {
           </div>
         </div>
 
-        <div
-          style={{
-            flex: 1,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <div>
             <h2>{t("Chart for Amsam-அம்சம்", language)}</h2>
             <div className="rasi-grid">
@@ -453,23 +274,25 @@ export default function EditStep5() {
         </div>
       </div>
 
-      <div style={styles.formContainer} className="button-container">
-        <div style={styles.leftColumn}>
+      <div className="edit-form-container button-container">
+        <div className="edit-left-column">
           <button
-            style={styles.editDetailPreviousButton}
+            style={{width: "80%"}}
+            className="edit-detail-previous-button"
             onClick={async () => {
-              await saveFormData(form); // Save before navigating
+              await saveFormData(form);
               router.push("/editdetail/4");
             }}
           >
             {t("Previous", language)}
           </button>
         </div>
-        <div style={styles.rightColumn}>
+        <div className="edit-right-column">
           <button
-            style={styles.editDetailButton}
+            style={{width: "80%"}}
+            className="edit-detail-button"
             onClick={async () => {
-              await saveFormData(form); // Save before navigating
+              await saveFormData(form);
               router.push("/editdetail/6");
             }}
           >

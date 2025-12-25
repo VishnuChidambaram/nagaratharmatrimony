@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
+import "./../editdetail.css";
 import TamilInput from "@/app/components/TamilInput";
 import TamilPopup from "@/app/components/TamilPopup";
 import LanguageToggle from "@/app/components/LanguageToggle";
@@ -68,55 +69,8 @@ export default function EditStep2() {
   };
   return (
     <>
-      <style jsx>{`
-        @media (max-width: 768px) {
-          .form-container {
-            flex-direction: column !important;
-            gap: 5px !important;
-          }
-          
-          .left-column, .right-column {
-            min-width: 100% !important;
-            margin: 0 !important;
-          }
-          
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-          
-          .field-row {
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 5px !important;
-          }
-          .field-label {
-            text-align: left !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            margin: 0 auto !important;
-          }
-         .field-input {
-            max-width:300px !important;
-            width: 300px !important;
-            margin: 5px auto !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
+      {/* Standardized CSS imported above */}
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
         </div>
@@ -127,13 +81,12 @@ export default function EditStep2() {
       <Navigation current={2} />
       <h1>{t("Step 2 - Education & Occupation", language)}</h1>
       <br/>
-      <div style={styles.formContainer} className="form-container">
-        <div style={styles.leftColumn} className="left-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Education Qualification", language)}:</label>
+      <div className="edit-form-container">
+        <div className="edit-left-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Education Qualification", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="educationQualification"
               value={form.educationQualification ?? ""}
               onChange={handleChange}
@@ -172,11 +125,10 @@ export default function EditStep2() {
             </select>
           </div>
           {form.educationQualification === "Others" && (
-            <div style={styles.fieldRow} className="field-row">
-              <label style={styles.fieldLabel} className="field-label">{t("Other Education", language)}:</label>
+            <div className="edit-field-row">
+              <label className="edit-field-label">{t("Other Education", language)}:</label>
               <TamilInput
-                style={styles.fieldInput}
-                className="field-input"
+                className="edit-field-input"
                 name="otherEducation"
                 value={form.otherEducation ?? ""}
                 onChange={handleChange}
@@ -185,11 +137,10 @@ export default function EditStep2() {
               />
             </div>
           )}
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Education Details", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Education Details", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="educationDetails"
               value={form.educationDetails ?? ""}
               onChange={handleChange}
@@ -197,11 +148,10 @@ export default function EditStep2() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Occupation / Business", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Occupation / Business", language)}:</label>
             <select
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="occupationBusiness"
               value={form.occupationBusiness ?? ""}
               onChange={handleChange}
@@ -311,11 +261,10 @@ export default function EditStep2() {
             </select>
           </div>
           {form.occupationBusiness === "Other" && (
-            <div style={styles.fieldRow} className="field-row">
-              <label style={styles.fieldLabel} className="field-label">{t("Other Occupation", language)}:</label>
+            <div className="edit-field-row">
+              <label className="edit-field-label">{t("Other Occupation", language)}:</label>
               <TamilInput
-                style={styles.fieldInput}
-                className="field-input"
+                className="edit-field-input"
                 name="otherOccupation"
                 value={form.otherOccupation ?? ""}
                 onChange={handleChange}
@@ -325,12 +274,11 @@ export default function EditStep2() {
             </div>
           )}
         </div>
-        <div style={styles.rightColumn} className="right-column">
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Working Place", language)}:</label>
+        <div className="edit-right-column">
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Working Place", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="workingPlace"
               value={form.workingPlace ?? ""}
               onChange={handleChange}
@@ -338,11 +286,10 @@ export default function EditStep2() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Work Details", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Work Details", language)}:</label>
             <TamilInput
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               name="workDetails"
               value={form.workDetails ?? ""}
               onChange={handleChange}
@@ -350,11 +297,10 @@ export default function EditStep2() {
               forcedLanguage={language}
             />
           </div>
-          <div style={styles.fieldRow} className="field-row">
-            <label style={styles.fieldLabel} className="field-label">{t("Income (LPA)", language)}:</label>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Income (LPA)", language)}:</label>
             <input
-              style={styles.fieldInput}
-              className="field-input"
+              className="edit-field-input"
               type="number"
               name="income"
               value={form.income ?? ""}
@@ -363,24 +309,20 @@ export default function EditStep2() {
           </div>
         </div>
       </div>
-      {error && <p style={{ color: "red" }}>{error}</p>}
-      <div style={styles.formContainer} className="button-container">
-        <div style={styles.leftColumn}>
-          <button
-            style={styles.editDetailPreviousButton}
-            onClick={async () => {
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/1");
-            }}
-          >
-            {t("Previous", language)}
-          </button>
-        </div>
-        <div style={styles.rightColumn}>
-          <button style={styles.editDetailButton} onClick={next}>
-            {t("Next", language)}
-          </button>
-        </div>
+      {error && <p className="edit-error-text">{error}</p>}
+      <div className="edit-button-container">
+        <button
+          className="edit-detail-previous-button"
+          onClick={async () => {
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/1");
+          }}
+        >
+          {t("Previous", language)}
+        </button>
+        <button className="edit-detail-button" onClick={next}>
+          {t("Next", language)}
+        </button>
       </div>
 
       <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>

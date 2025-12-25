@@ -1,0 +1,505 @@
+/* EditDetail Standardized Styles */
+
+.edit-detail-container {
+    width: 95%;
+    max-width: 1200px;
+    height: 85vh;
+    overflow-y: auto;
+    background: var(--card-bg);
+    box-shadow: 0 0 10px rgba(0,0,0,0.4);
+    text-align: center;
+    font-family: "Arial", sans-serif;
+    color: var(--card-text);
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 auto;
+    position: fixed;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.edit-form-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    width: 100%;
+}
+
+.edit-left-column, .edit-right-column {
+    flex: 1;
+    margin: 0px 0px -12px 0px;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-field-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin: 10px 0;
+    width: 100%;
+}
+
+.edit-field-label {
+    min-width: 180px;
+    max-width: 180px;
+    word-wrap: break-word;
+    font-weight: 500;
+    color: var(--card-text);
+    font-size: 14px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.edit-field-input {
+    width: 300px !important;
+    max-width: 300px !important;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 14px;
+    min-height: 40px;
+    box-sizing: border-box;
+}
+
+.edit-field-input-small {
+    width: 80px !important;
+    max-width: 80px !important;
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 14px;
+    min-height: 40px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* Ensure TamilInput wrapper also respects the width if needed */
+.edit-field-input-wrapper {
+    width: 300px !important;
+    max-width: 300px !important;
+}
+
+.edit-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 20%;
+    margin: 20px 6%;
+}
+
+.edit-error-text {
+    color: #ff4d4f;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+/* Button Styles - Matching Register Page */
+.edit-detail-button {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 20px;
+    margin: 10px auto;
+    border-radius: 6px;
+    border: none;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+.edit-detail-previous-button {
+    width: 100%;
+    max-width: 100%;
+    padding: 8px 20px;
+    margin: 10px auto;
+    border-radius: 6px;
+    border: none;
+    background: #6c757d;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+/* OTP Button Styles - For Send OTP, Verify OTP buttons */
+.edit-otp-button {
+    width: 300px;
+    max-width: 300px;
+    padding: 8px 20px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: none;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+.edit-otp-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Single Button Style - For pages with only Next button (Page 1) */
+.edit-single-button {
+    width: 45%;
+    max-width: 45%;
+    padding: 8px 20px;
+    margin: 10px auto;
+    margin-right: 0;
+    border-radius: 6px;
+    border: none;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+/* Page 8 Button Styles - Previous and Update buttons */
+.edit-page8-previous-button {
+    width: 50%;
+    max-width: 50%;
+    padding: 8px 20px;
+    margin: 10px 0;
+    margin-right: auto;
+    border-radius: 6px;
+    border: none;
+    background: #6c757d;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+.edit-page8-update-button {
+    width: 50%;
+    max-width: 50%;
+    padding: 8px 20px;
+    margin: 10px 0;
+    margin-left: 0;
+    border-radius: 6px;
+    border: none;
+    background: var(--button-bg);
+    color: var(--button-text);
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    min-height: 36px;
+}
+
+/* Page 8 Button Container - No gap between buttons */
+.edit-page8-button-container {
+    display: flex;
+    justify-content: center;
+    gap: 2%;
+    margin: 20px 6%;
+}
+
+/* Mobile/Desktop View Toggle for Charts */
+.step-label-mobile {
+    display: none; /* Hide mobile view by default */
+}
+
+.step-label-desktop {
+    display: block; /* Show desktop view by default */
+}
+
+@media (max-width: 1024px) {
+    .step-label-mobile {
+        display: block; /* Show mobile view on small screens */
+    }
+    
+    .step-label-desktop {
+        display: none; /* Hide desktop view on small screens */
+    }
+}
+
+.edit-referral-heading {
+    margin: 20px 0;
+    font-size: 16px;
+    color: var(--card-text);
+    text-align: center;
+    width: 100%;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 1024px) {
+    .edit-form-container {
+        flex-direction: column !important;
+        gap: 5px !important;
+    }
+
+    .edit-left-column, .edit-right-column {
+        min-width: 100% !important;
+        margin: 0 !important;
+    }
+
+    .edit-field-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 5px !important;
+    }
+
+    .edit-field-label {
+        text-align: left !important;
+        min-width: 300px !important;
+        max-width: 300px !important;
+        width: 300px !important;
+        margin: 0 auto !important;
+    }
+
+    .edit-field-input {
+        width: 300px !important;
+        max-width: 300px !important;
+        margin: 5px auto !important;
+    }
+
+    .edit-button-container {
+        flex-direction: column !important;
+        gap: 10px !important;
+        width: 100%;
+        margin: 10px 0 !important;
+        align-items: center !important;
+    }
+
+    .edit-button-container button {
+        width: 90% !important;
+        margin: 10px auto !important;
+        max-width: 400px;
+    }
+
+    .email-verification-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+    }
+
+    .edit-page8-button-container {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+        margin: 20px auto !important;
+    }
+    
+/* Tablet View - 50% Button Width */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .edit-detail-button,
+    .edit-detail-previous-button,
+    .edit-single-button,
+    .edit-otp-button,
+    .edit-page8-update-button,
+    .edit-page8-previous-button {
+        width: 50% !important;
+        max-width: 50% !important;
+        margin: 10px auto !important;
+        display: block;
+    }
+}
+
+/* Mobile View - 100% Button Width */
+@media (max-width: 768px) {
+    .edit-detail-button,
+    .edit-detail-previous-button,
+    .edit-single-button,
+    .edit-otp-button,
+    .edit-page8-update-button,
+    .edit-page8-previous-button {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 10px 0 !important;
+        display: block;
+    }
+}
+
+@media (max-width: 480px) {
+    .edit-detail-container h1 {
+        font-size: 22px !important;
+    }
+}
+
+/* Rasi/Amsam Grid Styles */
+.rasi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    margin: 20px auto;
+    border: 1px solid var(--input-border);
+}
+
+.rasi-grid > div {
+    border: 1px solid var(--input-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-bg);
+    color: var(--card-text);
+    text-align: center;
+    padding: 5px;
+    font-size: 12px;
+    min-height: 80px;
+    position: relative;
+}
+
+.center-box {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    font-weight: bold;
+    font-size: 18px;
+    background: var(--card-bg);
+    color: var(--card-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (max-width: 600px) {
+    .rasi-grid {
+        max-width: 100% !important;
+        font-size: 10px !important;
+        width: 100% !important;
+        margin: 20px auto 0px auto;
+    }
+    .rasi-grid > div {
+        padding: 3px !important;
+        font-size: 10px !important;
+        min-height: 60px !important;
+    }
+    .center-box {
+        font-size: 14px !important;
+    }
+}
+
+/* Page 5 Specific Styles */
+.step5-layout {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.planet-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 13px;
+}
+
+.planet-row label {
+    margin-bottom: 0 !important;
+    flex: 1;
+}
+
+.planet-container {
+    flex: 1;
+}
+
+.input2 {
+    width: 150px;
+    padding: 4px;
+    border-radius: 6px;
+    border: 1px solid var(--input-border);
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 16px;
+}
+
+.rasi-grid-container {
+    width: 100%;
+    margin: auto;
+    display: flex;
+    justify-content: center;
+    page-break-inside: avoid;
+}
+
+@media (max-width: 600px) {
+    .input2 {
+        width: 40%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .step5-layout {
+        flex-direction: column;
+    }
+
+    .planet-container {
+        flex-direction: column !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+    
+    .step5-layout > div {
+        flex: none !important;
+        width: 100% !important;
+    }
+}
+
+.card {
+    margin: 40px 20px 20px 20px;
+    padding: 20px;
+    border: 1px solid var(--input-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: var(--card-bg);
+    color: var(--card-text);
+}
+
+@media print {
+    .rasi-grid {
+        width: 210mm;
+        height: 210mm;
+        page-break-inside: avoid;
+    }
+}
+
+.planet-label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--card-text);
+}
+
+.photo-delete-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: rgba(255, 0, 0, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.photo-empty-placeholder {
+    padding: 20px;
+    text-align: center;
+    color: #999;
+    border: 2px dashed var(--input-border);
+    border-radius: 6px;
+    background-color: rgba(0,0,0,0.02);
+    font-size: 14px;
+}
+}

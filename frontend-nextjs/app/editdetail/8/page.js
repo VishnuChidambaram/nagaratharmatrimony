@@ -9,6 +9,7 @@ import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import "./../editdetail.css";
 
 export default function EditStep8() {
   const router = useRouter();
@@ -722,158 +723,7 @@ export default function EditStep8() {
 
   return (
     <>
-      <style>{`
-        .rasi-grid {
-          display: grid;
-          grid-template-columns: repeat(4, 1fr);
-          gap: 2px;
-          width: 100%;
-          max-width: 400px;
-          aspect-ratio: 1;
-          margin: 20px auto;
-          border: 1px solid var(--input-border);
-        }
-        .rasi-grid > div {
-          border: 1px solid var(--input-border);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--card-bg);
-          color: var(--card-text);
-          text-align: center;
-          padding: 5px;
-          font-size: 12px;
-          min-height: 80px;
-          position: relative;
-        }
-        .center-box {
-          grid-column: 2 / span 2;
-          grid-row: 2 / span 2;
-          font-weight: bold;
-          font-size: 18px;
-          background: var(--card-bg);
-          color: var(--card-text);
-        }
-
-        .step5-layout {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-        .planet-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .planet-row:last-child {
-            border-bottom: none;
-        }
-        .planet-row label {
-            font-weight: bold;
-            flex: 1;
-            text-align: left;
-            color: var(--card-text);
-        }
-        .card {
-            padding: 20px;
-            border: 1px solid var(--input-border);
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            background: var(--card-bg);
-            color: var(--card-text);
-            margin-bottom: 20px;
-        }
-        
-        .step-label-mobile {
-            display: none;
-            text-align: center;
-            font-weight: bold;
-            font-size: 16px;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 4px;
-        }
-        
-        .step-label-desktop {
-            display: block;
-        }
-
-        @media (max-width: 600px) {
-          .rasi-grid {
-            max-width: 100% !important;
-            font-size: 10px !important;
-            width: 100% !important;
-            margin: 40px auto 0px auto;
-          }
-          .rasi-grid > div {
-            padding: 3px !important;
-            font-size: 10px !important;
-            min-height: 60px !important;
-          }
-          .center-box {
-            font-size: 14px !important;
-          }
-        }
-
-        @media (max-width: 768px) {
-          .button-container {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          .button-container button {
-            width: 90% !important;
-            margin: 10px auto !important;
-            max-width: 400px;
-          }
-          .field-row {
-            flex-direction: column !important;
-            align-items: center !important;
-            gap: 5px !important;
-          }
-          .field-label {
-            text-align: left !important;
-            min-width: 300px !important;
-            max-width: 300px !important;
-            width: 300px !important;
-            margin: 0 auto !important;
-          }
-          .field-input {
-            max-width:300px !important;
-            width: 300px !important;
-            margin: 5px auto !important;
-          }
-
-          .email-verification-row {
-            flex-direction: column !important;
-            gap: 10px !important;
-          }
-          
-          .email-verification-row input,
-          .email-verification-row button {
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-          }
-          
-          .step-label-mobile {
-            display: block !important;
-          }
-          
-          .step-label-desktop {
-            display: none !important;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          h1 {
-            font-size: 22px !important;
-          }
-        }
-      `}</style>
-      <div style={styles.container}>
+      <div className="edit-detail-container">
       {language === "ta" && (
         <div style={{ position: "fixed", top: "100px", right: "20px", zIndex: 50 }}>
           </div>
@@ -979,7 +829,8 @@ export default function EditStep8() {
               }}
             >
               <TamilInput
-                style={{ ...styles.input241, cursor: "pointer" }}
+                className="edit-field-input"
+                style={{ cursor: "pointer" }}
                 name="email"
                 value={form.email || ""}
                 readOnly
@@ -990,7 +841,8 @@ export default function EditStep8() {
               />
               {!otpSent && (
                 <button
-                  style={styles.input123}
+                  className="edit-detail-button"
+                  style={{ width: '300px', margin: '10px 0' }}
                   onClick={handleSendOtp}
                   disabled={!form.email || isSendingOtp}
                 >
@@ -999,18 +851,15 @@ export default function EditStep8() {
               )}
               {otpSent && !otpVerified && (
                 <button
-                  style={{
-                    ...styles.input123,
-                    backgroundColor: "#6c757d",
-                  }}
+                  className="edit-otp-button"
                   onClick={handleSendOtp}
                   disabled={resendCooldown > 0 || isSendingOtp}
                 >
-                  {isSendingOtp
+                  {resendCooldown > 0
+                    ? `${t("Resend OTP in", language)} ${resendCooldown}s`
+                    : isSendingOtp
                     ? t("Sending...", language)
-                    : resendCooldown > 0
-                    ? `${t("Resend OTP", language)} (${resendCooldown}s)`
-                    : t("Resend OTP", language)}
+                    : t("Send OTP", language)}
                 </button>
               )}
             </div>
@@ -1024,26 +873,20 @@ export default function EditStep8() {
 
 
         {otpSent && !otpVerified && (
-             <div
-              className="email-verification-row"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              gap: "20px",
-                marginBottom: 5,
-              }}
-            >
-            <TamilInput
-              name="otp"
-              placeholder={t("Enter OTP", language)}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              style={styles.input241}
-              maxLength={4}
-              forcedLanguage={language === "ta" ? "ta" : "en"}
-            />
-              <button style={styles.input123} onClick={handleVerifyOtp}>
+            <div className="email-verification-row" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginBottom: 5 }}>
+              <TamilInput
+                name="otp"
+                placeholder={t("Enter OTP", language)}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                className="edit-field-input"
+                maxLength={4}
+                forcedLanguage={language === "ta" ? "ta" : "en"}
+              />
+              <button 
+                className="edit-otp-button"
+                onClick={handleVerifyOtp}
+              >
                 {t("Verify OTP", language)}
               </button>
             </div>
@@ -1089,23 +932,19 @@ export default function EditStep8() {
         </div>
       )}
 
-      <div style={styles.formContainer} className="button-container">
-        <div style={styles.leftColumn}>
-          <button
-            style={styles.previousButton1}
-            onClick={async () => {
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/7");
-            }}
-          >
-            {t("Previous", language)}
-          </button>
-        </div>
-        <div style={styles.rightColumn}>
-          <button style={styles.button1} onClick={handleSubmit}>
-            {t("Update", language)}
-          </button>
-        </div>
+      <div className="edit-page8-button-container">
+        <button
+          className="edit-page8-previous-button"
+          onClick={async () => {
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/7");
+          }}
+        >
+          {t("Previous", language)}
+        </button>
+        <button className="edit-page8-update-button" onClick={handleSubmit}>
+          {t("Update", language)}
+        </button>
       </div>
       <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
         {t("Go To Dashboard", language)} <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => router.push("/dashboard")}>{t("ClickHere", language)}</span>
