@@ -340,6 +340,27 @@
   }
 }
 
+/* Tablet adjustments for Admin Dashboard */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .dashboardOptions {
+    gap: 20px;
+  }
+  
+  .dashboardCard {
+    width: 220px;
+    height: 220px;
+    padding: 20px;
+  }
+
+  .cardIcon {
+    font-size: 2.5em;
+  }
+
+  .gridContainer {
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
 .dashboardOptions {
     display: flex;
     justify-content: center;

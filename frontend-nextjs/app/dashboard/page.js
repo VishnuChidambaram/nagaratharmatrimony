@@ -614,6 +614,24 @@ export default function Dashboard() {
             gap: 15px !important;
           }
         }
+
+        /* Tablet specific adjustments for Dashboard */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .dashboard-grid {
+             grid-template-columns: repeat(2, 1fr) !important;
+             gap: 20px !important;
+             padding: 20px !important;
+          }
+
+          .modal-content {
+             max-width: 80% !important;
+             max-height: 85% !important;
+          }
+          
+          .dashboard-header input[type="text"] {
+            width: 300px !important;
+          }
+        }
       `}</style>
 
       {/* Fixed Header */}
@@ -691,6 +709,7 @@ export default function Dashboard() {
         ) : (
           /* Grid Container */
           <div
+            className="dashboard-grid"
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",

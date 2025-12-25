@@ -396,6 +396,7 @@ export default function RootLayout({
               }} 
             />
             <div
+              className="header-title"
               style={{
                 fontSize: "26px",
                 fontWeight: "bold",

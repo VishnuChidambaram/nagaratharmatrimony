@@ -1,6 +1,6 @@
 export const styles = {
   container: {
-    width: "100%",
+    width: "95%",
     maxWidth: "1200px",
     height: "85vh",
     overflowY: "auto",
@@ -18,7 +18,7 @@ export const styles = {
     transform: "translate(-50%, -50%)",
   },
   input: {
-    width: "500px",
+    width: "100%",
     maxWidth: "500px",
     padding: "12px",
     margin: "10px auto",
@@ -327,7 +327,7 @@ export const styles = {
     flexShrink: 0,
   },
   fieldInput: {
-    width: "300px",
+    width: "100%",
     maxWidth: "300px",
     padding: "10px",
     borderRadius: "6px",

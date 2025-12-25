@@ -214,20 +214,41 @@ body {
 }
 
 /* Tablet adjustments */
-@media (max-width: 768px) {
+@media (min-width: 481px) and (max-width: 1024px) {
   h1 {
-    font-size: clamp(24px, 6vw, 32px);
+    font-size: clamp(22px, 5vw, 28px);
   }
   
   h2 {
-    font-size: clamp(20px, 5vw, 28px);
+    font-size: clamp(18px, 4.5vw, 24px);
+  }
+
+  h3 {
+    font-size: clamp(16px, 4vw, 20px);
   }
   
   /* Ensure buttons are touch-friendly */
   button,
-  .button {
+  .button,
+  .btn {
     min-height: 44px;
-    padding: 10px 14px;
+    padding: 10px 16px;
+  }
+
+  /* Container adjustments for tablet */
+  .container, .main-content {
+    padding: 20px;
+    max-width: 100%;
+  }
+
+  .header-title {
+    font-size: 22px !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 18px !important;
   }
 }
 

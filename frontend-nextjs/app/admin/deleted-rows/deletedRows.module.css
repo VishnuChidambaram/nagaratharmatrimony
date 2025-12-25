@@ -91,3 +91,19 @@
   align-items: center;
   gap: 5px;
 }
+
+/* Tablet adjustments for Deleted Rows */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .userCard {
+    padding: 20px;
+  }
+  
+  .userInfo {
+    gap: 8px;
+  }
+
+  .btn {
+    min-width: 120px;
+    padding: 10px 20px;
+  }
+}

@@ -105,12 +105,22 @@ export default function ApprovalRequests() {
           <p style={{ color: "var(--card-text)", opacity: 0.6 }}>{t("All update requests have been reviewed")}</p>
         </div>
       ) : (
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
-          gap: "20px",
-          marginTop: "20px"
-        }}>
+        <div 
+          className="approval-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
+            gap: "20px",
+            marginTop: "20px"
+          }}
+        >
+          <style jsx>{`
+            @media (min-width: 768px) and (max-width: 1024px) {
+              .approval-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+              }
+            }
+          `}</style>
           {requests.map((req) => (
             <div
               key={req.request_id}

@@ -96,6 +96,12 @@ export default function PreviewDetail() {
         .scrollable-content::-webkit-scrollbar {
           display: none;
         }
+        @media (min-width: 481px) and (max-width: 1024px) {
+          .preview-card {
+            max-width: 80% !important;
+            padding: 40px !important;
+          }
+        }
       `}</style>
 
       {/* Header */}
@@ -130,6 +136,7 @@ export default function PreviewDetail() {
       <div className="scrollable-content">
         {detailData && (
           <div
+            className="preview-card"
             style={{
               maxWidth: "600px",
               margin: "0 auto",

@@ -113,6 +113,16 @@ export default function Login() {
   return (
     <>
       <style jsx>{`
+        @media (min-width: 481px) and (max-width: 1024px) {
+          .login-container {
+            max-width: 400px !important;
+            padding: 30px !important;
+          }
+          .login-wrapper {
+            gap: 40px !important;
+          }
+        }
+
         @media (max-width: 480px) {
           .login-container {
             width: 100% !important;
