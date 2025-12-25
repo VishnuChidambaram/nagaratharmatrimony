@@ -205,9 +205,9 @@ export default function TamilInput({
 
   const InputComponent = isTextArea ? 'textarea' : 'input';
 
-  // Extract margins from props.style to apply to the wrapper
-  const { margin, marginTop, marginBottom, marginLeft, marginRight, ...inputStyle } = props.style || {};
-  const wrapperStyle = { margin, marginTop, marginBottom, marginLeft, marginRight };
+  // Extract margins AND width properties from props.style to apply to the wrapper
+  const { width, ...inputStyle } = props.style || {};
+  const wrapperStyle = { width };
 
   return (
     <div style={wrapperStyle} className="relative">

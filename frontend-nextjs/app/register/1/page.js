@@ -254,7 +254,7 @@ export default function Step1() {
             flex-direction: column !important;
             gap: 10px !important;
           }
-            .field-input {
+          .field-input {
             max-width:300px !important;
             width: 300px !important;
           }

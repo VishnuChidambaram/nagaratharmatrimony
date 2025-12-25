@@ -179,7 +179,7 @@ export default function Step7() {
             onChange={handle}
             placeholder={t("Education Details", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
-            style={styles.textarea}
+            style={styles.input}
           />
           <select
             name="complexion1"
@@ -203,7 +203,7 @@ export default function Step7() {
             onChange={handle}
             placeholder={t("Personal Preference", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
-            style={styles.textarea}
+            style={styles.input}
           />
         </div>
         <div style={{ flex: 1, marginLeft: "10px",}}>
