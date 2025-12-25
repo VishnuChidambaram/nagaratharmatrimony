@@ -1,7 +1,7 @@
 "use client";
 
 import { Geist, Geist_Mono } from "next/font/google";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import "./globals.css";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
@@ -143,6 +143,9 @@ export default function RootLayout({
   const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
 
   useEffect(() => {
     // Suppress specific console warnings in the browser
@@ -214,6 +217,32 @@ export default function RootLayout({
       };
     }
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        isMenuOpen &&
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node) &&
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node)
+      ) {
+        setIsMenuOpen(false);
+        if (menuTimeout) {
+          clearTimeout(menuTimeout);
+          setMenuTimeout(null);
+        }
+      }
+    }
+
+    if (isMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isMenuOpen, menuTimeout]);
+
 
   const toggleMenu = () => {
     if (isMenuOpen) {
@@ -331,6 +360,7 @@ export default function RootLayout({
           !pathname.startsWith("/admin/approval-requests/") &&
           pathname !== "/forgot-password" && (
               <button
+                ref={buttonRef}
                 style={{
                   background: "none",
                   border: "none",
@@ -345,6 +375,7 @@ export default function RootLayout({
               >
                 ☰
               </button>
+
             )}
           {/* Title and Search */}
           <div
@@ -381,6 +412,7 @@ export default function RootLayout({
         {/* Menu Dropdown */}
         {isMenuOpen && (
           <div
+            ref={menuRef}
             onMouseEnter={() => {
               if (menuTimeout) {
                 clearTimeout(menuTimeout);
@@ -407,6 +439,7 @@ export default function RootLayout({
               boxShadow: "0 4px 8px rgba(0,0,0,0.5)",
             }}
           >
+
             {/* User Profile - Only show if not on login, register, or forgot-password pages */}
             {pathname !== "/" &&
               pathname !== "/login" &&
