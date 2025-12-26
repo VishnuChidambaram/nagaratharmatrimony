@@ -63,7 +63,7 @@ export const styles = {
     fontSize: "16px",
   },
   input241: {
-    width: "100%",
+    width: "300px",
     padding: "10px",
     margin: "10px 5px",
     borderRadius: "6px",

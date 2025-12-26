@@ -205,17 +205,19 @@ export default function Login() {
             }}
             style={{ width: "100%" }}
           >
-            <TamilInput
-              style={styles.input}
-              type="text"
-              placeholder={t.emailPlaceholder}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              forcedLanguage="en"
-              helperMessage={language === 'ta' ? "ஆங்கிலத்தில் மட்டும் தட்டச்சு செய்யவும்" : ""}
-              id="email"
-              name="email"
-            />
+            <div style={{ width: "90%", margin: "0 auto" }}>
+              <TamilInput
+                style={styles.input}
+                type="text"
+                placeholder={t.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                forcedLanguage="en"
+                helperMessage={language === 'ta' ? "ஆங்கிலத்தில் மட்டும் தட்டச்சு செய்யவும்" : ""}
+                id="email"
+                name="email"
+              />
+            </div>
             <div style={styles.passwordWrapper}>
               <TamilInput
                 style={styles.passwordInput}
@@ -329,13 +331,14 @@ const styles = {
     color: "var(--card-text)",
   },
   input: {
-    width: "90%",
+    width: "100%",
     padding: "12px",
     margin: "10px 0",
     borderRadius: "6px",
     border: "1px solid var(--input-border)",
     background: "var(--input-bg)",
     color: "var(--input-text)",
+    boxSizing: "border-box",
   },
   passwordWrapper: {
     position: "relative",
@@ -351,6 +354,7 @@ const styles = {
     border: "1px solid var(--input-border)",
     background: "var(--input-bg)",
     color: "var(--input-text)",
+    boxSizing: "border-box",
   },
   eyeIcon: {
     position: "absolute",

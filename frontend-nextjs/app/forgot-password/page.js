@@ -192,17 +192,19 @@ export default function ForgotPassword() {
 
         {step === 1 && (
           <>
-            <TamilInput
-              style={styles.input}
-              type="text" // Changed to text as TamilInput handles it better, but for consistency with Login where it was 'text' for email
-              placeholder={t.emailPlaceholder}
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              forcedLanguage="en" // Email always English
-              helperMessage={language === 'ta' ? t.helperEnglishOnly : ""}
-              id="email"
-              name="email"
-            />
+            <div style={{ width: "90%", margin: "0 auto" }}>
+              <TamilInput
+                style={styles.input}
+                type="text" // Changed to text as TamilInput handles it better, but for consistency with Login where it was 'text' for email
+                placeholder={t.emailPlaceholder}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                forcedLanguage="en" // Email always English
+                helperMessage={language === 'ta' ? t.helperEnglishOnly : ""}
+                id="email"
+                name="email"
+              />
+            </div>
             <button
               style={styles.button}
               onClick={handleSendOtp}
@@ -218,17 +220,19 @@ export default function ForgotPassword() {
             <p style={{ color: "var(--card-text)", marginBottom: "20px" }}>
               {t.otpSentTo} {email}
             </p>
-            <TamilInput
-              style={styles.input}
-              type="text"
-              placeholder={t.otpPlaceholder}
-              value={otp}
-              onChange={(e) => setOtp(e.target.value)}
-              maxLength="4"
-              forcedLanguage="en" // OTP usually numbers/English
-              id="otp"
-              name="otp"
-            />
+            <div style={{ width: "90%", margin: "0 auto" }}>
+              <TamilInput
+                style={styles.input}
+                type="text"
+                placeholder={t.otpPlaceholder}
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength="4"
+                forcedLanguage="en" // OTP usually numbers/English
+                id="otp"
+                name="otp"
+              />
+            </div>
             <button style={styles.button} onClick={handleVerifyOtp}>
               {t.verifyOtp}
             </button>
@@ -346,13 +350,14 @@ const styles = {
     color: "var(--card-text)",
   },
   input: {
-    width: "90%",
+    width: "100%",
     padding: "12px",
     margin: "10px 0",
     borderRadius: "6px",
     border: "1px solid var(--input-border)",
     background: "var(--input-bg)",
     color: "var(--input-text)",
+    boxSizing: "border-box",
   },
   error: {
     color: "var(--error-text)",
