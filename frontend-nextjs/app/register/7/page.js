@@ -172,15 +172,17 @@ export default function Step7() {
             <option value="Below S.S.L.C">{t("Below S.S.L.C", language)}</option>
             <option value="Others">{t("Others", language)}</option>
           </select>
-          <TamilInput
-            isTextArea={true}
-            name="educationDetails1"
-            value={form.educationDetails1 || ""}
-            onChange={handle}
-            placeholder={t("Education Details", language)}
-            forcedLanguage={language === "ta" ? "ta" : "en"}
-            style={styles.input}
-          />
+          <div style={{ width: "90%", margin: "10px auto" }}>
+            <TamilInput
+              isTextArea={true}
+              name="educationDetails1"
+              value={form.educationDetails1 || ""}
+              onChange={handle}
+              placeholder={t("Education Details", language)}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
+              style={{ ...styles.input, width: "100%", margin: 0 }}
+            />
+          </div>
           <select
             name="complexion1"
             value={form.complexion1 || ""}
@@ -196,15 +198,17 @@ export default function Step7() {
             <option value="Black (karuppu)">{t("Black (karuppu)", language)}</option>
           </select>
 
-          <TamilInput
-            isTextArea={true}
-            name="personalPreference1"
-            value={form.personalPreference1 || ""}
-            onChange={handle}
-            placeholder={t("Personal Preference", language)}
-            forcedLanguage={language === "ta" ? "ta" : "en"}
-            style={styles.input}
-          />
+          <div style={{ width: "90%", margin: "10px auto" }}>
+            <TamilInput
+              isTextArea={true}
+              name="personalPreference1"
+              value={form.personalPreference1 || ""}
+              onChange={handle}
+              placeholder={t("Personal Preference", language)}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
+              style={{ ...styles.input, width: "100%", margin: 0 }}
+            />
+          </div>
         </div>
         <div style={{ flex: 1, marginLeft: "10px",}}>
           <label>{t("Willingness to Work After Marriage", language)} </label>
