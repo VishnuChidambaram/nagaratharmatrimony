@@ -544,7 +544,7 @@ export default function EditStep8() {
     const renderLocalBox = (pos, sourceData) => {
       const planets = sourceData[pos] || [];
       return (
-        <div>
+        <div className="rasi-cell" style={{ border: '1px solid var(--input-border)' }}>
           <span
             style={{
               position: "absolute",
@@ -557,7 +557,9 @@ export default function EditStep8() {
           >
             {pos}
           </span>
-          {planets.length > 0 ? planets.join(", ") : ""}
+          <span style={{ textAlign: "center", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
+            {planets.length > 0 ? planets.join(", ") : ""}
+          </span>
         </div>
       );
     };
@@ -569,13 +571,32 @@ export default function EditStep8() {
         {/* Rasi Chart */}
         <div style={{ marginBottom: "40px" }}>
           <h5 style={{ marginBottom: "15px", color: "var(--card-text)" }}>{t("Rasi Chart", language)}</h5>
-          <div className="rasi-grid">
+          <div className="rasi-grid" style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(4, 1fr)', 
+            gap: '2px', 
+            width: '100%', 
+            maxWidth: '400px', 
+            aspectRatio: '1', 
+            margin: '20px auto', 
+            border: '1px solid var(--input-border)' 
+          }}>
             {renderLocalBox(1, localChartData)}
             {renderLocalBox(2, localChartData)}
             {renderLocalBox(3, localChartData)}
             {renderLocalBox(4, localChartData)}
             {renderLocalBox(12, localChartData)}
-            <div className="center-box">{t("Rasi", language)}</div>
+            <div className="center-box" style={{ 
+               gridColumn: '2 / span 2', 
+               gridRow: '2 / span 2', 
+               fontWeight: 'bold', 
+               fontSize: '18px', 
+               backgroundColor: 'var(--card-bg)', 
+               color: 'var(--card-text)', 
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center' 
+            }}>{t("Rasi", language)}</div>
             {renderLocalBox(5, localChartData)}
             {renderLocalBox(11, localChartData)}
             {renderLocalBox(6, localChartData)}
@@ -589,13 +610,32 @@ export default function EditStep8() {
         {/* Amsam Chart */}
         <div>
           <h5 style={{ marginBottom: "15px", color: "var(--card-text)" }}>{t("Amsam Chart", language)}</h5>
-          <div className="rasi-grid">
+          <div className="rasi-grid" style={{ 
+            display: 'grid', 
+            gridTemplateColumns: 'repeat(4, 1fr)', 
+            gap: '2px', 
+            width: '100%', 
+            maxWidth: '400px', 
+            aspectRatio: '1', 
+            margin: '20px auto', 
+            border: '1px solid var(--input-border)' 
+          }}>
             {renderLocalBox(1, localAmsamChartData)}
             {renderLocalBox(2, localAmsamChartData)}
             {renderLocalBox(3, localAmsamChartData)}
             {renderLocalBox(4, localAmsamChartData)}
             {renderLocalBox(12, localAmsamChartData)}
-            <div className="center-box">{t("Amsam", language)}</div>
+            <div className="center-box" style={{ 
+               gridColumn: '2 / span 2', 
+               gridRow: '2 / span 2', 
+               fontWeight: 'bold', 
+               fontSize: '18px', 
+               backgroundColor: 'var(--card-bg)', 
+               color: 'var(--card-text)', 
+               display: 'flex', 
+               alignItems: 'center', 
+               justifyContent: 'center' 
+            }}>{t("Amsam", language)}</div>
             {renderLocalBox(5, localAmsamChartData)}
             {renderLocalBox(11, localAmsamChartData)}
             {renderLocalBox(6, localAmsamChartData)}
@@ -613,21 +653,20 @@ export default function EditStep8() {
   const renderPage5Comparison = () => {
     return (
       <>
-        {/* Mobile View: Stacked with Labels */}
-        <div className="step-label-mobile">
-          <div style={{ backgroundColor: "var(--input-bg)", color: "var(--card-text)", opacity: 0.7, textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginBottom: "10px", borderRadius: "4px" }}>{t("Before Edit (Original)", language)}</div>
-          <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "space-around" }}>
-            {renderPage5StyleLayout(originalForm, "Before Edit (Original)")}
+        {/* Unified View: Side-by-Side (Parallel) with Labels */}
+        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "space-between" }}>
+          <div style={{ flex: 1, minWidth: "300px" }}>
+             <div style={{ backgroundColor: "var(--input-bg)", color: "var(--card-text)", opacity: 0.7, textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginBottom: "10px", borderRadius: "4px" }}>{t("Before Edit (Original)", language)}</div>
+             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
+               {renderPage5StyleLayout(originalForm, "")}
+             </div>
           </div>
-          <div style={{ backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e", textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginTop: "20px", marginBottom: "10px", borderRadius: "4px" }}>{t("After Edit (New)", language)}</div>
-          <div style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "space-around" }}>
-            {renderPage5StyleLayout(form, "After Edit (New)")}
+          <div style={{ flex: 1, minWidth: "300px" }}>
+             <div style={{ backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e", textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginBottom: "10px", borderRadius: "4px" }}>{t("After Edit (New)", language)}</div>
+             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
+               {renderPage5StyleLayout(form, "")}
+             </div>
           </div>
-        </div>
-        {/* Desktop View: Side by Side */}
-        <div className="step-label-desktop" style={{ display: "flex", gap: "40px", flexWrap: "wrap", justifyContent: "space-around" }}>
-          {renderPage5StyleLayout(originalForm, "Before Edit (Original)")}
-          {renderPage5StyleLayout(form, "After Edit (New)")}
         </div>
       </>
     );

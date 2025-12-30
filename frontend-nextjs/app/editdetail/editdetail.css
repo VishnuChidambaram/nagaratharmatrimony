@@ -294,7 +294,7 @@
         gap: 10px !important;
         margin: 20px auto !important;
     }
-    
+}
 /* Tablet View - 50% Button Width */
 @media (min-width: 769px) and (max-width: 1024px) {
     .edit-detail-button,
@@ -501,5 +501,4 @@
     border-radius: 6px;
     background-color: rgba(0,0,0,0.02);
     font-size: 14px;
-}
 }
