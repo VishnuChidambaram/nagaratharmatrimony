@@ -29,7 +29,7 @@ export default function EditStep1() {
 
       try {
         const emailFromUrl = searchParams.get("email");
-        const emailFromStorage = localStorage.getItem("userEmail");
+        const emailFromStorage = sessionStorage.getItem("userEmail");
         const lastFetchedEmail = localStorage.getItem("lastFetchedEmail");
         const email = emailFromUrl || lastFetchedEmail || emailFromStorage;
 

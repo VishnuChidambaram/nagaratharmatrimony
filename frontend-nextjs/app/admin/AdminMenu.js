@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useLanguage } from "../context/LanguageContext";
 import { t } from "../utils/translations";
 import { API_URL } from "../utils/config";
+import { getAuthHeaders } from "../utils/auth-headers";
 
 export default function AdminMenu() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function AdminMenu() {
 
   useEffect(() => {
     // Load admin email
-    const storedAdminEmail = localStorage.getItem("adminEmail");
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
     if (storedAdminEmail) {
       setAdminEmail(storedAdminEmail);
     }
@@ -77,11 +78,11 @@ export default function AdminMenu() {
   };
 
   const handleLogout = async () => {
-    localStorage.removeItem("adminEmail");
+    sessionStorage.removeItem("adminEmail");
     try {
       await fetch(`${API_URL}/admin/logout`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         credentials: "include",
       });
     } catch (e) {

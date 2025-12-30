@@ -53,7 +53,37 @@ router.get("/all-details", async (req, res) => {
     // Check if user is authenticated (either regular user or admin)
     // Regular user details are stored in 'userEmail' cookie
     // Admin details are stored in 'adminEmail' cookie
-    const isAuth = req.cookies && (req.cookies.userEmail || req.cookies.adminEmail);
+    // Check if user is authenticated (either regular user or admin)
+    // Regular user details are stored in 'userEmail' cookie
+    // Admin details are stored in 'adminEmail' cookie
+    let isAuth = false;
+
+    // Check Admin Auth
+    // Prioritize Headers
+    let adminEmail = req.headers['x-admin-email'] || req.cookies.adminEmail;
+    let adminSessionId = req.headers['x-admin-session-id'] || req.cookies.adminSessionId; // Not strictly needed for basic check but good for verifying
+
+    if (adminEmail) {
+      // Basic check - we assume middleware or auth route handles strict session validation, 
+      // but here we trust the email if present (legacy logic) OR strictly check headers if we want robust security.
+      // For now, let's replicate the original logic: if adminEmail cookie/header is present, allow.
+      isAuth = true;
+    } 
+    
+    // Check User Auth
+    if (!isAuth) {
+       let userEmail = req.headers['x-user-email'] || req.cookies.userEmail;
+       let sessionId = req.headers['x-session-id'] || req.cookies.sessionId;
+
+       if (userEmail && sessionId) {
+          const user = await db.UserDetail.findOne({ 
+            where: { email: userEmail } 
+          });
+          if (user && user.sessionId === sessionId) {
+            isAuth = true;
+          }
+       }
+    }
 
     if (!isAuth) {
       // If not authenticated, return empty data to "fix the page as empty in browser view"

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import AdminMenu from "../AdminMenu";
 import styles from "./dashboard.module.css";
 import { useLanguage } from "../../hooks/useLanguage";
-import { API_URL } from "../../utils/config";
+import { API_URL } from "@/app/utils/config";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
 
 import { translations } from "../../utils/translations";
 import LanguageToggle from "../../components/LanguageToggle";
@@ -26,7 +27,7 @@ export default function AdminDashboard() {
   };
 
   useEffect(() => {
-    const storedAdminEmail = localStorage.getItem("adminEmail");
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
     if (!storedAdminEmail) {
       router.push("/admin/login");
     } else {
@@ -52,10 +53,11 @@ export default function AdminDashboard() {
 
   const fetchDeletedCount = async () => {
     try {
-      const res = await fetch(`${API_URL}/deleted-details`, {
-        credentials: "include"
+      const response = await fetch(`${API_URL}/admin/users`, {
+        credentials: "include",
+        headers: { ...getAuthHeaders() }
       });
-      const data = await res.json();
+      const data = await response.json();
       if (data.success) {
         setDeletedCount(data.data.length);
       }

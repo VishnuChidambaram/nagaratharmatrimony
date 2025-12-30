@@ -4,7 +4,9 @@ import { useState, useEffect } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
 import LanguageToggle from "../components/LanguageToggle";
-import { API_URL } from "../utils/config";
+import { API_URL } from "@/app/utils/config";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
+
 import { getPhotoUrl, getPhotoUrls } from "../utils/photoUtils";
 
 
@@ -40,11 +42,12 @@ export default function Dashboard() {
   // New: Poll for notifications
   useEffect(() => {
     const fetchNotifications = async () => {
-      const email = localStorage.getItem("userEmail");
+      const email = sessionStorage.getItem("userEmail");
       if (email) {
         try {
           const res = await fetch(`${API_URL}/api/notifications/${email}`, {
-            credentials: "include"
+            credentials: "include",
+            headers: { ...getAuthHeaders() }
           });
           const data = await res.json();
           if (data.success && data.notifications.length > 0) {
@@ -91,7 +94,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Check if user is logged in
-    const userEmail = localStorage.getItem("userEmail");
+    const userEmail = sessionStorage.getItem("userEmail");
     if (!userEmail) {
       window.location.href = "/login";
       return;
@@ -101,10 +104,18 @@ export default function Dashboard() {
       try {
         // Fetch all details from the database
         const response = await fetch(`${API_URL}/all-details`, {
-          credentials: "include"
+          credentials: "include",
+          headers: { ...getAuthHeaders() }
         });
         const result = await response.json();
         if (result.success) {
+          // Check for session expiry message
+          if (result.message === "Authentication required to view all details") {
+            // Clear local storage and redirect
+            sessionStorage.removeItem("userEmail");
+            window.location.href = "/login";
+            return;
+          }
           setData(result.data);
         } else {
           setError(t("Failed to fetch data"));
@@ -120,7 +131,8 @@ export default function Dashboard() {
     const checkPendingUpdate = async () => {
       try {
         const res = await fetch(`${API_URL}/api/update-requests/user/${userEmail}`, {
-          credentials: "include"
+          credentials: "include",
+          headers: { ...getAuthHeaders() }
         });
         const data = await res.json();
         if (data.success && data.hasPending) {
@@ -167,7 +179,8 @@ export default function Dashboard() {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/${pendingRequestId}`, {
         method: "DELETE",
-        credentials: "include"
+        credentials: "include",
+        headers: { ...getAuthHeaders() }
       });
       const data = await res.json();
 
@@ -201,6 +214,7 @@ export default function Dashboard() {
       const response = await fetch(`${API_URL}/upload-details/${selectedImageOwner.email}`, {
         method: "PUT",
         credentials: "include",
+        headers: { ...getAuthHeaders() }, // Note: FormData sends its own Content-Type, so we don't set it manually, getAuthHeaders only sets custom x-headers
         body: formData,
       });
 
@@ -250,6 +264,7 @@ export default function Dashboard() {
       const response = await fetch(`${API_URL}/upload-details/${selectedImageOwner.email}`, {
         method: "PUT",
         credentials: "include",
+        headers: { ...getAuthHeaders() },
         body: formData,
       });
 
@@ -768,7 +783,7 @@ export default function Dashboard() {
                     }}
                   >
                     {(() => {
-                        const userEmail = localStorage.getItem("userEmail");
+                        const userEmail = sessionStorage.getItem("userEmail");
                         const isOwnCard = userEmail && item.email && userEmail.toLowerCase() === item.email.toLowerCase();
 
                         const allPhotos = getPhotoUrls(item);
@@ -892,7 +907,7 @@ export default function Dashboard() {
                         );
                     })()}
                     <div style={{ flex: 1 }}>
-                    {localStorage.getItem("userEmail") === item.email && (
+                    {sessionStorage.getItem("userEmail") === item.email && (
                       <>
                         <div style={{
                           display: "inline-block",
@@ -1051,7 +1066,7 @@ export default function Dashboard() {
                     >
                       {t("More Detail")}
                     </button>
-                    {(localStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
+                    {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1153,7 +1168,7 @@ export default function Dashboard() {
                               objectFit: "cover",
                               border: "2px solid var(--input-border)",
                               cursor: "pointer",
-                               filter: (selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email?.toLowerCase() !== localStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email)) ? "blur(10px)" : "none"
+                               filter: (selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email?.toLowerCase() !== sessionStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email)) ? "blur(10px)" : "none"
                             }}
                             onClick={() => {
                                  setSelectedImage(imageUrl);
@@ -1823,7 +1838,7 @@ export default function Dashboard() {
                     const allPhotos = getPhotoUrls(selectedUser);
 
                         if (allPhotos.length > 0) {
-                            const userEmail = localStorage.getItem("userEmail");
+                            const userEmail = sessionStorage.getItem("userEmail");
                             // Case insensitive check for ownership
                             const isOwn = userEmail && selectedUser.email && userEmail.toLowerCase() === selectedUser.email.toLowerCase();
                             const isProtected = selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && !isOwn && !unlockedUsers.includes(selectedUser.email);
@@ -1890,7 +1905,7 @@ export default function Dashboard() {
       
         {/* Image Modal - Rendered last to be on top */}
         {selectedImage && (() => {
-            const userEmail = localStorage.getItem("userEmail");
+            const userEmail = sessionStorage.getItem("userEmail");
             const isOwner = selectedImageOwner && userEmail && 
                            (selectedImageOwner.email.toLowerCase() === userEmail.toLowerCase());
             const hasPassword = selectedImageOwner && selectedImageOwner.photoPassword;

@@ -25,7 +25,7 @@ export default function AdminLogin() {
   // Clear admin session when login page loads to force authentication
   useEffect(() => {
     if (typeof window !== "undefined") {
-      localStorage.removeItem("adminEmail");
+      sessionStorage.removeItem("adminEmail");
     }
   }, []);
 
@@ -77,11 +77,13 @@ export default function AdminLogin() {
       }));
       
       if (typeof window !== "undefined") {
-        localStorage.setItem("adminEmail", email);
+        sessionStorage.setItem("adminEmail", email);
+        if (data.sessionId) sessionStorage.setItem("adminSessionId", data.sessionId);
+        
         // Set cookie for middleware
-        document.cookie = `adminEmail=${email}; path=/; max-age=86400; samesite=lax`;
+        document.cookie = `adminEmail=${email}; path=/; samesite=lax`;
       }
-      window.localStorage.setItem("adminEmail", email); 
+      window.sessionStorage.setItem("adminEmail", email); 
 
       setTimeout(() => {
         router.push("/admin/dashboard");

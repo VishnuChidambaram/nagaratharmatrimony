@@ -375,6 +375,10 @@ const UserDetail = sequelize.define(
       allowNull: true,
       comment: 'JSON array of photo paths, max 5 photos',
     },
+    sessionId: {
+      type: Sequelize.STRING(255),
+      allowNull: true,
+    },
     // Step 7 - Partner Preference (13 fields)
     educationQualification1: {
       type: Sequelize.STRING(255),

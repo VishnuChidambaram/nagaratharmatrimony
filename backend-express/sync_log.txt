@@ -1,0 +1,50 @@
+Authenticating...
+Connected to DB.
+Syncing database with alter: true...
+Sync failed: Error
+    at Query.run (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\sequelize\lib\dialects\mysql\query.js:52:25)
+    at C:\Desktop\nagaratharmatrimony\backend-express\node_modules\sequelize\lib\sequelize.js:315:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    at async UserDetail.sync (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\sequelize\lib\model.js:984:11)
+    at async Sequelize.sync (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\sequelize\lib\sequelize.js:377:9)
+    at async syncDB (file:///C:/Desktop/nagaratharmatrimony/backend-express/manual_sync.js:10:5) {
+  name: 'SequelizeDatabaseError',
+  parent: Error: Too many keys specified; max 64 keys allowed
+      at Packet.asError (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\packets\packet.js:740:17)
+      at Query.execute (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\commands\command.js:29:26)
+      at Connection.handlePacket (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:477:34)
+      at PacketParser.onPacket (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:93:12)
+      at PacketParser.executeStart (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\packet_parser.js:75:16)
+      at Socket.<anonymous> (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:100:25)
+      at Socket.emit (node:events:524:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5) {
+    code: 'ER_TOO_MANY_KEYS',
+    errno: 1069,
+    sqlState: '42000',
+    sqlMessage: 'Too many keys specified; max 64 keys allowed',
+    sql: 'ALTER TABLE `userdetails` CHANGE `phone` `phone` VARCHAR(20) UNIQUE;',
+    parameters: undefined
+  },
+  original: Error: Too many keys specified; max 64 keys allowed
+      at Packet.asError (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\packets\packet.js:740:17)
+      at Query.execute (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\commands\command.js:29:26)
+      at Connection.handlePacket (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:477:34)
+      at PacketParser.onPacket (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:93:12)
+      at PacketParser.executeStart (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\packet_parser.js:75:16)
+      at Socket.<anonymous> (C:\Desktop\nagaratharmatrimony\backend-express\node_modules\mysql2\lib\base\connection.js:100:25)
+      at Socket.emit (node:events:524:28)
+      at addChunk (node:internal/streams/readable:561:12)
+      at readableAddChunkPushByteMode (node:internal/streams/readable:512:3)
+      at Readable.push (node:internal/streams/readable:392:5) {
+    code: 'ER_TOO_MANY_KEYS',
+    errno: 1069,
+    sqlState: '42000',
+    sqlMessage: 'Too many keys specified; max 64 keys allowed',
+    sql: 'ALTER TABLE `userdetails` CHANGE `phone` `phone` VARCHAR(20) UNIQUE;',
+    parameters: undefined
+  },
+  sql: 'ALTER TABLE `userdetails` CHANGE `phone` `phone` VARCHAR(20) UNIQUE;',
+  parameters: {}
+}

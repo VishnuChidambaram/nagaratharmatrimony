@@ -4,6 +4,7 @@ import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
 import db from "../models/index.js";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -204,17 +205,33 @@ router.post("/admin/login", async (req, res) => {
       });
     }
 
+    // Generate Session ID
+    const sessionId = crypto.randomUUID();
+    
+    // Update Admin with Session ID
+    await admin.update({ sessionId });
+
     // Set httpOnly cookie with admin email
     res.cookie("adminEmail", admin.email, {
       httpOnly: true,
       secure: true, // Required for cross-site sameSite: none
       sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
-      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      maxAge: 10 * 60 * 1000, // 10 minutes session
+    });
+
+    // Set Admin Session ID cookie
+    res.cookie("adminSessionId", sessionId, {
+      httpOnly: true,
+      secure: true, 
+      sameSite: "none",
+      maxAge: 10 * 60 * 1000, // 10 minutes session
     });
 
     return res.json({
       success: true,
       message: "Admin Login successful",
+      sessionId: sessionId,
+      email: admin.email
     });
   } catch (error) {
     console.error("Admin Login error:", error);
@@ -261,16 +278,44 @@ router.post("/login", async (req, res) => {
     const isMatch = password === user.password;
 
     if (isMatch) {
+      // Check if user is already logged in
+      const { forceLogin } = req.body;
+      
+      if (user.sessionId && !forceLogin) {
+        return res.json({
+          success: false,
+          code: "ALREADY_LOGGED_IN",
+          message: "You are already logged in on another device.",
+        });
+      }
+
+      // Generate Session ID
+      const sessionId = crypto.randomUUID();
+
+      // Update User with Session ID
+      await user.update({ sessionId });
+
       // Set httpOnly cookie with user email
       res.cookie("userEmail", user.email, {
         httpOnly: true,
         secure: true, // Required for cross-site sameSite: none
         sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        maxAge: 10 * 60 * 1000, // 10 minutes session
       });
+
+      // Set Session ID cookie
+      res.cookie("sessionId", sessionId, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: 10 * 60 * 1000, // 10 minutes session
+      });
+
       return res.json({
         success: true,
         message: "Login successful",
+        sessionId: sessionId,
+        email: user.email
       });
     }
 
@@ -288,35 +333,129 @@ router.post("/login", async (req, res) => {
   }
 });
 
-router.get("/check-auth", (req, res) => {
-  const userEmail = req.cookies.userEmail;
-  if (userEmail) {
-    return res.json({
-      success: true,
-      user: { email: userEmail },
-    });
+router.get("/check-auth", async (req, res) => {
+  // Prioritize Headers for Multi-Tab Support
+  let userEmail = req.headers['x-user-email'];
+  let sessionId = req.headers['x-session-id'];
+
+  // Fallback to cookies (legacy/device)
+  if (!userEmail || !sessionId) {
+     userEmail = req.cookies.userEmail;
+     sessionId = req.cookies.sessionId;
   }
+
+  if (userEmail && sessionId) {
+    try {
+      const user = await db.UserDetail.findOne({ where: { email: userEmail } });
+      
+      if (user && user.sessionId === sessionId) {
+        // Refresh cookie maxAge if cookies exist (to keep sliding window alive for cookie-based logic if any)
+        if (req.cookies.userEmail) {
+             res.cookie("userEmail", user.email, { httpOnly: true, secure: true, sameSite: "none", maxAge: 10 * 60 * 1000 });
+             res.cookie("sessionId", sessionId, { httpOnly: true, secure: true, sameSite: "none", maxAge: 10 * 60 * 1000 });
+        }
+
+        return res.json({
+          success: true,
+          user: { email: userEmail },
+        });
+      }
+    } catch (error) {
+      console.error("Check auth error:", error);
+    }
+  }
+
   return res.json({
     success: false,
   });
 });
 
-router.post("/logout", (req, res) => {
+router.post("/logout", async (req, res) => {
+  const userEmail = req.cookies.userEmail;
+
+  if (userEmail) {
+    try {
+      // Clear session in DB
+      await db.UserDetail.update({ sessionId: null }, { where: { email: userEmail } });
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  }
+
   res.clearCookie("userEmail", {
     httpOnly: true,
     secure: true, 
     sameSite: "none",
   });
+
+  res.clearCookie("sessionId", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+  });
+
   res.json({ success: true, message: "Logged out successfully" });
 });
 
-router.post("/admin/logout", (req, res) => {
+router.post("/admin/logout", async (req, res) => {
+  const adminEmail = req.cookies.adminEmail;
+
+  if (adminEmail) {
+    try {
+      await db.AdminLogin.update({ sessionId: null }, { where: { email: adminEmail } });
+    } catch (error) {
+      console.error("Admin logout error:", error);
+    }
+  }
+
   res.clearCookie("adminEmail", {
     httpOnly: true,
     secure: true, 
     sameSite: "none",
   });
+  
+  res.clearCookie("adminSessionId", {
+    httpOnly: true,
+    secure: true, 
+    sameSite: "none",
+  });
+
   res.json({ success: true, message: "Admin logged out successfully" });
+});
+
+router.get("/check-admin-auth", async (req, res) => {
+  // Prioritize Headers
+  let adminEmail = req.headers['x-admin-email'];
+  let adminSessionId = req.headers['x-admin-session-id'];
+
+  if (!adminEmail || !adminSessionId) {
+    adminEmail = req.cookies.adminEmail;
+    adminSessionId = req.cookies.adminSessionId;
+  }
+
+  if (adminEmail && adminSessionId) {
+    try {
+      const admin = await db.AdminLogin.findOne({ where: { email: adminEmail } });
+      
+      if (admin && admin.sessionId === adminSessionId) {
+        // Refresh cookie maxAge
+        if (req.cookies.adminEmail) {
+            res.cookie("adminEmail", admin.email, { httpOnly: true, secure: true, sameSite: "none", maxAge: 10 * 60 * 1000 });
+            res.cookie("adminSessionId", adminSessionId, { httpOnly: true, secure: true, sameSite: "none", maxAge: 10 * 60 * 1000 });
+        }
+        return res.json({
+          success: true,
+          email: adminEmail,
+        });
+      }
+    } catch (error) {
+      console.error("Check admin auth error:", error);
+    }
+  }
+
+  return res.json({
+    success: false,
+  });
 });
 
 router.post("/check-user-exists", async (req, res) => {

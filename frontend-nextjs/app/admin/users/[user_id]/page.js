@@ -253,7 +253,7 @@ export default function UserDetail() {
   const [editFormData, setEditFormData] = useState({});
 
   useEffect(() => {
-    const storedAdminEmail = localStorage.getItem("adminEmail");
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
     if (!storedAdminEmail) {
       router.push("/admin/login");
     } else if (user_id) {

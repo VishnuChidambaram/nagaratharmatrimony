@@ -8,6 +8,11 @@ router.get("/api/notifications/:email", async (req, res) => {
   try {
     const { email } = req.params;
 
+    // Strict Auth Check
+    if (!req.user || req.user.email !== email) {
+        return res.status(401).json({ success: false, message: "Unauthorized" });
+    }
+
     const notifications = await db.Notification.findAll({
       where: {
         user_email: email,

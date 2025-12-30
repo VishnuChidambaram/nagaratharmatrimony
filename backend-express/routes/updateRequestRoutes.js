@@ -15,6 +15,11 @@ router.post("/api/update-requests", async (req, res) => {
       });
     }
 
+    // Strict Auth Check
+    if (!req.user || req.user.email !== user_email) {
+        return res.status(401).json({ success: false, message: "Unauthorized request" });
+    }
+
     // Fetch current user data as original_data
     const currentUser = await db.UserDetail.findOne({
       where: { email: user_email },

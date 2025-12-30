@@ -87,7 +87,12 @@ app.use("/uploads", (req, res, next) => {
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 
+import { sessionAuthMiddleware } from "./middleware/authMiddleware.js";
+
 // Routes
+// Apply Middleware to extract user info from Headers/Cookies
+app.use(sessionAuthMiddleware);
+
 app.use("/", authRoutes);
 app.use("/", userRoutes);
 app.use("/", updateRequestRoutes);
@@ -104,7 +109,7 @@ async function initDB(retries = 5) {
       console.log("Connected to MySQL database successfully");
 
       // Sync the model with the database
-      await db.sequelize.sync();
+      await db.sequelize.sync({ alter: true });
       return; // Success
     } catch (error) {
       console.error("Database connection attempt failed:", error.message);

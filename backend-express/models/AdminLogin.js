@@ -27,6 +27,10 @@ const AdminLogin = sequelize.define(
       defaultValue: Sequelize.NOW,
       onUpdate: Sequelize.NOW,
     },
+    sessionId: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   },
   {
     tableName: "admin_login",

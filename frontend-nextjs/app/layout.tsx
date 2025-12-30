@@ -128,7 +128,9 @@ function PreventInspect() {
 }
 
 import { API_URL } from "@/app/utils/config";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
 import { clearFormData } from "@/app/register/styles";
+import SessionMonitor from "./components/SessionMonitor";
 
 export default function RootLayout({
   children,
@@ -190,7 +192,7 @@ export default function RootLayout({
       }
 
       // Check for saved user email
-      const savedEmail = localStorage.getItem("userEmail");
+      const savedEmail = sessionStorage.getItem("userEmail");
       if (savedEmail) {
         setUserEmail(savedEmail);
       }
@@ -292,8 +294,10 @@ export default function RootLayout({
       }
 
       // Check for pending updates
+      const headers = getAuthHeaders() as any; 
       const res = await fetch(`${API_URL}/api/update-requests/user/${encodeURIComponent(userEmail)}`, {
-        credentials: "include"
+        credentials: "include",
+        headers: headers
       });
       const data = await res.json();
 
@@ -597,15 +601,17 @@ export default function RootLayout({
                   <button
                     onClick={async () => {
                       try {
+                        const headers = getAuthHeaders() as any;
                         await fetch(`${API_URL}/logout`, {
                           method: "POST",
                           credentials: "include",
+                          headers: headers
                         });
                       } catch (error) {
                         console.error("Logout error:", error);
                       }
                       await clearFormData(); // Clear registration data
-                      localStorage.removeItem("userEmail");
+                      sessionStorage.removeItem("userEmail");
                       // Show toast and wait
                       window.dispatchEvent(new CustomEvent('show-notification', { 
                         detail: { message: 'Logout Successful', type: 'success' } 
@@ -893,6 +899,7 @@ export default function RootLayout({
             }
           `}
         </style>
+        <SessionMonitor />
         </LanguageProvider>
       </body>
     </html>

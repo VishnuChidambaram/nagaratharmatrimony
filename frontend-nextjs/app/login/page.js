@@ -16,16 +16,39 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [showForceLoginModal, setShowForceLoginModal] = useState(false); // New state for popup
   const { language, toggleLanguage } = useLanguage();
 
   const t = language === "en" ? en : ta;
 
-  // Clear user session when login page loads to force authentication
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("userEmail");
-    }
-  }, []);
+  // Check for existing session on load - Auto-login disabled
+  // useEffect(() => {
+  //   const checkSession = async () => {
+  //     try {
+  //       const res = await fetch(`${API_URL}/check-auth`, {
+  //         credentials: "include"
+  //       });
+  //       const data = await res.json();
+  //       if (data.success) {
+  //          // Already logged in - Do not redirect automatically
+  //          // Just ensure localStorage is synced if needed
+  //          if (typeof window !== "undefined") {
+  //            if (data.user && data.user.email) {
+  //               localStorage.setItem("userEmail", data.user.email);
+  //            }
+  //          }
+  //       } else {
+  //          // Not logged in or session invalid
+  //          if (typeof window !== "undefined") {
+  //            localStorage.removeItem("userEmail");
+  //          }
+  //       }
+  //     } catch (e) {
+  //        console.error("Auth check failed", e);
+  //     }
+  //   };
+  //   checkSession();
+  // }, []);
 
 
 
@@ -48,7 +71,7 @@ export default function Login() {
     toggleLanguage(newLang);
   };
 
-  const handleLogin = async () => {
+  const handleLogin = async (forceLogin = false) => {
     if (!email || !password) {
       setError(t.errorMissing);
       window.dispatchEvent(new CustomEvent('show-notification', { 
@@ -73,7 +96,7 @@ export default function Login() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // Important for cookies
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password, forceLogin }),
       });
 
       const data = await res.json();
@@ -85,21 +108,27 @@ export default function Login() {
         }));
         
         if (typeof window !== "undefined") {
-          localStorage.setItem("userEmail", email);
+          sessionStorage.setItem("userEmail", email);
+          if (data.sessionId) sessionStorage.setItem("sessionId", data.sessionId);
+
           // Set cookie for middleware (not httpOnly as it's set by client-side JS)
-          document.cookie = `userEmail=${email}; path=/; max-age=86400; samesite=lax`;
+          document.cookie = `userEmail=${email}; path=/; samesite=lax`;
         }
-        window.localStorage.setItem("userEmail", email);
+        window.sessionStorage.setItem("userEmail", email);
 
         // Wait 2 seconds before redirecting
         setTimeout(() => {
           window.location.href = "/dashboard";
         }, 2000);
       } else {
-        setError(data.message || t.loginFailed);
-        window.dispatchEvent(new CustomEvent('show-notification', { 
-          detail: { message: data.message || t.loginFailed, type: 'error' } 
-        }));
+        if (data.code === "ALREADY_LOGGED_IN") {
+          setShowForceLoginModal(true);
+        } else {
+          setError(data.message || t.loginFailed);
+          window.dispatchEvent(new CustomEvent('show-notification', { 
+            detail: { message: data.message || t.loginFailed, type: 'error' } 
+          }));
+        }
       }
     } catch (err) {
       console.error("Login error:", err);
@@ -163,6 +192,69 @@ export default function Login() {
             style={{ ...styles.container, position: "relative" }}
             className="login-container"
           >
+            {/* Force Login Modal */}
+            {showForceLoginModal && (
+              <div style={{
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                background: 'rgba(0,0,0,0.5)',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                zIndex: 2000
+              }}>
+                <div style={{
+                  background: 'var(--card-bg)',
+                  padding: '20px',
+                  borderRadius: '10px',
+                  maxWidth: '300px',
+                  textAlign: 'center',
+                  boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+                }}>
+                  <h3 style={{ marginTop: 0, color: 'var(--card-text)' }}>{language === 'ta' ? 'ஏற்கனவே உள்நுழைந்துள்ளீர்கள்' : 'Already Logged In'}</h3>
+                  <p style={{ color: 'var(--card-text)' }}>
+                    {language === 'ta' 
+                      ? 'நீங்கள் ஏற்கனவே மற்றொரு சாதனத்தில் உள்நுழைந்துள்ளீர்கள். இங்கே உள்நுழைய விரும்புகிறீர்களா? (இது முந்தைய அமர்வை வெளியேற்றும்)' 
+                      : 'You are already logged in on another device. Do you want to continue here? (This will log out the other session)'}
+                  </p>
+                  <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
+                    <button
+                      onClick={() => setShowForceLoginModal(false)}
+                      style={{
+                        padding: '8px 16px',
+                        background: '#ccc',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {language === 'ta' ? 'இல்லை' : 'No'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowForceLoginModal(false);
+                        handleLogin(true); // Force login
+                      }}
+                      style={{
+                        padding: '8px 16px',
+                        background: 'var(--button-bg)',
+                        color: 'var(--button-text)',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer',
+                        fontWeight: 'bold'
+                      }}
+                    >
+                      {language === 'ta' ? 'ஆம்' : 'Yes'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Language Toggle Icon */}
             <button
               style={styles.languageToggle}

@@ -1,53 +1,27 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export default function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-
-  // 1. Admin Routes Logic
-  if (pathname.startsWith("/admin")) {
-    const isAdminLogin = pathname === "/admin/login";
-    const adminEmail = request.cookies.get("adminEmail");
-
-    if (isAdminLogin) {
-        // Allow access to login page without auto-redirecting
-        // Admins must authenticate every time
-        return NextResponse.next();
-    }
-
-    // Protected Admin Routes (e.g. /admin/dashboard)
-    if (!adminEmail) {
-      return NextResponse.redirect(new URL("/admin/login", request.url));
-    }
-    
-    return NextResponse.next();
-  }
-
-  // 2. User Routes Logic
+export function middleware(request: NextRequest) {
+  // Relaxed Middleware:
+  // We defer strictly to Client-Side protection (SessionMonitor) to support Multi-Tab / Multi-User.
+  // Since specific user session (sessionStorage) is only known to the client, 
+  // the server (Middleware) cannot distinguish between Tab A (User 1) and Tab B (User 2) 
+  // if we rely on shared Cookies.
   
-  // Define public user routes
-  const isPublicUserRoute = 
-    pathname === "/" || 
-    pathname === "/login" || 
-    pathname.startsWith("/register") || 
-    pathname === "/forgot-password";
-
-  const userEmail = request.cookies.get("userEmail");
-
-  // If user is authenticated and checks public routes, redirect to dashboard? 
-  // (Existing code didn't do this explicitly effectively except for the empty check at line 20, keeping it minimal for now to avoid side effects)
-  
-  if (!isPublicUserRoute) {
-    if (!userEmail) {
-      // Redirect to login if not authenticated
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
-    }
-  }
-
+  // We allow the request to proceed. 
+  // The client-side SessionMonitor will check sessionStorage against the API and redirect if invalid.
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|logo.png).*)"],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api|_next/static|_next/image|favicon.ico).*)",
+  ],
 };

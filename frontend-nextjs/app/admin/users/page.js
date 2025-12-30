@@ -60,7 +60,7 @@ export default function UsersList() {
   };
 
   useEffect(() => {
-    const storedAdminEmail = localStorage.getItem("adminEmail");
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
     if (!storedAdminEmail) {
       router.push("/admin/login");
     } else {
