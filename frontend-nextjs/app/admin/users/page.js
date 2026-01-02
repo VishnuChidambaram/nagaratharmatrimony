@@ -138,8 +138,7 @@ export default function UsersList() {
     <div className={styles.container}>
       {/* Fixed Sticky Header */}
       <div className={styles.header}>
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <AdminMenu />
+        <div style={{ display: "flex", alignItems: "center" }}>
             <h1 className={styles.headerTitle}>
             {t("Registered Users")}
             </h1>
@@ -186,6 +185,7 @@ export default function UsersList() {
                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
              </svg>
           </div>
+          <AdminMenu />
         </div>
       </div>
 

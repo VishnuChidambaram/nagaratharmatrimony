@@ -550,11 +550,8 @@ export default function ReviewRequest() {
         paddingBottom: "10px", 
         borderBottom: "1px solid var(--input-border)" 
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <AdminMenu />
-          <h1 style={{ margin: 0, fontSize: "24px", color: "var(--page-text)" }}>{t("Request Details")}</h1>
-        </div>
-
+        <h1 style={{ margin: 0, fontSize: "24px", color: "var(--page-text)" }}>{t("Request Details")}</h1>
+        <AdminMenu />
       </div>
 
       {/* Confirmation Popup */}

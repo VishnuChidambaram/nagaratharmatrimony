@@ -330,8 +330,7 @@ export default function UserDetail() {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <div style={{display: "flex", alignItems: "center", gap: "15px"}}>
-            <AdminMenu />
+        <div style={{display: "flex", alignItems: "center"}}>
             <h1 className={styles.headerTitle}>
             {t("User Details", language)}
             </h1>
@@ -360,6 +359,7 @@ export default function UserDetail() {
              >
                  ← {t("Back to List", language)}
              </button>
+             <AdminMenu />
         </div>
       </div>
 

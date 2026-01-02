@@ -65,7 +65,6 @@ export default function ApprovalRequests() {
         borderBottom: "1px solid var(--input-border)" 
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: "15px" }}>
-          <AdminMenu />
           <h1 style={{ margin: 0, fontSize: "24px", color: "var(--page-text)" }}>{t("Pending Update Requests")}</h1>
         </div>
         {/* Actions: Go to Dashboard + Language Toggle */}
@@ -85,6 +84,7 @@ export default function ApprovalRequests() {
             {t("Go to Dashboard")}
           </button>
           <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
+          <AdminMenu />
         </div>
       </div>
 

@@ -102,7 +102,6 @@ export default function DeletedRows() {
     <div className={styles.container}>
       <div className={styles.header}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <AdminMenu />
           <h1 className={styles.headerTitle}>{t("Deleted Rows")}</h1>
         </div>
         {/* Actions: Go to Dashboard + Language Toggle */}
@@ -122,6 +121,7 @@ export default function DeletedRows() {
             {t("Go to Dashboard")}
           </button>
           <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
+          <AdminMenu />
         </div>
       </div>
 

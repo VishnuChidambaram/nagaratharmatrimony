@@ -75,12 +75,10 @@ export default function AdminDashboard() {
     <div className={styles.container}>
       {/* Fixed Sticky Header */}
       <div className={styles.header}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-          <AdminMenu />
           <h1 className={styles.headerTitle}>
             {t("Admin Dashboard")}
           </h1>
-       </div>
+          <AdminMenu />
        </div>
 
       {/* Content Area */}
