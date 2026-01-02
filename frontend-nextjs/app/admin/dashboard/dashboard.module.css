@@ -277,11 +277,18 @@
     width: 100%;
     align-items: center;
     gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping */
   }
 
+  /* Reorder AdminMenu to appear before search bar if desired, or just let search bar take full width at the end */
+  /* Assuming DOM order: Lang, Button, Search, AdminMenu */
+  /* We want: Lang, Button, AdminMenu
+              Search */
+
   .searchContainer {
-    flex: 1;
-    width: auto;
+    width: 100%;
+    order: 3; /* Force it to the end or specific position */
+    margin-top: 5px;
   }
 
   .searchInput {
