@@ -466,6 +466,54 @@ export default function RootLayout({
                   </div>
                 </div>
               )}
+            {/* Logout Button - Only show if not on login, register, or forgot-password pages */}
+            {pathname !== "/" &&
+              pathname !== "/login" &&
+              pathname !== "/register" &&
+              pathname !== "/forgot-password" && (
+                <div
+                  style={{
+                    padding: "10px",
+                    borderTop: "1px solid var(--menu-border)",
+                  }}
+                >
+                  <button
+                    onClick={async () => {
+                      try {
+                        const headers = getAuthHeaders() as any;
+                        await fetch(`${API_URL}/logout`, {
+                          method: "POST",
+                          credentials: "include",
+                          headers: headers
+                        });
+                      } catch (error) {
+                        console.error("Logout error:", error);
+                      }
+                      await clearFormData(); // Clear registration data
+                      sessionStorage.removeItem("userEmail");
+                      // Show toast and wait
+                      window.dispatchEvent(new CustomEvent('show-notification', { 
+                        detail: { message: 'Logout Successful', type: 'success' } 
+                      }));
+                      setTimeout(() => {
+                        window.location.href = "/login";
+                      }, 2000);
+                    }}
+                    style={{
+                      width: "100%",
+                      padding: "8px 12px",
+                      background: "#f44336",
+                      color: "white",
+                      border: "none",
+                      borderRadius: "4px",
+                      cursor: "pointer",
+                      fontSize: "14px",
+                    }}
+                  >
+                    <T>Logout</T>
+                  </button>
+                </div>
+              )}
             {/* Menu Options - Show on dashboard and editdetail pages */}
             {(pathname === "/dashboard" || pathname.startsWith("/editdetail")) && (
               <div
@@ -586,54 +634,7 @@ export default function RootLayout({
                 </button>
               </div>
             </div>
-            {/* Logout Button - Only show if not on login, register, or forgot-password pages */}
-            {pathname !== "/" &&
-              pathname !== "/login" &&
-              pathname !== "/register" &&
-              pathname !== "/forgot-password" && (
-                <div
-                  style={{
-                    padding: "10px",
-                    borderTop: "1px solid var(--menu-border)",
-                  }}
-                >
-                  <button
-                    onClick={async () => {
-                      try {
-                        const headers = getAuthHeaders() as any;
-                        await fetch(`${API_URL}/logout`, {
-                          method: "POST",
-                          credentials: "include",
-                          headers: headers
-                        });
-                      } catch (error) {
-                        console.error("Logout error:", error);
-                      }
-                      await clearFormData(); // Clear registration data
-                      sessionStorage.removeItem("userEmail");
-                      // Show toast and wait
-                      window.dispatchEvent(new CustomEvent('show-notification', { 
-                        detail: { message: 'Logout Successful', type: 'success' } 
-                      }));
-                      setTimeout(() => {
-                        window.location.href = "/login";
-                      }, 2000);
-                    }}
-                    style={{
-                      width: "100%",
-                      padding: "8px 12px",
-                      background: "#f44336",
-                      color: "white",
-                      border: "none",
-                      borderRadius: "4px",
-                      cursor: "pointer",
-                      fontSize: "14px",
-                    }}
-                  >
-                    <T>Logout</T>
-                  </button>
-                </div>
-              )}
+
           </div>
         )}
 
