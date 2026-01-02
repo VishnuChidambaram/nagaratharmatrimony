@@ -351,6 +351,36 @@ export default function RootLayout({
             boxSizing: "border-box",
           }}
         >
+          {/* Title and Search */}
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
+            }}
+          >
+            <img 
+              src="/logo.png" 
+              alt="Logo" 
+              style={{ 
+                height: "40px", 
+                width: "40px", 
+                borderRadius: "50%",
+                objectFit: "cover" 
+              }} 
+            />
+            <div
+              className="header-title"
+              style={{
+                fontSize: "26px",
+                fontWeight: "bold",
+                color: "var(--header-text)",
+              }}
+            >
+              <>Nagarathar Matrimony</>
+            </div>
+          </div>
+
           {/* Menu Button - Hide on login, register, and forgot-password pages */}
           {pathname !== "/login" &&
           pathname !== "/admin/login" &&
@@ -381,37 +411,6 @@ export default function RootLayout({
               </button>
 
             )}
-          {/* Title and Search */}
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-            }}
-          >
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              style={{ 
-                height: "40px", 
-                width: "40px", 
-                borderRadius: "50%",
-                objectFit: "cover" 
-              }} 
-            />
-            <div
-              className="header-title"
-              style={{
-                fontSize: "26px",
-                fontWeight: "bold",
-                color: "var(--header-text)",
-              }}
-            >
-              <>Nagarathar Matrimony</>
-            </div>
-          </div>
-          {/* Placeholder for right side if needed */}
-          <div style={{ width: "40px" }}></div>
         </header>
 
         {/* Menu Dropdown */}
@@ -434,7 +433,7 @@ export default function RootLayout({
             style={{
               position: "fixed",
               top: "60px",
-              left: "15px",
+              right: "15px",
               background: "var(--menu-bg)",
               border: "1px solid var(--menu-border)",
               borderRadius: "8px",
