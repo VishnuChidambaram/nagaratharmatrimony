@@ -182,13 +182,29 @@ export default function AdminMenu() {
             onMouseLeave={handleMouseLeave}
           >
             {/* Admin Profile Section */}
-            <div style={{ marginTop: "40px", marginBottom: "30px" }}>
+            <div style={{ marginTop: "80px", marginBottom: "30px" }}>
               <h3 style={{ fontSize: "18px", fontWeight: "bold", marginBottom: "15px", color: "var(--page-text)" }}>
                 {t("Admin Profile", language)}
               </h3>
-              <div style={{ color: "var(--card-text)", fontSize: "14px" }}>
+              <div style={{ color: "var(--card-text)", fontSize: "14px", marginBottom: "15px" }}>
                 {adminEmail}
               </div>
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: "100%",
+                  padding: "6px",
+                  backgroundColor: "#dc3545",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "16px",
+                }}
+              >
+                {t("Logout", language)}
+              </button>
             </div>
 
             {/* Language Section inside menu */}
@@ -201,7 +217,7 @@ export default function AdminMenu() {
                   onClick={() => toggleLanguage("en")}
                   style={{
                     flex: 1,
-                    padding: "12px",
+                    padding: "6px",
                     backgroundColor: language === "en" ? "#007bff" : "#e9ecef",
                     color: language === "en" ? "white" : "#333",
                     border: "none",
@@ -217,7 +233,7 @@ export default function AdminMenu() {
                   onClick={() => toggleLanguage("ta")}
                   style={{
                     flex: 1,
-                    padding: "12px",
+                    padding: "6px",
                     backgroundColor: language === "ta" ? "#007bff" : "#e9ecef",
                     color: language === "ta" ? "white" : "#333",
                     border: "none",
@@ -242,7 +258,7 @@ export default function AdminMenu() {
                   onClick={() => toggleTheme("light")}
                   style={{
                     flex: 1,
-                    padding: "12px",
+                    padding: "6px",
                     backgroundColor: theme === "light" ? "#007bff" : "#e9ecef",
                     color: theme === "light" ? "white" : "#333",
                     border: "none",
@@ -258,7 +274,7 @@ export default function AdminMenu() {
                   onClick={() => toggleTheme("dark")}
                   style={{
                     flex: 1,
-                    padding: "12px",
+                    padding: "6px",
                     backgroundColor: theme === "dark" ? "#007bff" : "#e9ecef",
                     color: theme === "dark" ? "white" : "#333",
                     border: "none",
@@ -281,9 +297,9 @@ export default function AdminMenu() {
               }}
               style={{
                 width: "100%",
-                padding: "12px",
+                padding: "6px",
                 marginBottom: "15px",
-                backgroundColor: "#17a2b8", // Info/Dashboard color
+                backgroundColor: "#17a2b8",
                 color: "white",
                 border: "none",
                 borderRadius: "8px",
@@ -303,7 +319,7 @@ export default function AdminMenu() {
               }}
               style={{
                 width: "100%",
-                padding: "12px",
+                padding: "6px",
                 marginBottom: "15px",
                 backgroundColor: "#28a745", // Green for approvals
                 color: "white",
@@ -325,7 +341,7 @@ export default function AdminMenu() {
               }}
               style={{
                 width: "100%",
-                padding: "12px",
+                padding: "8px",
                 marginBottom: "15px",
                 backgroundColor: "#ffc107", // Warning color
                 color: "#000",
@@ -339,23 +355,7 @@ export default function AdminMenu() {
               {t("Deleted Rows", language)}
             </button>
 
-            {/* Logout Button */}
-            <button
-              onClick={handleLogout}
-              style={{
-                width: "100%",
-                padding: "12px",
-                backgroundColor: "#dc3545",
-                color: "white",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-                fontWeight: "bold",
-                fontSize: "16px",
-              }}
-            >
-              {t("Logout", language)}
-            </button>
+
           </div>
         </>
       )}
