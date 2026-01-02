@@ -146,18 +146,22 @@ export default function UsersList() {
         
         <div className={styles.headerActions}>
            {/* Language Toggle */}
-           <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
+           <div className={styles.langWrapper}>
+             <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
+           </div>
+           
            <button 
               onClick={() => router.push("/admin/dashboard")}
-              className={`${styles.btn} ${styles.btnRestore}`}
+              className={`${styles.btn} ${styles.btnRestore} ${styles.dashboardBtn}`}
               style={{ 
-                  marginRight: "10px",
+                  marginRight: "0px", // Removed margin as grid gap handles it
                   color: "white",
                   whiteSpace: "nowrap"
                }}
            >
               {t("Go to Dashboard")}
            </button>
+
           {/* Search Bar */}
           <div className={styles.searchContainer}>
              <input 
@@ -185,7 +189,10 @@ export default function UsersList() {
                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
              </svg>
           </div>
-          <AdminMenu />
+          
+          <div className={styles.menuWrapper}>
+             <AdminMenu />
+          </div>
         </div>
       </div>
 

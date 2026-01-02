@@ -263,32 +263,47 @@
 /* --- Mobile Responsive Styles --- */
 @media (max-width: 768px) {
   .header {
-    flex-direction: row; /* Changed from column to row */
-    align-items: center;
-    justify-content: space-between;
-    gap: 15px;
+    flex-direction: column; /* Stack Title and Actions */
+    align-items: stretch; /* Stretch to fill width */
+    justify-content: flex-start;
+    gap: 10px;
     padding: 15px;
     height: auto;
     position: relative;
   }
 
   .headerActions {
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+      "search search"
+      "lang spacer";
     width: 100%;
     align-items: center;
-    gap: 10px;
-    flex-wrap: wrap; /* Allow wrapping */
+    gap: 15px; 
   }
 
-  /* Reorder AdminMenu to appear before search bar if desired, or just let search bar take full width at the end */
-  /* Assuming DOM order: Lang, Button, Search, AdminMenu */
-  /* We want: Lang, Button, AdminMenu
-              Search */
-
+  /* Grid Area Assignments */
+  .langWrapper {
+    grid-area: lang;
+  }
+  
+  /* Move menu to absolute position top right */
+  .menuWrapper {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 10;
+  }
+  
   .searchContainer {
+    grid-area: search;
     width: 100%;
-    order: 3; /* Force it to the end or specific position */
-    margin-top: 5px;
+    margin-top: 5px; 
+  }
+
+  .dashboardBtn {
+    display: none; 
   }
 
   .searchInput {
