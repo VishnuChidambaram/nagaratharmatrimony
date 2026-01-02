@@ -9,6 +9,7 @@ import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
 import "./../editdetail.css";
 
 export default function EditStep8() {
@@ -207,7 +208,10 @@ export default function EditStep8() {
       // Create update request
       const res = await fetch(`${API_URL}/api/update-requests`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...getAuthHeaders()
+        },
         body: JSON.stringify({
           user_email: originalEmail,
           new_data: submitData,
