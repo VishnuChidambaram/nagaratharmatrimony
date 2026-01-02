@@ -131,6 +131,7 @@ import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 import { clearFormData } from "@/app/register/styles";
 import SessionMonitor from "./components/SessionMonitor";
+import SessionTimer from "./components/SessionTimer";
 
 export default function RootLayout({
   children,
@@ -477,6 +478,8 @@ export default function RootLayout({
                     borderTop: "1px solid var(--menu-border)",
                   }}
                 >
+                  <SessionTimer type="user" />
+                  
                   <button
                     onClick={async () => {
                       try {

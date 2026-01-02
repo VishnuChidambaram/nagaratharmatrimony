@@ -7,6 +7,7 @@ import { useLanguage } from "../context/LanguageContext";
 import { t } from "../utils/translations";
 import { API_URL } from "../utils/config";
 import { getAuthHeaders } from "../utils/auth-headers";
+import SessionTimer from "../components/SessionTimer";
 
 export default function AdminMenu() {
   const router = useRouter();
@@ -189,6 +190,9 @@ export default function AdminMenu() {
               <div style={{ color: "var(--card-text)", fontSize: "14px", marginBottom: "15px" }}>
                 {adminEmail}
               </div>
+              
+              <SessionTimer type="admin" />
+
               <button
                 onClick={handleLogout}
                 style={{

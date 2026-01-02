@@ -7,6 +7,7 @@ import db from "../models/index.js";
 import crypto from "crypto";
 
 const router = express.Router();
+const SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
 
 // Email bridge function to bypass Render SMTP block
 async function sendEmailViaBridge(to, subject, text) {
@@ -231,7 +232,8 @@ router.post("/admin/login", async (req, res) => {
       success: true,
       message: "Admin Login successful",
       sessionId: sessionId,
-      email: admin.email
+      email: admin.email,
+      expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
     });
   } catch (error) {
     console.error("Admin Login error:", error);
@@ -315,7 +317,8 @@ router.post("/login", async (req, res) => {
         success: true,
         message: "Login successful",
         sessionId: sessionId,
-        email: user.email
+        email: user.email,
+        expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
       });
     }
 
@@ -358,6 +361,7 @@ router.get("/check-auth", async (req, res) => {
         return res.json({
           success: true,
           user: { email: userEmail },
+          expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
         });
       }
     } catch (error) {
@@ -446,6 +450,7 @@ router.get("/check-admin-auth", async (req, res) => {
         return res.json({
           success: true,
           email: adminEmail,
+          expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
         });
       }
     } catch (error) {

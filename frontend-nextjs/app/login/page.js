@@ -110,6 +110,7 @@ export default function Login() {
         if (typeof window !== "undefined") {
           sessionStorage.setItem("userEmail", email);
           if (data.sessionId) sessionStorage.setItem("sessionId", data.sessionId);
+          if (data.expiresAt) sessionStorage.setItem("sessionExpiresAt", data.expiresAt);
 
           // Set cookie for middleware (not httpOnly as it's set by client-side JS)
           document.cookie = `userEmail=${email}; path=/; samesite=lax`;

@@ -79,6 +79,7 @@ export default function AdminLogin() {
       if (typeof window !== "undefined") {
         sessionStorage.setItem("adminEmail", email);
         if (data.sessionId) sessionStorage.setItem("adminSessionId", data.sessionId);
+        if (data.expiresAt) sessionStorage.setItem("adminSessionExpiresAt", data.expiresAt);
         
         // Set cookie for middleware
         document.cookie = `adminEmail=${email}; path=/; samesite=lax`;
