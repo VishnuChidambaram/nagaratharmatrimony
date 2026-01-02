@@ -14,7 +14,6 @@ import userRoutes from "./routes/userRoutes.js";
 import updateRequestRoutes from "./routes/updateRequestRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
-import migrationRoutes from "./routes/migrationRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -99,7 +98,6 @@ app.use("/", userRoutes);
 app.use("/", updateRequestRoutes);
 app.use("/", notificationRoutes);
 app.use("/", uploadRoutes);
-app.use("/", migrationRoutes);
 
 async function initDB(retries = 5) {
   while (retries > 0) {
@@ -111,7 +109,8 @@ async function initDB(retries = 5) {
       console.log("Connected to MySQL database successfully");
 
       // Sync the model with the database
-      await db.sequelize.sync({ alter: true });
+      // alter: true removed to prevent startup crashes on production
+      await db.sequelize.sync(); 
       return; // Success
     } catch (error) {
       console.error("Database connection attempt failed:", error.message);
