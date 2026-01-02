@@ -493,21 +493,7 @@ export default function ReviewRequest() {
         .step-label-mobile {
           display: block !important;
         }
-          /* Action Buttons Mobile Responsiveness */
-          .action-buttons-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-          }
-          
-          .action-button {
-             padding: 12px 30px;
-             font-size: 16px;
-          }
-
-          @media (max-width: 768px) {
+          @media (max-width: 640px) {
             .action-buttons-container {
               flex-wrap: nowrap !important;
               justify-content: space-between !important;
@@ -515,8 +501,8 @@ export default function ReviewRequest() {
             }
             .action-button {
               flex: 1;
-              padding: 10px 5px !important; /* Reduce padding */
-              font-size: 14px !important; /* Reduce font size */
+              padding: 10px 5px !important;
+              font-size: 14px !important;
               white-space: nowrap;
               width: 100%;
               display: flex;
@@ -568,9 +554,7 @@ export default function ReviewRequest() {
         background-color: var(--background) !important;
         color: var(--card-text) !important;
       }
-      .action-buttons-container {
-         display: flex;
-      }
+
 
     `}</style>
     <div style={{ padding: "20px", minHeight: "100vh", backgroundColor: "var(--background)" }}>
@@ -1027,12 +1011,21 @@ export default function ReviewRequest() {
       </p>
 
       {/* Action Buttons */}
-      <div className="action-buttons-container">
+      {/* Action Buttons */}
+      <div className="action-buttons-container" style={{ 
+        display: "flex", 
+        gap: "15px", 
+        marginBottom: "30px",
+        flexWrap: "wrap",
+        justifyContent: "flex-end"
+      }}>
         <button
           className="action-button"
           onClick={() => setShowConfirmPopup(true)}
           disabled={processing}
           style={{
+            padding: "12px 30px",
+            fontSize: "16px",
             backgroundColor: "#4caf50",
             color: "white",
             border: "none",
@@ -1049,6 +1042,8 @@ export default function ReviewRequest() {
           onClick={handleReject}
           disabled={processing}
           style={{
+            padding: "12px 30px",
+            fontSize: "16px",
             backgroundColor: "#f44336",
             color: "white",
             border: "none",
