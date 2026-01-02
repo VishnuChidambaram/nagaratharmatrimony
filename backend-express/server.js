@@ -14,6 +14,7 @@ import userRoutes from "./routes/userRoutes.js";
 import updateRequestRoutes from "./routes/updateRequestRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import migrationRoutes from "./routes/migrationRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -98,6 +99,7 @@ app.use("/", userRoutes);
 app.use("/", updateRequestRoutes);
 app.use("/", notificationRoutes);
 app.use("/", uploadRoutes);
+app.use("/", migrationRoutes);
 
 async function initDB(retries = 5) {
   while (retries > 0) {
