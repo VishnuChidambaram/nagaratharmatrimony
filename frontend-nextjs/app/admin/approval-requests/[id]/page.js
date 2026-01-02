@@ -493,7 +493,37 @@ export default function ReviewRequest() {
         .step-label-mobile {
           display: block !important;
         }
-      }
+          /* Action Buttons Mobile Responsiveness */
+          .action-buttons-container {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+          }
+          
+          .action-button {
+             padding: 12px 30px;
+             font-size: 16px;
+          }
+
+          @media (max-width: 768px) {
+            .action-buttons-container {
+              flex-wrap: nowrap !important;
+              justify-content: space-between !important;
+              gap: 10px !important;
+            }
+            .action-button {
+              flex: 1;
+              padding: 10px 5px !important; /* Reduce padding */
+              font-size: 14px !important; /* Reduce font size */
+              white-space: nowrap;
+              width: 100%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+            }
+          }
     `}</style>
     <style jsx global>{`
       .step-label-mobile {
@@ -537,6 +567,9 @@ export default function ReviewRequest() {
         font-size: 16px !important;
         background-color: var(--background) !important;
         color: var(--card-text) !important;
+      }
+      .action-buttons-container {
+         display: flex;
       }
 
     `}</style>
@@ -994,23 +1027,16 @@ export default function ReviewRequest() {
       </p>
 
       {/* Action Buttons */}
-      <div style={{ 
-        display: "flex", 
-        gap: "15px", 
-        marginBottom: "30px",
-        flexWrap: "wrap",
-        justifyContent: "flex-end"
-      }}>
+      <div className="action-buttons-container">
         <button
+          className="action-button"
           onClick={() => setShowConfirmPopup(true)}
           disabled={processing}
           style={{
-            padding: "12px 30px",
             backgroundColor: "#4caf50",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            fontSize: "16px",
             fontWeight: "bold",
             cursor: processing ? "not-allowed" : "pointer",
             opacity: processing ? 0.6 : 1
@@ -1019,15 +1045,14 @@ export default function ReviewRequest() {
           {processing ? t("Loading...") : t("Approve Request")}
         </button>
         <button
+          className="action-button"
           onClick={handleReject}
           disabled={processing}
           style={{
-            padding: "12px 30px",
             backgroundColor: "#f44336",
             color: "white",
             border: "none",
             borderRadius: "6px",
-            fontSize: "16px",
             fontWeight: "bold",
             cursor: processing ? "not-allowed" : "pointer",
             opacity: processing ? 0.6 : 1
