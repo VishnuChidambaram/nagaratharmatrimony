@@ -30,7 +30,7 @@ export default function EditStep1() {
       try {
         const emailFromUrl = searchParams.get("email");
         const emailFromStorage = sessionStorage.getItem("userEmail");
-        const lastFetchedEmail = localStorage.getItem("lastFetchedEmail");
+        const lastFetchedEmail = sessionStorage.getItem("lastFetchedEmail");
         const email = emailFromUrl || lastFetchedEmail || emailFromStorage;
 
         if (!email) {
@@ -74,8 +74,8 @@ export default function EditStep1() {
           console.log("Step 1: Loaded fresh data:", userData);
           setForm(userData);
           saveFormData(userData); // Seed LocalStorage
-          localStorage.setItem("lastFetchedEmail", email);
-          localStorage.setItem("originalEmail", userData.email); // Store original email for update URL
+          sessionStorage.setItem("lastFetchedEmail", email);
+          sessionStorage.setItem("originalEmail", userData.email); // Store original email for update URL
         }
 
 

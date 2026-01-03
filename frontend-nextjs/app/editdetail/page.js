@@ -8,7 +8,7 @@ export default function EditIndex() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    localStorage.removeItem("lastFetchedEmail");
+    sessionStorage.removeItem("lastFetchedEmail");
     const email = searchParams.get("email");
     if (email) {
       router.push(`/editdetail/1?email=${encodeURIComponent(email)}`);

@@ -64,7 +64,7 @@ export default function EditStep8() {
       setLoading(false);
 
       // Fetch original data for comparison
-      const email = localStorage.getItem("originalEmail") || localStorage.getItem("lastFetchedEmail") || localData.email;
+      const email = sessionStorage.getItem("originalEmail") || sessionStorage.getItem("lastFetchedEmail") || localData.email;
       if (email) {
           fetch(`${API_URL}/userdetails/${encodeURIComponent(email)}`)
             .then(res => res.json())
@@ -139,7 +139,7 @@ export default function EditStep8() {
 
     try {
       // Use the original email to identify the user
-      const originalEmail = localStorage.getItem("originalEmail") || form.email;
+      const originalEmail = sessionStorage.getItem("originalEmail") || form.email;
       
       // Prepare form data (excluding password fields only)
       const submitData = {};
@@ -226,9 +226,9 @@ export default function EditStep8() {
           detail: { message: msg, type: 'success' } 
         }));
         
-        localStorage.removeItem("lastFetchedEmail");
-        localStorage.removeItem("registerFormData");
-        localStorage.removeItem("originalEmail");
+        sessionStorage.removeItem("lastFetchedEmail");
+        sessionStorage.removeItem("registerFormData");
+        sessionStorage.removeItem("originalEmail");
         
         // Wait 2 seconds
         setTimeout(() => {
