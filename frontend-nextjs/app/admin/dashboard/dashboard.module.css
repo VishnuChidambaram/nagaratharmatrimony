@@ -262,6 +262,10 @@
 
 /* --- Mobile Responsive Styles --- */
 @media (max-width: 768px) {
+  .headerTitle {
+    font-size: 18px;
+  }
+
   .header {
     flex-direction: row; /* Align horizontal */
     align-items: center; 
