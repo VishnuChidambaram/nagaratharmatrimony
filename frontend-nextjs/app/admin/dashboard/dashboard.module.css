@@ -263,11 +263,11 @@
 /* --- Mobile Responsive Styles --- */
 @media (max-width: 768px) {
   .header {
-    flex-direction: column; /* Stack Title and Actions */
-    align-items: stretch; /* Stretch to fill width */
-    justify-content: flex-start;
+    flex-direction: row; /* Align horizontal */
+    align-items: center; 
+    justify-content: space-between;
     gap: 10px;
-    padding: 15px;
+    padding: 10px 15px; /* Adjust padding if needed */
     height: auto;
     position: relative;
   }
