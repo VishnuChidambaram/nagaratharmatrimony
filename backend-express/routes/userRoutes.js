@@ -3,24 +3,12 @@ import multer from "multer";
 import path from "path";
 import bcrypt from "bcrypt";
 import db from "../models/index.js";
+import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 
 const router = express.Router();
 
-// Configure multer for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage: storage });
+// Configure multer for file uploads using Cloudinary
+const upload = multer({ storage: cloudinaryStorage });
 
 router.get("/upload-details", async (req, res) => {
   try {
@@ -221,11 +209,11 @@ router.post(
       // Fix: Store photo in 'photo' field as a JSON stringified array to match model and frontend expectations
       let photoPath = null;
       if (req.files.image) {
-        photoPath = JSON.stringify(["uploads/" + req.files.image[0].filename]);
+        photoPath = JSON.stringify([req.files.image[0].path]);
       }
       
       const pdfPath = req.files.pdf
-        ? "uploads/" + req.files.pdf[0].filename
+        ? req.files.pdf[0].path
         : null;
 
       // Create new user detail entry
@@ -331,7 +319,7 @@ router.put(
 
         // Process all uploaded photos (not just the first one)
         req.files.photo.forEach(file => {
-          const newPhotoPath = "uploads/" + file.filename;
+          const newPhotoPath = file.path;
           currentPhotos.push(newPhotoPath);
         });
         
