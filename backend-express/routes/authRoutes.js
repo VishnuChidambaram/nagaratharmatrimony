@@ -45,7 +45,18 @@ const upload = multer({
   limits: { 
     fileSize: 10 * 1024 * 1024, // 10MB total limit
   },
-});
+  fileFilter: (req, file, cb) => {
+    const filetypes = /jpeg|jpg/;
+    const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = filetypes.test(file.mimetype);
+
+    if (mimetype && extname) {
+      return cb(null, true);
+    } else {
+      cb(new Error("Error: Only .jpg and .jpeg files are allowed!"));
+    }
+  },
+}).fields([{ name: "photo", maxCount: 2 }]);
 
 function generateOtp() {
   return Math.floor(1000 + Math.random() * 9000).toString();
@@ -483,7 +494,19 @@ router.post("/check-user-exists", async (req, res) => {
   }
 });
 
-router.post("/register", upload.fields([{ name: "photo", maxCount: 2 }]), async (req, res) => {
+router.post("/register", (req, res, next) => {
+  upload(req, res, function (err) {
+    if (err instanceof multer.MulterError) {
+      // A Multer error occurred when uploading.
+      return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+    } else if (err) {
+      // An unknown error occurred when uploading.
+      return res.status(400).json({ success: false, message: err.message });
+    }
+    // Everything went fine.
+    next();
+  });
+}, async (req, res) => {
   const data = req.body;
 
   // Helper function to convert empty strings to null for integer fields

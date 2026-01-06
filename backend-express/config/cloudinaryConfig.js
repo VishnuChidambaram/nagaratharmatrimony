@@ -11,7 +11,7 @@ const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
     folder: 'nagaratharmatrimony_uploads', // Folder name in Cloudinary
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'pdf'],
+    allowed_formats: ['jpg', 'jpeg', 'pdf'],
     // transformation: [{ width: 500, height: 500, crop: 'limit' }] // Optional resize
   },
 });

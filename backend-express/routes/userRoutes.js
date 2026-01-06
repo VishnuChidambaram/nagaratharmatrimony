@@ -8,7 +8,28 @@ import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 const router = express.Router();
 
 // Configure multer for file uploads using Cloudinary
-const upload = multer({ storage: cloudinaryStorage });
+const upload = multer({ 
+  storage: cloudinaryStorage,
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === "pdf") {
+      if (file.mimetype === "application/pdf") {
+        cb(null, true);
+      } else {
+        cb(new Error("Error: Only .pdf files are allowed for PDF field!"));
+      }
+    } else {
+      const filetypes = /jpeg|jpg/;
+      const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
+      const mimetype = filetypes.test(file.mimetype);
+
+      if (mimetype && extname) {
+        return cb(null, true);
+      } else {
+        cb(new Error("Error: Only .jpg and .jpeg files are allowed for photos!"));
+      }
+    }
+  }
+});
 
 router.get("/upload-details", async (req, res) => {
   try {
@@ -175,10 +196,19 @@ router.get("/upload-details/:id", async (req, res) => {
 
 router.post(
   "/upload-details",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "pdf", maxCount: 1 },
-  ]),
+  (req, res, next) => {
+    upload.fields([
+      { name: "image", maxCount: 1 },
+      { name: "pdf", maxCount: 1 },
+    ])(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+      next();
+    });
+  },
   async (req, res) => {
     const { name, phoneNumber, description, email } = req.body;
 
@@ -244,7 +274,16 @@ router.post(
 
 router.put(
   "/upload-details/:email",
-  upload.fields([{ name: "photo", maxCount: 5 }]),
+  (req, res, next) => {
+    upload.fields([{ name: "photo", maxCount: 5 }])(req, res, function (err) {
+      if (err instanceof multer.MulterError) {
+        return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
+      } else if (err) {
+        return res.status(400).json({ success: false, message: err.message });
+      }
+      next();
+    });
+  },
   async (req, res) => {
     const { email } = req.params;
     const data = req.body;

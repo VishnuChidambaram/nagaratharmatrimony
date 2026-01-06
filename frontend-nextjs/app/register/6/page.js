@@ -959,10 +959,15 @@ export default function Step6() {
       return;
     }
 
-    // Validate each file is an image
-    const invalidFiles = files.filter(file => !file.type.startsWith("image/"));
+    // Validate each file is a JPG/JPEG image
+    const invalidFiles = files.filter(file => {
+      const isJPG = file.type === "image/jpeg" || file.type === "image/jpg";
+      const hasJPGExt = file.name.toLowerCase().endsWith(".jpg") || file.name.toLowerCase().endsWith(".jpeg");
+      return !(isJPG || hasJPGExt);
+    });
+    
     if (invalidFiles.length > 0) {
-      setError("Please select only image files.");
+      setError("Please select only .jpg or .jpeg image files.");
       setTimeout(() => setError(""), 4000);
       e.target.value = "";
       return;
@@ -1261,7 +1266,7 @@ export default function Step6() {
             style={styles.input}
             name="photos"
             onChange={handleFileChange}
-            accept="image/*"
+            accept=".jpg,.jpeg"
             multiple
           />
            <label style={{ marginLeft: "20px" }}>
