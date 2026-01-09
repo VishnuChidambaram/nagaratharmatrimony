@@ -1034,6 +1034,7 @@ export default function Dashboard() {
                         flexDirection: "column",
                         transition: "transform 0.2s, box-shadow 0.2s",
                         cursor: "pointer",
+                        margin: "15px",
                       }}
                     >
                       {/* Header with Image and Basic Info */}
