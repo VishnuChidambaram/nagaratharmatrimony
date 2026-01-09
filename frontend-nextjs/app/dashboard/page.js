@@ -181,7 +181,7 @@ export default function Dashboard() {
     );
   });
 
-  const currentUserEmail = sessionStorage.getItem("userEmail")?.toLowerCase();
+  const currentUserEmail = typeof window !== 'undefined' ? sessionStorage.getItem("userEmail")?.toLowerCase() : null;
   
   const personalData = data.filter(item => item.email?.toLowerCase() === currentUserEmail);
   const otherData = data.filter(item => item.email?.toLowerCase() !== currentUserEmail);
