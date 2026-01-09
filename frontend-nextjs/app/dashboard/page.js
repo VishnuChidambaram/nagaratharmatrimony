@@ -28,6 +28,8 @@ export default function Dashboard() {
   const [pendingRequestId, setPendingRequestId] = useState(null);
   const [isPrivacyMode, setIsPrivacyMode] = useState(false); // New: Track if modal is in privacy mode
   const [showPrivacyConfirm, setShowPrivacyConfirm] = useState(false); // New: Confirm privacy toggle off
+  const [view, setView] = useState("dashboard"); // dashboard, personal, other, search
+  const [searchField, setSearchField] = useState(""); // selected field for search
 
   const { language, toggleLanguage } = useLanguage();
 
@@ -156,7 +158,14 @@ export default function Dashboard() {
   }, []);
 
   const filteredData = data.filter((item) => {
+    if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
+    
+    if (searchField) {
+      const value = item[searchField];
+      return value && value.toString().toLowerCase().includes(term);
+    }
+
     return (
       (item.name && item.name.toLowerCase().includes(term)) ||
       (item.email && item.email.toLowerCase().includes(term)) ||
@@ -171,6 +180,11 @@ export default function Dashboard() {
       (item.pdfPath && item.pdfPath.toLowerCase().includes(term))
     );
   });
+
+  const currentUserEmail = sessionStorage.getItem("userEmail")?.toLowerCase();
+  
+  const personalData = data.filter(item => item.email?.toLowerCase() === currentUserEmail);
+  const otherData = data.filter(item => item.email?.toLowerCase() !== currentUserEmail);
 
 
   const handleCancelUpdate = async () => {
@@ -307,8 +321,14 @@ export default function Dashboard() {
         display: "flex",
         flexDirection: "column",
         background: "var(--page-bg)",
+        backgroundImage: `
+          radial-gradient(at 0% 0%, hsla(145, 63%, 42%, 0.05) 0, transparent 50%),
+          radial-gradient(at 100% 0%, hsla(150, 60%, 50%, 0.05) 0, transparent 50%),
+          radial-gradient(at 100% 100%, hsla(160, 50%, 45%, 0.05) 0, transparent 50%),
+          radial-gradient(at 0% 100%, hsla(140, 55%, 40%, 0.05) 0, transparent 50%)
+        `,
         color: "var(--page-text)",
-        fontFamily: '"Arial", sans-serif',
+        fontFamily: '"Outfit", "Inter", sans-serif',
       }}
     >
       {/* Language Toggle */}
@@ -420,8 +440,14 @@ export default function Dashboard() {
           overflow: auto;
           scrollbar-width: none; /* Firefox */
           -ms-overflow-style: none; /* IE and Edge */
-          max-height: calc(100vh - 80px); /* Fixed height for scrolling */
-          padding-bottom: 10px;
+          max-height: calc(100vh - 60px); /* Adjusted for 60px header */
+          padding-bottom: 5px;
+        }
+        
+        @media (min-width: 1025px) {
+          .no-scroll-desktop {
+            overflow: hidden !important;
+          }
         }
         .scrollable-content::-webkit-scrollbar {
           display: none; /* Chrome, Safari, and Opera */
@@ -487,6 +513,84 @@ export default function Dashboard() {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 10px;
+        }
+
+
+        /* Hover highlights for cards */
+        .dashboard-card, .user-card {
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+          backdrop-filter: blur(10px) !important;
+          -webkit-backdrop-filter: blur(10px) !important;
+          background: rgba(var(--card-bg-rgb), 0.7) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          animation: cardFadeIn 0.6s ease-out backwards;
+          min-height: 300px; /* Further increased height for desktop */
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+        }
+
+        .dashboard-card:hover, .user-card:hover {
+          border-color: #28a745 !important;
+          box-shadow: 0 20px 40px rgba(40, 167, 69, 0.15), 0 0 20px rgba(40, 167, 69, 0.05) !important;
+          transform: translateY(-8px) scale(1.02) !important;
+          background-color: rgba(40, 167, 69, 0.05) !important;
+        }
+
+        .dashboard-card:active, .user-card:active {
+          transform: translateY(-2px) scale(0.98) !important;
+          box-shadow: 0 5px 15px rgba(40, 167, 69, 0.1) !important;
+        }
+        
+        @keyframes cardFadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
+        .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
+        .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
+        .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
+
+        /* Default (Desktop) Main Grid */
+        .main-dashboard-grid {
+          display: grid !important;
+          grid-template-columns: repeat(4, 1fr) !important;
+          gap: 20px !important;
+          max-width: 1200px !important;
+          margin: 40px auto !important;
+        }
+
+        /* Tablet specific adjustments for Dashboard */
+        @media (min-width: 769px) and (max-width: 1024px) {
+          .main-dashboard-grid {
+             grid-template-columns: repeat(2, 1fr) !important;
+             gap: 20px !important;
+             max-width: 800px !important;
+             margin: 30px auto !important;
+          }
+
+          .dashboard-grid {
+             grid-template-columns: repeat(2, 1fr) !important;
+             gap: 20px !important;
+             padding: 20px !important;
+          }
+
+          .modal-content {
+             max-width: 80% !important;
+             max-height: 85% !important;
+          }
+          
+          .dashboard-header input[type="text"] {
+            width: 300px !important;
+          }
         }
 
         /* Mobile responsive styles */
@@ -583,13 +687,13 @@ export default function Dashboard() {
 
           /* Dashboard Header Mobile Styles */
           .dashboard-header {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
+            flex-direction:row !important; /* Keep items on one line if possible, or very tight */
+            align-items: center !important;
+            justify-content: space-between !important;
             height: auto !important;
-            min-height: 100px !important;
-            padding: 15px !important;
-            gap: 12px;
+            min-height: 50px !important; /* Reduced to match fixed height */
+            padding: 5px 12px !important; 
+            gap: 5px !important;
             position: sticky !important;
             top: 0 !important;
             z-index: 200 !important;
@@ -597,54 +701,60 @@ export default function Dashboard() {
           }
 
           .dashboard-header h1 {
-            font-size: 20px !important;
-            width: 100%;
-            margin-top: 20px !important;
+            font-size: 16px !important; /* Even smaller */
+            margin-top: 0 !important;
             margin-bottom: 0 !important;
           }
 
           .dashboard-header input[type="text"] {
-            width: 100% !important;
-            max-width: 100% !important;
-            font-size: 14px !important;
-            padding: 10px 12px 10px 40px !important;
-          }
-
-          /* Ensure content doesn't hide under sticky header on mobile */
-          .scrollable-content {
-            margin-top: 0 !important;
-          }
-
-          /* User Badge Mobile Styles */
-          .user-badge {
-            font-size: 11px !important;
-            padding: 6px 12px !important;
-            letter-spacing: 0.5px !important;
+            width: 150px !important; /* Fixed width to keep header small */
+            font-size: 13px !important;
+            padding: 5px 8px 5px 30px !important;
           }
 
           /* Card Grid Mobile Adjustments */
           .dashboard-grid {
+            display: block !important;
+            padding: 5px 8px !important;
+            width: 100% !important;
+          }
+
+          .main-dashboard-grid {
+            display: grid !important;
             grid-template-columns: 1fr !important;
-            padding: 10px 15px !important;
-            gap: 15px !important;
-          }
-        }
-
-        /* Tablet specific adjustments for Dashboard */
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .dashboard-grid {
-             grid-template-columns: repeat(2, 1fr) !important;
-             gap: 20px !important;
-             padding: 20px !important;
-          }
-
-          .modal-content {
-             max-width: 80% !important;
-             max-height: 85% !important;
+            gap: 12px !important;
+            margin: 15px auto !important;
+            max-width: 100% !important;
+            width: 100% !important;
           }
           
-          .dashboard-header input[type="text"] {
-            width: 300px !important;
+          .dashboard-card {
+            width: auto !important; 
+            padding: 15px !important;
+            gap: 8px !important;
+            min-height: auto !important;
+          }
+          
+          .dashboard-card div[style*="fontSize: 50px"] {
+            font-size: 30px !important;
+          }
+          
+          .dashboard-card h2 {
+            font-size: 16px !important;
+          }
+          
+          .dashboard-card p {
+            font-size: 12px !important;
+          }
+
+          /* Sub-view Card Adjustments */
+          .user-card {
+            padding: 12px !important;
+            margin-bottom: 8px !important;
+          }
+
+          .personal-view-grid {
+            margin: 5px auto !important;
           }
         }
       `}</style>
@@ -653,58 +763,110 @@ export default function Dashboard() {
       <div
         className="dashboard-header"
         style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          padding: "5px 20px",
+          background: "rgba(var(--card-bg-rgb), 0.8)",
+          backdropFilter: "blur(15px)",
+          WebkitBackdropFilter: "blur(15px)",
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          height: "60px",
           position: "sticky",
           top: 0,
-          background: "var(--page-bg)",
-          height: "60px",
-          borderBottom: "1px solid var(--input-border)",
-          zIndex: 200,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          paddingLeft: "20px",
-          paddingRight: "20px",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+          zIndex: 100,
         }}
       >
-        <h1
-          style={{
-            margin: 0,
-            fontSize: "24px",
-            color: "var(--page-text)",
-            fontWeight: "bold",
-          }}
-        >
-          {t("Dashboard")}
-        </h1>
-        <input
-          type="text"
-          placeholder={t("Search")}
-          value={searchTerm}
-          onChange={(e) => {
-            const value = e.target.value;
-            setSearchTerm(value);
-            localStorage.setItem("searchTerm", value);
-          }}
-          style={{
-            padding: "8px 12px 8px 40px",
-            borderRadius: "6px",
-            border: "1px solid var(--input-border)",
-            backgroundColor: "var(--card-bg)",
-            backgroundImage:
-              "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E\")",
-            backgroundRepeat: "no-repeat",
-            backgroundPosition: "10px center",
-            color: "var(--page-text)",
-            fontSize: "16px",
-            width: "250px",
-            outline: "none",
-          }}
-        />
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+          {view !== "dashboard" && (
+            <button
+              onClick={() => {
+                setView("dashboard");
+                setSearchTerm("");
+                setSearchField("");
+              }}
+              style={{
+                padding: "8px 12px",
+                background: "var(--card-bg)",
+                border: "1px solid var(--input-border)",
+                color: "var(--page-text)",
+                borderRadius: "6px",
+                cursor: "pointer",
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "14px",
+              }}
+            >
+              ← {t("Back")}
+            </button>
+          )}
+          <h1
+            style={{
+              margin: 0,
+              fontSize: "20px",
+              color: "var(--page-text)",
+              fontWeight: "bold",
+            }}
+          >
+            {view === "dashboard" ? t("Dashboard") : 
+             view === "personal" ? t("Personal Card") : 
+             view === "other" ? t("All Other Profiles") : t("Search Members")}
+          </h1>
+        </div>
+        {view === "search" && (
+           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+             <select
+               value={searchField}
+               onChange={(e) => setSearchField(e.target.value)}
+               style={{
+                 padding: "8px",
+                 borderRadius: "6px",
+                 border: "1px solid var(--input-border)",
+                 backgroundColor: "var(--card-bg)",
+                 color: "var(--page-text)",
+                 outline: "none",
+               }}
+             >
+               <option value="">{t("Select Search Field")}</option>
+               <option value="name">{t("Name")}</option>
+               <option value="user_id">{t("User ID")}</option>
+               <option value="phone">{t("Phone")}</option>
+               <option value="nativePlace">{t("Native Place")}</option>
+               <option value="educationQualification">{t("Education Details")}</option>
+               <option value="workDetails">{t("Work Details")}</option>
+             </select>
+             <input
+               type="text"
+               placeholder={t("Search")}
+               disabled={!searchField}
+               value={searchTerm}
+               onChange={(e) => {
+                 const value = e.target.value;
+                 setSearchTerm(value);
+               }}
+               style={{
+                 padding: "8px 12px 8px 40px",
+                 borderRadius: "6px",
+                 border: "1px solid var(--input-border)",
+                 backgroundColor: "var(--card-bg)",
+                 backgroundImage:
+                   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E\")",
+                 backgroundRepeat: "no-repeat",
+                 backgroundPosition: "10px center",
+                 color: "var(--page-text)",
+                 fontSize: "16px",
+                 width: "250px",
+                 outline: "none",
+                 opacity: searchField ? 1 : 0.5,
+               }}
+             />
+           </div>
+        )}
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="scrollable-content">
+      <div className={`scrollable-content ${view === "dashboard" ? "no-scroll-desktop" : ""}`}>
         {/* Loading/Error States */}
         {loading ? (
           <div style={{ textAlign: "center", padding: "40px" }}>
@@ -726,361 +888,431 @@ export default function Dashboard() {
           <div
             className="dashboard-grid"
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(350px, 1fr))",
-              gap: "20px",
-              width: "100%",
               padding: "10px 20px",
+              width: "100%",
             }}
           >
-            {filteredData.length === 0 ? (
-              <div
-                style={{
-                  gridColumn: "1 / -1",
-                  textAlign: "center",
-                  padding: "40px",
-                  backgroundColor: "var(--card-bg)",
-                  borderRadius: "8px",
-                  color: "#999",
-                }}
-              >
-                {data.length === 0
-                  ? t("No details uploaded yet.")
-                  : t("No matching results.")}
-              </div>
-            ) : (
-              filteredData.map((item) => (
+            {view === "dashboard" ? (
+              /* Main Dashboard 4 Cards View */
+              <div className="main-dashboard-grid">
+                {/* Card 1: Personal Detail */}
                 <div
-                  key={item.user_id}
+                  onClick={() => setView("personal")}
+                  className="dashboard-card"
                   style={{
-                    border: "1px solid var(--input-border)",
-                    borderRadius: "12px",
-                    padding: "20px",
                     backgroundColor: "var(--card-bg)",
-                    boxShadow: "0 4px 8px rgba(0,0,0,0.1)",
+                    border: "1px solid var(--input-border)",
+                    borderRadius: "16px",
+                    padding: "30px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
                     display: "flex",
                     flexDirection: "column",
-                    transition: "transform 0.2s, box-shadow 0.2s",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 6px 12px rgba(0,0,0,0.15)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow =
-                      "0 4px 8px rgba(0,0,0,0.1)";
+                    alignItems: "center",
+                    gap: "15px"
                   }}
                 >
-                  {/* Header with Image and Basic Info */}
+                  <div style={{ fontSize: "50px" }}>👤</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Personal Card")}</h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("View your own profile detail")}</p>
+                </div>
+
+                {/* Card 2: Other Profiles */}
+                <div
+                  onClick={() => setView("other")}
+                  className="dashboard-card"
+                  style={{
+                    backgroundColor: "var(--card-bg)",
+                    border: "1px solid var(--input-border)",
+                    borderRadius: "16px",
+                    padding: "30px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "15px"
+                  }}
+                >
+                  <div style={{ fontSize: "50px" }}>👥</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("All Other Profiles")}</h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Browse and find matching profiles")}</p>
+                </div>
+
+                {/* Card 3: Search */}
+                <div
+                  onClick={() => setView("search")}
+                  className="dashboard-card"
+                  style={{
+                    backgroundColor: "var(--card-bg)",
+                    border: "1px solid var(--input-border)",
+                    borderRadius: "16px",
+                    padding: "30px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "15px"
+                  }}
+                >
+                  <div style={{ fontSize: "50px" }}>🔍</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Search Members")}</h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Search by name, ID, or qualification")}</p>
+                </div>
+
+                {/* Card 4: Edit Detail */}
+                <div
+                  onClick={() => window.location.href = "/editdetail"}
+                  className="dashboard-card"
+                  style={{
+                    backgroundColor: "var(--card-bg)",
+                    border: "1px solid var(--input-border)",
+                    borderRadius: "16px",
+                    padding: "30px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: "15px"
+                  }}
+                >
+                  <div style={{ fontSize: "50px" }}>📝</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Edit Detail")}</h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Update your profile information")}</p>
+                </div>
+              </div>
+            ) : (
+              /* Sub-view Grid */
+              <div
+                className={view === "personal" ? "personal-view-grid" : ""}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: view === "personal" ? "1fr" : "repeat(auto-fit, minmax(350px, 1fr))",
+                  gap: "20px",
+                  width: "100%",
+                  maxWidth: view === "personal" ? "600px" : "100%",
+                  margin: view === "personal" ? "40px auto" : "0",
+                }}
+              >
+                {(view === "personal" ? personalData : view === "other" ? otherData : filteredData).length === 0 ? (
                   <div
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      marginBottom: "15px",
+                      gridColumn: "1 / -1",
+                      textAlign: "center",
+                      padding: "40px",
+                      backgroundColor: "var(--card-bg)",
+                      borderRadius: "8px",
+                      color: "#999",
                     }}
                   >
-                    {(() => {
-                        const userEmail = sessionStorage.getItem("userEmail");
-                        const isOwnCard = userEmail && item.email && userEmail.toLowerCase() === item.email.toLowerCase();
-
-                        const allPhotos = getPhotoUrls(item);
-                        const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
-
-                        const handlePhotoSelect = async (selectedPhotoUrl) => {
-                            if (!isOwnCard) return;
-
-                            // Reorder photos: move selected to front
-                            const newPhotos = [selectedPhotoUrl, ...allPhotos.filter(p => p !== selectedPhotoUrl)];
-                            
-                            // Convert back to relative paths for saving if needed, but our backend handles full URLs gracefully 
-                            // or distinct relative paths? Actually backend expects "uploads/..." usually.
-                            // But we are sending back what we got. 
-                            // Let's check what we receive. We receive full localhost URLs here.
-                            // We should strip the domain to be safe and clean, or just send relative paths.
-                            // But wait, the backend just saves the string text.
-                            // Better convert back to relative paths to match backend storage format.
-                            const toRelative = (url) => {
-                                if (url.startsWith(`${API_URL}/`)) {
-                                    return url.replace(`${API_URL}/`, "");
-
-                                }
-                                return url;
-                            };
-
-                            const photoPathsToSave = newPhotos.map(toRelative);
-
-                            // Optimistic update (optional, but good)
-                            // We can't easily update 'data' state deeply here without a re-fetch or complex reducer.
-                            // So let's just trigger the API value and then re-fetch.
-                            
-                            try {
-                                const response = await fetch(`${API_URL}/upload-details/${item.email}`, {
-                                    method: "PUT",
-                                    headers: {
-                                        "Content-Type": "application/json"
-                                    },
-                                    credentials: "include",
-                                    body: JSON.stringify({
-                                        photo: JSON.stringify(photoPathsToSave)
-                                    })
-                                });
-                                const result = await response.json();
-                                if (result.success) {
-                                    // Refresh data to show change
-                                     const fetchData = async () => {
-                                        try {
-                                            const res = await fetch(`${API_URL}/all-details`, {
-                                                credentials: "include"
-                                            });
-                                            const data = await res.json();
-                                            if (data.success) {
-                                                setData(data.data);
-                                            }
-                                        } catch (e) { console.error(e); }
-                                    };
-                                    fetchData();
-                                } else {
-                                    alert("Failed to update photo: " + result.message);
-                                }
-                            } catch (e) {
-                                console.error("Error updating photo", e);
-                                alert("Error updating photo");
-                            }
-                        };
-
-                        return (
-                            <div style={{ display: 'flex', flexDirection: 'column', marginRight: "15px" }}>
-                                <img
-                                  loading="lazy"
-                                  src={mainPhoto}
-                                  alt={item.name}
-                                  style={{
-                                    width: "80px",
-                                    height: "80px",
-                                    borderRadius: "50%",
-                                    objectFit: "cover",
-                                    cursor: "pointer",
-                                    border: isOwnCard ? "2px solid #28a745" : "none",
-                                    filter: (item.photoPassword && item.photoPassword.length > 0 && !isOwnCard && !unlockedUsers.includes(item.email)) ? "blur(8px)" : "none"
-                                  }}
-                                    onClick={(e) => {
-                                    e.stopPropagation();
-                                     setSelectedImage(mainPhoto);
-                                     setSelectedImageOwner(item);
-                                     setIsPrivacyMode(false);
-                                  }}
-                                />
-                                {isOwnCard && allPhotos.length > 1 && (
-                                    <div style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap', maxWidth: '100px' }}>
-                                        {allPhotos.slice(1).map((photo, idx) => (
-                                            <img 
-                                                loading="lazy"
-                                                key={idx}
-                                                src={photo}
-                                                alt="thumb"
-                                                style={{
-                                                    width: "30px",
-                                                    height: "30px",
-                                                    borderRadius: "50%",
-                                                    objectFit: "cover",
-                                                    cursor: "pointer",
-                                                    opacity: 0.7,
-                                                    filter: "none"
-                                                }}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                     setSelectedImage(photo);
-                                                     setSelectedImageOwner(item);
-                                                     handlePhotoSelect(photo);
-                                                     setIsPrivacyMode(false);
-                                                }}
-                                                onMouseEnter={(e) => e.target.style.opacity = 1}
-                                                onMouseLeave={(e) => e.target.style.opacity = 0.7}
-                                            />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        );
-                    })()}
-                    <div style={{ flex: 1 }}>
-                    {sessionStorage.getItem("userEmail") === item.email && (
-                      <>
-                        <div style={{
-                          display: "inline-block",
-                          background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
-                          color: "white",
-                          fontSize: "14px",
-                          fontWeight: "bold",
-                          padding: "8px 16px",
-                          borderRadius: "25px",
-                          marginBottom: "8px",
-                          boxShadow: "0 4px 15px rgba(40, 167, 69, 0.4), 0 0 20px rgba(40, 167, 69, 0.2)",
-                          textTransform: "uppercase",
-                          letterSpacing: "1px",
-                          border: "2px solid rgba(255, 255, 255, 0.3)",
-                          animation: "pulse 2s ease-in-out infinite",
-                        }}>
-                          {t("✨ It's You ✨")}
-                        </div>
-                        {pendingUpdateStatus && (
-                          <div 
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setShowCancelModal(true);
-                            }}
-                            style={{
-                              display: "inline-block",
-                              marginLeft: "10px",
-                              background: "linear-gradient(135deg, #ff9800 0%, #ff5722 100%)",
-                              color: "white",
-                              fontSize: "12px",
-                              fontWeight: "bold",
-                              padding: "6px 12px",
-                              borderRadius: "20px",
-                              marginBottom: "8px",
-                              boxShadow: "0 2px 8px rgba(255, 152, 0, 0.4)",
-                              textTransform: "uppercase",
-                              letterSpacing: "0.5px",
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
-                              cursor: "pointer",
-                            }}
-                            title={t("Click to manage request")}
-                          >
-                            🕒 {t("Update Pending")}
-                          </div>
-                        )}
-                      </>
-                    )}
-                      <h3
-                        style={{
-                          margin: "0 0 5px 0",
-                          color: "var(--card-text)",
-                          fontSize: "18px",
-                        }}
-                      >
-                        {item.name}
-                      </h3>
-                      <p
-                        style={{
-                          margin: "0",
-                          color: "var(--card-text)",
-                          opacity: 0.7,
-                          fontSize: "14px",
-                        }}
-                      >
-                        ID: {item.user_id}
-                      </p>
-                    </div>
+                    {data.length === 0
+                      ? t("No details uploaded yet.")
+                      : t("No matching results.")}
                   </div>
-
-                  {/* Details Section */}
-                  <div style={{ flex: 1, marginBottom: "15px" }}>
-                    <div style={{ marginBottom: "8px" }}>
-                        <strong
-                            style={{ color: "var(--card-text)", opacity: 0.7 }}
-                          >
-                            {t("Email")}:
-                          </strong>{" "}
-                      <span style={{ color: "var(--card-text)" }}>
-                        {item.email}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                        <strong
-                            style={{ color: "var(--card-text)", opacity: 0.7 }}
-                          >
-                            {t("Phone")}:
-                          </strong>{" "}
-                      <span style={{ color: "var(--card-text)" }}>
-                        {item.phone}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                        <strong
-                            style={{ color: "var(--card-text)", opacity: 0.7 }}
-                          >
-                            {t("Qualification")}:
-                          </strong>{" "}
-                      <span style={{ color: "var(--card-text)" }}>
-                        {item.educationQualification || "N/A"}
-                      </span>
-                    </div>
-                    <div style={{ marginBottom: "8px" }}>
-                        <strong
-                            style={{ color: "var(--card-text)", opacity: 0.7 }}
-                          >
-                            {t("Work Details")}:
-                          </strong>{" "}
-                      <span
-                        style={{
-                          color: "var(--card-text)",
-                          display: "block",
-                          marginTop: "4px",
-                          lineHeight: "1.4",
-                        }}
-                        title={item.workDetails || ""}
-                      >
-                        {item.workDetails && item.workDetails.length > 100
-                          ? `${item.workDetails.substring(0, 100)}...`
-                          : item.workDetails || "N/A"}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Actions Section */}
-                  <div
-                    style={{
-                      borderTop: "1px solid var(--input-border)",
-                      paddingTop: "15px",
-                      display: "flex",
-                      gap: "10px",
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedUser(item);
-                      }}
+                ) : (
+                  (view === "personal" ? personalData : view === "other" ? otherData : filteredData).map((item) => (
+                    <div
+                      key={item.user_id}
+                      className="user-card"
                       style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        padding: "6px 12px",
-                        backgroundColor: "#28a745",
-                        color: "white",
-                        border: "none",
-                        borderRadius: "4px",
-                        fontSize: "12px",
-                        fontWeight: "500",
+                        border: view === "personal" ? "2px solid #28a745" : "1px solid var(--input-border)",
+                        borderRadius: "12px",
+                        padding: view === "personal" ? "30px" : "20px",
+                        backgroundColor: "var(--card-bg)",
+                        boxShadow: view === "personal" ? "0 10px 25px rgba(40,167,69,0.15)" : "0 4px 8px rgba(0,0,0,0.1)",
+                        display: "flex",
+                        flexDirection: "column",
+                        transition: "transform 0.2s, box-shadow 0.2s",
                         cursor: "pointer",
-                        transition: "background-color 0.2s",
-                      }}
-
-                      onMouseLeave={(e) => {
-                        e.target.style.backgroundColor = "#28a745";
                       }}
                     >
-                      {t("More Detail")}
-                    </button>
-                    {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
+                      {/* Header with Image and Basic Info */}
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          marginBottom: "15px",
+                        }}
+                      >
+                        {(() => {
+                            const userEmail = sessionStorage.getItem("userEmail");
+                            const isOwnCard = userEmail && item.email && userEmail.toLowerCase() === item.email.toLowerCase();
+
+                            const allPhotos = getPhotoUrls(item);
+                            const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
+
+                            const handlePhotoSelect = async (selectedPhotoUrl) => {
+                                if (!isOwnCard) return;
+
+                                // Reorder photos: move selected to front
+                                const newPhotos = [selectedPhotoUrl, ...allPhotos.filter(p => p !== selectedPhotoUrl)];
+                                
+                                // Convert back to relative paths for saving if needed, but our backend handles full URLs gracefully 
+                                // or distinct relative paths? Actually backend expects "uploads/..." usually.
+                                // But we are sending back what we got. 
+                                // Let's check what we receive. We receive full localhost URLs here.
+                                // We should strip the domain to be safe and clean, or just send relative paths.
+                                // But wait, the backend just saves the string text.
+                                // Better convert back to relative paths to match backend storage format.
+                                const toRelative = (url) => {
+                                    if (url.startsWith(`${API_URL}/`)) {
+                                        return url.replace(`${API_URL}/`, "");
+
+                                    }
+                                    return url;
+                                };
+
+                                const photoPathsToSave = newPhotos.map(toRelative);
+
+                                // Optimistic update (optional, but good)
+                                // We can't easily update 'data' state deeply here without a re-fetch or complex reducer.
+                                // So let's just trigger the API value and then re-fetch.
+                                
+                                try {
+                                    const response = await fetch(`${API_URL}/upload-details/${item.email}`, {
+                                        method: "PUT",
+                                        headers: {
+                                            "Content-Type": "application/json"
+                                        },
+                                        credentials: "include",
+                                        body: JSON.stringify({
+                                            photo: JSON.stringify(photoPathsToSave)
+                                        })
+                                    });
+                                    const result = await response.json();
+                                    if (result.success) {
+                                        // Refresh data to show change
+                                         const fetchData = async () => {
+                                            try {
+                                                const res = await fetch(`${API_URL}/all-details`, {
+                                                    credentials: "include"
+                                                });
+                                                const data = await res.json();
+                                                if (data.success) {
+                                                    setData(data.data);
+                                                }
+                                            } catch (e) { console.error(e); }
+                                        };
+                                        fetchData();
+                                    } else {
+                                        alert("Failed to update photo: " + result.message);
+                                    }
+                                } catch (e) {
+                                    console.error("Error updating photo", e);
+                                    alert("Error updating photo");
+                                }
+                            };
+
+                            return (
+                                <div style={{ display: 'flex', flexDirection: 'column', marginRight: "15px" }}>
+                                    <img
+                                      loading="lazy"
+                                      src={mainPhoto}
+                                      alt={item.name}
+                                      style={{
+                                        width: "80px",
+                                        height: "80px",
+                                        borderRadius: "50%",
+                                        objectFit: "cover",
+                                        cursor: "pointer",
+                                        border: isOwnCard ? "2px solid #28a745" : "none",
+                                        filter: (item.photoPassword && item.photoPassword.length > 0 && !isOwnCard && !unlockedUsers.includes(item.email)) ? "blur(8px)" : "none"
+                                      }}
+                                        onClick={(e) => {
+                                        e.stopPropagation();
+                                         setSelectedImage(mainPhoto);
+                                         setSelectedImageOwner(item);
+                                         setIsPrivacyMode(false);
+                                      }}
+                                    />
+                                    {isOwnCard && allPhotos.length > 1 && (
+                                        <div style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap', maxWidth: '100px' }}>
+                                            {allPhotos.slice(1).map((photo, idx) => (
+                                                <img 
+                                                    loading="lazy"
+                                                    key={idx}
+                                                    src={photo}
+                                                    alt="thumb"
+                                                    style={{
+                                                        width: "30px",
+                                                        height: "30px",
+                                                        borderRadius: "50%",
+                                                        objectFit: "cover",
+                                                        cursor: "pointer",
+                                                        opacity: 0.7,
+                                                        filter: "none"
+                                                    }}
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                         setSelectedImage(photo);
+                                                         setSelectedImageOwner(item);
+                                                         handlePhotoSelect(photo);
+                                                         setIsPrivacyMode(false);
+                                                    }}
+                                                    onMouseEnter={(e) => e.target.style.opacity = 1}
+                                                    onMouseLeave={(e) => e.target.style.opacity = 0.7}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            );
+                        })()}
+                        <div style={{ flex: 1 }}>
+                        {sessionStorage.getItem("userEmail") === item.email && (
+                          <>
+                            <div style={{
+                              display: "inline-block",
+                              background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
+                              color: "white",
+                              fontSize: "14px",
+                              fontWeight: "bold",
+                              padding: "8px 16px",
+                              borderRadius: "25px",
+                              marginBottom: "8px",
+                              boxShadow: "0 4px 15px rgba(40, 167, 69, 0.4), 0 0 20px rgba(40, 167, 69, 0.2)",
+                              textTransform: "uppercase",
+                              letterSpacing: "1px",
+                              border: "2px solid rgba(255, 255, 255, 0.3)",
+                              animation: "pulse 2s ease-in-out infinite",
+                            }}>
+                              {t("✨ It's You ✨")}
+                            </div>
+                            {pendingUpdateStatus && (
+                              <div 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowCancelModal(true);
+                                }}
+                                style={{
+                                  display: "inline-block",
+                                  marginLeft: "10px",
+                                  background: "linear-gradient(135deg, #ff9800 0%, #ff5722 100%)",
+                                  color: "white",
+                                  fontSize: "12px",
+                                  fontWeight: "bold",
+                                  padding: "6px 12px",
+                                  borderRadius: "20px",
+                                  marginBottom: "8px",
+                                  boxShadow: "0 2px 8px rgba(255, 152, 0, 0.4)",
+                                  textTransform: "uppercase",
+                                  letterSpacing: "0.5px",
+                                  border: "2px solid rgba(255, 255, 255, 0.3)",
+                                  cursor: "pointer",
+                                }}
+                                title={t("Click to manage request")}
+                              >
+                                🕒 {t("Update Pending")}
+                              </div>
+                            )}
+                          </>
+                        )}
+                          <h3
+                            style={{
+                              margin: "0 0 5px 0",
+                              color: "var(--card-text)",
+                              fontSize: "18px",
+                            }}
+                          >
+                            {item.name}
+                          </h3>
+                          <p
+                            style={{
+                              margin: "0",
+                              color: "var(--card-text)",
+                              opacity: 0.7,
+                              fontSize: "14px",
+                            }}
+                          >
+                            ID: {item.user_id}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Details Section */}
+                      <div style={{ flex: 1, marginBottom: "15px" }}>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong
+                                style={{ color: "var(--card-text)", opacity: 0.7 }}
+                              >
+                                {t("Email")}:
+                              </strong>{" "}
+                          <span style={{ color: "var(--card-text)" }}>
+                            {item.email}
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong
+                                style={{ color: "var(--card-text)", opacity: 0.7 }}
+                              >
+                                {t("Phone")}:
+                              </strong>{" "}
+                          <span style={{ color: "var(--card-text)" }}>
+                            {item.phone}
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong
+                                style={{ color: "var(--card-text)", opacity: 0.7 }}
+                              >
+                                {t("Qualification")}:
+                              </strong>{" "}
+                          <span style={{ color: "var(--card-text)" }}>
+                            {item.educationQualification || "N/A"}
+                          </span>
+                        </div>
+                        <div style={{ marginBottom: "8px" }}>
+                            <strong
+                                style={{ color: "var(--card-text)", opacity: 0.7 }}
+                              >
+                                {t("Work Details")}:
+                              </strong>{" "}
+                          <span
+                            style={{
+                              color: "var(--card-text)",
+                              display: "block",
+                              marginTop: "4px",
+                              lineHeight: "1.4",
+                            }}
+                            title={item.workDetails || ""}
+                          >
+                            {item.workDetails && item.workDetails.length > 100
+                              ? `${item.workDetails.substring(0, 100)}...`
+                              : item.workDetails || "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Actions Section */}
+                      <div
+                        style={{
+                          borderTop: "1px solid var(--input-border)",
+                          paddingTop: "15px",
+                          display: "flex",
+                          gap: "10px",
+                          flexWrap: "wrap",
+                        }}
+                      >
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            const photos = getPhotoUrls(item);
-                            const mainPhoto = photos.length > 0 ? photos[0] : "https://via.placeholder.com/80";
-                            setSelectedImage(mainPhoto);
-                            setSelectedImageOwner(item);
-                            setIsPrivacyMode(true);
+                            setSelectedUser(item);
                           }}
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
                             padding: "6px 12px",
-                            backgroundColor: "#007bff",
+                            backgroundColor: "#28a745",
                             color: "white",
                             border: "none",
                             borderRadius: "4px",
@@ -1089,13 +1321,45 @@ export default function Dashboard() {
                             cursor: "pointer",
                             transition: "background-color 0.2s",
                           }}
+
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = "#28a745";
+                          }}
                         >
-                           {t("Privacy")}
+                          {t("More Detail")}
                         </button>
-                    )}
-                  </div>
-                </div>
-              ))
+                        {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const photos = getPhotoUrls(item);
+                                const mainPhoto = photos.length > 0 ? photos[0] : "https://via.placeholder.com/80";
+                                setSelectedImage(mainPhoto);
+                                setSelectedImageOwner(item);
+                                setIsPrivacyMode(true);
+                              }}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                padding: "6px 12px",
+                                backgroundColor: "#007bff",
+                                color: "white",
+                                border: "none",
+                                borderRadius: "4px",
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                cursor: "pointer",
+                                transition: "background-color 0.2s",
+                              }}
+                            >
+                               {t("Privacy")}
+                            </button>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
             )}
           </div>
         )}
@@ -2169,14 +2433,6 @@ export default function Dashboard() {
         );
         })()}
 
-      {/* Footer */}
-      <div
-        style={{
-          height: "50px",
-          background: "var(--page-bg)",
-          borderTop: "1px solid var(--input-border)",
-        }}
-      ></div>
     </div>
   );
 }

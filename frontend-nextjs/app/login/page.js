@@ -285,7 +285,7 @@ export default function Login() {
                 fontWeight: "bold",
               }}
             >
-              {language === "en" ? "TA" : "EN"}
+              {language === "en" ? "EN" : "TA"}
             </span>
           </button>
 

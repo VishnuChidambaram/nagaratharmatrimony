@@ -164,7 +164,7 @@ export default function AdminLogin() {
                 fontWeight: "bold",
               }}
             >
-              {language === "en" ? "TA" : "EN"}
+              {language === "en" ? "EN" : "TA"}
             </span>
           </button>
         <h3 style={styles.title}>{t.title}</h3>
