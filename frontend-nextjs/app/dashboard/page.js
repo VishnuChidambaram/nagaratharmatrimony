@@ -687,13 +687,14 @@ export default function Dashboard() {
 
           /* Dashboard Header Mobile Styles */
           .dashboard-header {
-            flex-direction:row !important; /* Keep items on one line if possible, or very tight */
+            flex-direction: row !important;
+            flex-wrap: wrap !important; /* Allow wrapping to new line */
             align-items: center !important;
             justify-content: space-between !important;
             height: auto !important;
-            min-height: 50px !important; /* Reduced to match fixed height */
-            padding: 5px 12px !important; 
-            gap: 5px !important;
+            min-height: 50px !important;
+            padding: 8px 12px !important; 
+            gap: 8px !important;
             position: sticky !important;
             top: 0 !important;
             z-index: 200 !important;
@@ -701,15 +702,33 @@ export default function Dashboard() {
           }
 
           .dashboard-header h1 {
-            font-size: 16px !important; /* Even smaller */
+            font-size: 16px !important;
             margin-top: 0 !important;
             margin-bottom: 0 !important;
           }
 
           .dashboard-header input[type="text"] {
-            width: 150px !important; /* Fixed width to keep header small */
+            width: 150px !important;
             font-size: 13px !important;
             padding: 5px 8px 5px 30px !important;
+          }
+
+          /* Search controls mobile layout */
+          .search-controls {
+            flex-direction: row !important; /* Keep dropdown and search bar on same line */
+            width: 100% !important; /* Force to new line */
+            gap: 8px !important;
+            order: 10 !important; /* Push to end, forcing new line */
+          }
+
+          .search-controls select {
+            flex: 0 0 auto !important; /* Don't grow, natural width */
+            min-width: 140px !important;
+          }
+
+          .search-controls input[type="text"] {
+            flex: 1 !important; /* Take remaining space */
+            min-width: 0 !important; /* Allow shrinking */
           }
 
           /* Card Grid Mobile Adjustments */
@@ -815,7 +834,7 @@ export default function Dashboard() {
           </h1>
         </div>
         {view === "search" && (
-           <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+           <div className="search-controls" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
              <select
                value={searchField}
                onChange={(e) => setSearchField(e.target.value)}
