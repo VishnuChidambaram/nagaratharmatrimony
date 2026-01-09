@@ -184,7 +184,7 @@ export default function ForgotPassword() {
               fontWeight: "bold",
             }}
           >
-            {language === "en" ? "TA" : "EN"}
+            {language === "en" ? "EN" : "TA"}
           </span>
         </button>
 

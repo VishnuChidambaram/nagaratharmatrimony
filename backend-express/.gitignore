@@ -1,0 +1,7 @@
+node_modules/
+.env
+uploads/
+sync_log.txt
+schema_diff.json
+firestore-debug.log
+user_list.txt
