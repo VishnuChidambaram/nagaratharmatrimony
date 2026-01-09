@@ -1256,6 +1256,34 @@ export default function Dashboard() {
                           >
                             ID: {item.user_id}
                           </p>
+
+                          {/* Heritage Badges */}
+                          <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
+                            {item.yourTemple && (
+                              <span className="heritage-badge" style={{ 
+                                  background: "linear-gradient(45deg, #FF6B6B, #EE5D5D)", 
+                                  color: "white", 
+                                  padding: "4px 10px", 
+                                  borderRadius: "12px", 
+                                  fontSize: "11px", 
+                                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
+                              }}>
+                                🏛️ {item.yourTemple}
+                              </span>
+                            )}
+                            {item.yourDivision && (
+                              <span className="heritage-badge" style={{ 
+                                  background: "linear-gradient(45deg, #4ECDC4, #556270)", 
+                                  color: "white", 
+                                  padding: "4px 10px", 
+                                  borderRadius: "12px", 
+                                  fontSize: "11px", 
+                                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
+                              }}>
+                                 🌿 {item.yourDivision}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
 
@@ -1300,8 +1328,9 @@ export default function Dashboard() {
                           <span
                             style={{
                               color: "var(--card-text)",
-                              display: "block",
-                              marginTop: "4px",
+                              color: "var(--card-text)",
+                              display: "inline",
+                              marginLeft: "5px",
                               lineHeight: "1.4",
                             }}
                             title={item.workDetails || ""}
