@@ -789,7 +789,7 @@ export default function Dashboard() {
           background: "rgba(var(--card-bg-rgb), 0.8)",
           backdropFilter: "blur(15px)",
           WebkitBackdropFilter: "blur(15px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          borderBottom: "1px solid rgba(147, 144, 144, 0.35)",
           height: "60px",
           position: "sticky",
           top: 0,
