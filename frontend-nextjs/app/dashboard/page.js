@@ -751,6 +751,7 @@ export default function Dashboard() {
             padding: 15px !important;
             gap: 8px !important;
             min-height: auto !important;
+            margin: 15px 45px !important;
           }
           
           .dashboard-card div[style*="fontSize: 50px"] {
@@ -768,7 +769,7 @@ export default function Dashboard() {
           /* Sub-view Card Adjustments */
           .user-card {
             padding: 12px !important;
-            margin-bottom: 8px !important;
+            margin: 15px !important;
           }
 
           .personal-view-grid {
@@ -2264,31 +2265,7 @@ export default function Dashboard() {
               }}
               onClick={(e) => e.stopPropagation()}
             >
-              {isPrivacyMode && (
-                <button
-                  className="modal-close"
-                  onClick={() => {
-                      setSelectedImage(null);
-                      setImagePasswordInput("");
-                      // setIsImageUnlocked(false);
-                      setNewPhotoPassword("");
-                      setSelectedImageOwner(null);
-                      setIsPrivacyMode(false);
-                  }}
-                  style={{
-                    position: "fixed", // Fixed so it doesn't scroll away
-                    top: "20px",
-                    right: "20px",
-                    background: "white",
-                    color: "black",
-                    zIndex: 2202,
-                    cursor: "pointer",
-                    boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
-                  }}
-                >
-                  ✕ {t("Close")}
-                </button>
-              )}
+
               
               <div style={{ position: 'relative', marginBottom: isOwner ? "20px" : "0" }}>
                   {!isPrivacyMode && (
@@ -2361,18 +2338,20 @@ export default function Dashboard() {
               {isOwner && isPrivacyMode && (
                   <div style={{
                       background: 'var(--card-bg)',
-                      padding: '20px',
-                      borderRadius: '8px',
+                      padding: '25px',
+                      borderRadius: '12px',
                       display: 'flex',
                       flexDirection: "column",
-                      gap: '10px',
+                      gap: '15px',
                       alignItems: 'center',
-                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)',
+                      boxShadow: '0 8px 16px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1)',
+                      border: '1px solid var(--input-border)',
                       width: "100%",
-                      maxWidth: "300px"
+                      maxWidth: "400px",
+                      backdropFilter: 'blur(10px)'
                   }}>
-                      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '15px'}}>
-                          <span style={{fontWeight: 'bold', color: 'var(--card-text)'}}>{t("Privacy Protection")}</span>
+                      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '10px', paddingBottom: '15px', borderBottom: '2px solid var(--input-border)'}}>
+                          <span style={{fontWeight: 'bold', color: 'var(--card-text)', fontSize: '18px'}}>{t("Privacy Protection")}</span>
                           <label className="switch" style={{position: 'relative', display: 'inline-block', width: '50px', height: '26px'}}>
                               <input 
                                   type="checkbox" 
@@ -2401,29 +2380,112 @@ export default function Dashboard() {
                           </label>
                       </div>
 
-                      <span style={{ color: 'var(--card-text)', fontWeight: "bold" }}>{t("Set/Update Photo Password")}</span>
-                      <input 
-                        id="new-password-input"
-                        type="text" 
-                        placeholder={t("New Password")}
-                        value={newPhotoPassword}
-                        onChange={(e) => setNewPhotoPassword(e.target.value)}
-                        style={{ padding: '10px', borderRadius: '4px', border: '1px solid #ccc', width: "100%" }}
-                      />
-                      <button 
-                        onClick={handleSetPhotoPassword}
-                        style={{
-                            padding: '10px 20px',
-                            background: '#007bff',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer',
-                            width: "100%"
-                        }}
-                      >
-                        {t("Set Password")}
-                      </button>
+                      <div style={{
+                          width: '100%',
+                          background: 'linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(0, 123, 255, 0.05) 100%)',
+                          padding: '20px',
+                          borderRadius: '8px',
+                          border: '1px solid var(--input-border)',
+                          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
+                      }}>
+                          <span style={{ 
+                              color: 'var(--card-text)', 
+                              fontWeight: "bold", 
+                              fontSize: '14px',
+                              display: 'block',
+                              marginBottom: '12px',
+                              textAlign: 'center',
+                              letterSpacing: '0.5px'
+                          }}>{t("Set/Update Photo Password")}</span>
+                          <input 
+                            id="new-password-input"
+                            type="text" 
+                            placeholder={t("New Password")}
+                            value={newPhotoPassword}
+                            onChange={(e) => setNewPhotoPassword(e.target.value)}
+                            style={{ 
+                                padding: '14px 16px', 
+                                borderRadius: '8px', 
+                                border: '2px solid var(--input-border)', 
+                                width: "100%",
+                                fontSize: '15px',
+                                background: 'var(--card-bg)',
+                                color: 'var(--card-text)',
+                                transition: 'all 0.3s ease',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                                outline: 'none',
+                                marginBottom: '12px'
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = '#007bff'}
+                            onBlur={(e) => e.target.style.borderColor = 'var(--input-border)'}
+                          />
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
+                              <button 
+                                onClick={handleSetPhotoPassword}
+                                style={{
+                                    padding: '6px 24px',
+                                    background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '8px',
+                                    cursor: 'pointer',
+                                    fontSize: '12px',
+                                    fontWeight: '600',
+                                    boxShadow: '0 4px 8px rgba(0, 123, 255, 0.3), 0 2px 4px rgba(0, 123, 255, 0.2)',
+                                    transition: 'all 0.3s ease',
+                                    textTransform: 'uppercase',
+                                    letterSpacing: '0.5px',
+                                    width: '100%'
+                                }}
+                                onMouseEnter={(e) => {
+                                    e.target.style.transform = 'translateY(-2px)';
+                                    e.target.style.boxShadow = '0 6px 12px rgba(0, 123, 255, 0.4), 0 3px 6px rgba(0, 123, 255, 0.3)';
+                                }}
+                                onMouseLeave={(e) => {
+                                    e.target.style.transform = 'translateY(0)';
+                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 123, 255, 0.3), 0 2px 4px rgba(0, 123, 255, 0.2)';
+                                }}
+                              >
+                                {t("Set Password")}
+                              </button>
+                              <button
+                                  onClick={() => {
+                                      setSelectedImage(null);
+                                      setImagePasswordInput("");
+                                      setNewPhotoPassword("");
+                                      setSelectedImageOwner(null);
+                                      setIsPrivacyMode(false);
+                                  }}
+                                  style={{
+                                      padding: '6px 24px',
+                                      background: '#6c757d',
+                                      color: 'white',
+                                      border: 'none',
+                                      borderRadius: '8px',
+                                      cursor: 'pointer',
+                                      fontSize: '12px',
+                                      fontWeight: '600',
+                                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+                                      transition: 'all 0.3s ease',
+                                      textTransform: 'uppercase',
+                                      letterSpacing: '0.5px',
+                                      width: '100%'
+                                  }}
+                                  onMouseEnter={(e) => {
+                                      e.target.style.background = '#5a6268';
+                                      e.target.style.boxShadow = '0 3px 6px rgba(0,0,0,0.15)';
+                                      e.target.style.transform = 'translateY(-2px)';
+                                  }}
+                                  onMouseLeave={(e) => {
+                                      e.target.style.background = '#6c757d';
+                                      e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+                                      e.target.style.transform = 'translateY(0)';
+                                  }}
+                              >
+                                  {t("Cancel")}
+                              </button>
+                          </div>
+                      </div>
                   </div>
               )}
 {showPrivacyConfirm && (
