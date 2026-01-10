@@ -561,7 +561,7 @@ export default function Dashboard() {
         /* Default (Desktop) Main Grid */
         .main-dashboard-grid {
           display: grid !important;
-          grid-template-columns: repeat(4, 1fr) !important;
+          grid-template-columns: repeat(3, 1fr) !important;
           gap: 20px !important;
           max-width: 1200px !important;
           margin: 40px auto !important;
@@ -985,29 +985,7 @@ export default function Dashboard() {
                   <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Search by name, ID, or qualification")}</p>
                 </div>
 
-                {/* Card 4: Edit Detail */}
-                <div
-                  onClick={() => window.location.href = "/editdetail"}
-                  className="dashboard-card"
-                  style={{
-                    backgroundColor: "var(--card-bg)",
-                    border: "1px solid var(--input-border)",
-                    borderRadius: "16px",
-                    padding: "30px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "15px"
-                  }}
-                >
-                  <div style={{ fontSize: "50px" }}>📝</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Edit Detail")}</h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Update your profile information")}</p>
-                </div>
+                {/* Card 4 removed and moved inside Personal Detail card */}
               </div>
             ) : (
               /* Sub-view Grid */
@@ -1401,6 +1379,34 @@ export default function Dashboard() {
                               }}
                             >
                                {t("Privacy")}
+                            </button>
+                        )}
+                        {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (pendingUpdateStatus) {
+                                  setShowCancelModal(true);
+                                } else {
+                                  window.location.href = "/editdetail";
+                                }
+                              }}
+                              style={{
+                                display: "inline-flex",
+                                alignItems: "center",
+                                padding: "6px 12px",
+                                backgroundColor: pendingUpdateStatus ? "#6c757d" : "#ffc107",
+                                color: pendingUpdateStatus ? "white" : "#000",
+                                border: "none",
+                                borderRadius: "4px",
+                                fontSize: "12px",
+                                fontWeight: "500",
+                                cursor: "pointer",
+                                transition: "background-color 0.2s",
+                              }}
+                              title={pendingUpdateStatus ? t("Pending Approval") : t("Edit Profile")}
+                            >
+                               {t("Edit Profile")}
                             </button>
                         )}
                       </div>

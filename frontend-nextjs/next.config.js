@@ -1,8 +1,4 @@
 const nextConfig = {
-  devIndicators: {
-    buildActivity: false,
-    appIsrStatus: false,
-  },
   allowedDevOrigins: ["169.254.156.216", "192.168.1.2"],
   onDemandEntries: {
     // Make sure we don't keep pages around forever
