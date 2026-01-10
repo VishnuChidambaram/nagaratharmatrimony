@@ -199,7 +199,7 @@ export default function RootLayout({
       }
       
       // Listen for theme changes from Admin Menu
-      const handleThemeChange = (e: any) => {
+      const handleThemeChange = (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
         const newTheme = e.detail; 
         console.log("RootLayout: Received theme-sync", newTheme);
         if (newTheme) {
@@ -295,7 +295,7 @@ export default function RootLayout({
       }
 
       // Check for pending updates
-      const headers = getAuthHeaders() as any; 
+      const headers = getAuthHeaders() as Record<string, string>; 
       const res = await fetch(`${API_URL}/api/update-requests/user/${encodeURIComponent(userEmail)}`, {
         credentials: "include",
         headers: headers
@@ -483,7 +483,7 @@ export default function RootLayout({
                   <button
                     onClick={async () => {
                       try {
-                        const headers = getAuthHeaders() as any;
+                        const headers = getAuthHeaders() as Record<string, string>;
                         await fetch(`${API_URL}/logout`, {
                           method: "POST",
                           credentials: "include",
@@ -812,7 +812,7 @@ export default function RootLayout({
                   fontWeight: "bold",
                 }}
               >
-                <T>Okay, I'll wait</T>
+                <T>Okay, I&apos;ll wait</T>
               </button>
             </div>
           </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import AdminMenu from "../AdminMenu";
 import styles from "./dashboard.module.css";
@@ -9,14 +9,13 @@ import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 
 import { translations } from "../../utils/translations";
-import LanguageToggle from "../../components/LanguageToggle";
 
 export default function AdminDashboard() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [pendingCount, setPendingCount] = useState(0);
   const [deletedCount, setDeletedCount] = useState(0);
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   // Translation helper function
   const t = (key) => {
@@ -26,18 +25,7 @@ export default function AdminDashboard() {
     return key;
   };
 
-  useEffect(() => {
-    const storedAdminEmail = sessionStorage.getItem("adminEmail");
-    if (!storedAdminEmail) {
-      router.push("/admin/login");
-    } else {
-      setIsLoading(false);
-      fetchPendingCount();
-      fetchDeletedCount();
-    }
-  }, [router]);
-
-  const fetchPendingCount = async () => {
+  const fetchPendingCount = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests?status=pending`, {
         credentials: "include"
@@ -49,9 +37,9 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error fetching pending count:", error);
     }
-  };
+  }, []);
 
-  const fetchDeletedCount = async () => {
+  const fetchDeletedCount = useCallback(async () => {
     try {
       const response = await fetch(`${API_URL}/admin/users`, {
         credentials: "include",
@@ -64,7 +52,18 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error("Error fetching deleted count:", error);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
+    if (!storedAdminEmail) {
+      router.push("/admin/login");
+    } else {
+      setIsLoading(false);
+      fetchPendingCount();
+      fetchDeletedCount();
+    }
+  }, [router, fetchPendingCount, fetchDeletedCount]);
 
 
   if (isLoading) {

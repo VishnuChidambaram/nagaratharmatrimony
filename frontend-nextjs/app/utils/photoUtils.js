@@ -15,7 +15,7 @@ export const getPhotoUrls = (item) => {
     if (typeof photoData === "string" && photoData.startsWith("[")) {
       try {
         photoPaths = JSON.parse(photoData);
-      } catch (e) {
+      } catch {
         photoPaths = [photoData];
       }
     } else if (Array.isArray(photoData)) {

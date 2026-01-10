@@ -1,9 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
-import LanguageToggle from "../components/LanguageToggle";
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 
@@ -31,15 +30,15 @@ export default function Dashboard() {
   const [view, setView] = useState("dashboard"); // dashboard, personal, other, search
   const [searchField, setSearchField] = useState(""); // selected field for search
 
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   // Translation helper function
-  const t = (key) => {
+  const t = useCallback((key) => {
     if (language === "ta" && translations[key] && translations[key].ta) {
       return translations[key].ta;
     }
     return key;
-  };
+  }, [language]);
 
   // New: Poll for notifications
   useEffect(() => {
@@ -94,6 +93,53 @@ export default function Dashboard() {
     }
   }, [error]);
 
+  const fetchData = useCallback(async () => {
+    try {
+      // Fetch all details from the database
+      const response = await fetch(`${API_URL}/all-details`, {
+        credentials: "include",
+        headers: { ...getAuthHeaders() }
+      });
+      const result = await response.json();
+      if (result.success) {
+        // Check for session expiry message
+        if (result.message === "Authentication required to view all details") {
+          // Clear local storage and redirect
+          sessionStorage.removeItem("userEmail");
+          window.location.href = "/login";
+          return;
+        }
+        setData(result.data);
+      } else {
+        setError(t("Failed to fetch data"));
+      }
+    } catch (err) {
+      setError(t("Error fetching data"));
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [t]);
+
+  const checkPendingUpdate = useCallback(async (email) => {
+    try {
+      const res = await fetch(`${API_URL}/api/update-requests/user/${email}`, {
+        credentials: "include",
+        headers: { ...getAuthHeaders() }
+      });
+      const data = await res.json();
+      if (data.success && data.hasPending) {
+        setPendingUpdateStatus(true);
+        setPendingRequestId(data.request ? data.request.request_id : null);
+      } else {
+        setPendingUpdateStatus(false);
+        setPendingRequestId(null);
+      }
+    } catch (error) {
+      console.error("Error checking pending status:", error);
+    }
+  }, []);
+
   useEffect(() => {
     // Check if user is logged in
     const userEmail = sessionStorage.getItem("userEmail");
@@ -102,60 +148,13 @@ export default function Dashboard() {
       return;
     }
 
-    const fetchData = async () => {
-      try {
-        // Fetch all details from the database
-        const response = await fetch(`${API_URL}/all-details`, {
-          credentials: "include",
-          headers: { ...getAuthHeaders() }
-        });
-        const result = await response.json();
-        if (result.success) {
-          // Check for session expiry message
-          if (result.message === "Authentication required to view all details") {
-            // Clear local storage and redirect
-            sessionStorage.removeItem("userEmail");
-            window.location.href = "/login";
-            return;
-          }
-          setData(result.data);
-        } else {
-          setError(t("Failed to fetch data"));
-        }
-      } catch (err) {
-        setError(t("Error fetching data"));
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    const checkPendingUpdate = async () => {
-      try {
-        const res = await fetch(`${API_URL}/api/update-requests/user/${userEmail}`, {
-          credentials: "include",
-          headers: { ...getAuthHeaders() }
-        });
-        const data = await res.json();
-        if (data.success && data.hasPending) {
-          setPendingUpdateStatus(true);
-          setPendingRequestId(data.request ? data.request.request_id : null);
-        } else {
-          setPendingUpdateStatus(false);
-          setPendingRequestId(null);
-        }
-      } catch (error) {
-        console.error("Error checking pending status:", error);
-      }
-    };
-
     fetchData();
-    checkPendingUpdate();
+    checkPendingUpdate(userEmail);
     
     // Check pending status every 15 seconds
-    const interval = setInterval(checkPendingUpdate, 15000);
+    const interval = setInterval(() => checkPendingUpdate(userEmail), 15000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fetchData, checkPendingUpdate]);
 
   const filteredData = data.filter((item) => {
     if (!searchTerm) return true;
@@ -2480,7 +2479,7 @@ export default function Dashboard() {
             </div>
           </div>
         );
-        })()}
+      })()}
 
     </div>
   );

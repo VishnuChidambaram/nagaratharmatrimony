@@ -12,7 +12,6 @@ import { useLanguage } from "@/app/hooks/useLanguage";
 export default function Step4() {
   const router = useRouter();
   const [form, setForm] = useState(defaultFormData);
-  const [errors, setErrors] = useState({});
   const [error, setError] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const { language, toggleLanguage } = useLanguage();
@@ -201,9 +200,7 @@ export default function Step4() {
             <option value="கும்பம்-Kumbam">கும்பம்-Kumbam</option>
             <option value="மீனம்-Meenam">மீனம்-Meenam</option>
           </select>
-          {errors.ascendant && (
-            <p style={{ color: "red", fontSize: "12px" }}>{errors.ascendant}</p>
-          )}
+
           <select
             style={styles.input}
             name="birthStar"
@@ -255,9 +252,7 @@ export default function Step4() {
             placeholder={t("Dosham (தோஷம்)", language)}
             forcedLanguage={language}
             style={styles.input}/>
-          {errors.Dosham && (
-            <p style={{ color: "red", fontSize: "12px" }}>{errors.Dosham}</p>
-          )}
+
         </div>
         <div style={styles.rightColumn} className="right-column">
           <TamilInput
@@ -297,11 +292,7 @@ export default function Step4() {
               max="9999-12-31"
             />
           </div>
-          {errors.dateOfBirth && (
-            <p style={{ color: "red", fontSize: "12px", marginLeft: "120px" }}>
-              {errors.dateOfBirth}
-            </p>
-          )}
+
 
           <div
             style={{
@@ -377,9 +368,7 @@ export default function Step4() {
               கேது மகா திசை-Kethu Maga Dasa
             </option>
           </select>
-          {errors.DasaType && (
-            <p style={{ color: "red", fontSize: "12px" }}>{errors.DasaType}</p>
-          )}
+
           <div
             style={{
               display: "flex",
@@ -419,11 +408,7 @@ export default function Step4() {
               maxLength={2}
             />
           </div>
-          {errors.dasaRemain && (
-            <p style={{ color: "red", fontSize: "12px" }}>
-              {errors.dasaRemain}
-            </p>
-          )}
+
         </div>
       </div>
       {error && <p style={{ color: "red" }}>{error}</p>}

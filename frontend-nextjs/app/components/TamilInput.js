@@ -20,7 +20,6 @@ export default function TamilInput({
   const [internalLanguage, setInternalLanguage] = useState("en"); 
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [cursorPosition, setCursorPosition] = useState(0);
   const inputRef = useRef(null);
   const suggestionBoxRef = useRef(null);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,11 +54,10 @@ export default function TamilInput({
     let caret = 0;
     try {
       caret = e.target.selectionStart || newVal.length;
-    } catch (error) {
+    } catch {
       // Password inputs don't support selectionStart
       caret = newVal.length;
     }
-    setCursorPosition(caret);
     
     const currentWord = getCurrentWord(newVal, caret);
     console.log("TamilInput: Typed word:", currentWord);

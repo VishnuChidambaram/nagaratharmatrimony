@@ -1,18 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { en } from "./locales/en";
 import { ta } from "./locales/ta";
-import TamilInput from "@/app/components/TamilInput";
-import TamilPopup from "@/app/components/TamilPopup";
-import { useRef } from "react";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import TamilInput from "@/app/components/TamilInput";
 
 
 export default function Login() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");

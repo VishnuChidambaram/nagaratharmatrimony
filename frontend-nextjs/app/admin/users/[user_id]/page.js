@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import AdminMenu from "../../AdminMenu";
 import styles from "../../dashboard/dashboard.module.css";
@@ -252,16 +252,7 @@ export default function UserDetail() {
   // Remove isEditing state, implicitly always editing
   const [editFormData, setEditFormData] = useState({});
 
-  useEffect(() => {
-    const storedAdminEmail = sessionStorage.getItem("adminEmail");
-    if (!storedAdminEmail) {
-      router.push("/admin/login");
-    } else if (user_id) {
-      fetchUser();
-    }
-  }, [router, user_id]);
-
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/upload-details/${user_id}`);
       const data = await res.json();
@@ -277,7 +268,16 @@ export default function UserDetail() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [user_id, router, language]);
+
+  useEffect(() => {
+    const storedAdminEmail = sessionStorage.getItem("adminEmail");
+    if (!storedAdminEmail) {
+      router.push("/admin/login");
+    } else if (user_id) {
+      fetchUser();
+    }
+  }, [router, user_id, fetchUser]);
 
   const handleCancelClick = () => {
     // Redirect to list on cancel

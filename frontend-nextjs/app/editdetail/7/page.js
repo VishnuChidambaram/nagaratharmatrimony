@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
+import { useRouter } from "next/navigation";
+import { loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
 import "./../editdetail.css";
-import LanguageToggle from "@/app/components/LanguageToggle";
-import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import TamilInput from "@/app/components/TamilInput";
@@ -14,11 +12,10 @@ import { normalizeDropdownValue } from "@/app/utils/normalization";
 
 export default function EditStep7() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [form, setForm] = useState(defaultFormData);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
   const heightOptions = Array.from({ length: 31 }, (_, i) => {
     const height = 4.0 + i * 0.1;
     return { value: height.toFixed(1), label: height.toFixed(1) };
@@ -82,15 +79,7 @@ export default function EditStep7() {
       return t("From Height must be less than or equal to To Height", language);
     return "";
   };
-  const next = () => {
-    const v = validate();
-    if (v) {
-      setError(v);
-      setTimeout(() => setError(""), 4000);
-      return;
-    }
-    router.push("/editdetail/8");
-  };
+
   return (
     <>
       <div className="edit-detail-container">

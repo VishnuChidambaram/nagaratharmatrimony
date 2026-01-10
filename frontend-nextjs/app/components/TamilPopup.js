@@ -56,7 +56,7 @@ export default function TamilPopup({
             {/* Content */}
             <div className="space-y-5">
              <p className="text-xs text-gray-600 leading-relaxed">
-            எழுத்து ஒலிப்பு ஆங்கிலம் (எடுத்துக்காட்டு.. <b>"vanakam"</b>) என மாற்ற <b>Space</b> அழுத்தவும்.. 
+            எழுத்து ஒலிப்பு ஆங்கிலம் (எடுத்துக்காட்டு.. <b>&quot;vanakam&quot;</b>) என மாற்ற <b>Space</b> அழுத்தவும்.. 
              <br/>
              </p>
 

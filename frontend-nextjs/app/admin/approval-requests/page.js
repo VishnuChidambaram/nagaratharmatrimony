@@ -21,14 +21,6 @@ export default function ApprovalRequests() {
     return key;
   };
 
-  useEffect(() => {
-    fetchRequests();
-    
-    // Auto-sync: Poll for new requests every 10 seconds
-    const interval = setInterval(fetchRequests, 10000);
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchRequests = async () => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests`, {
@@ -44,6 +36,14 @@ export default function ApprovalRequests() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchRequests();
+    
+    // Auto-sync: Poll for new requests every 10 seconds
+    const interval = setInterval(fetchRequests, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   if (loading) {
     return (

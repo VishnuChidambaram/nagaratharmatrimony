@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
+import { useRouter } from "next/navigation";
+import { loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
 import TamilInput from "@/app/components/TamilInput";
-import TamilPopup from "@/app/components/TamilPopup";
-import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
@@ -14,7 +12,6 @@ import "./../editdetail.css";
 
 export default function EditStep8() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [form, setForm] = useState(defaultFormData);
   const [originalForm, setOriginalForm] = useState({}); // New state: Original Data
   const [otpSent, setOtpSent] = useState(false);
@@ -29,7 +26,7 @@ export default function EditStep8() {
 
   const [loading, setLoading] = useState(true);
   const [clickedField, setClickedField] = useState(null);
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   const handleFieldClick = (field) => {
     setClickedField(field);
@@ -151,13 +148,7 @@ export default function EditStep8() {
         }
       }
       
-      // Helper to process photo field (single or array)
-      const processPhotoField = async (field) => {
-          if (field instanceof File) {
-              return await uploadFile(field);
-          }
-          return field;
-      };
+
 
       // Handle single 'photo' field if it exists and is a File
       if (submitData.photo && submitData.photo instanceof File) {
@@ -270,7 +261,7 @@ export default function EditStep8() {
       } else {
         setEmailVerificationError(data.message);
       }
-    } catch (e) {
+    } catch {
       setEmailVerificationError("Failed to send OTP");
     } finally {
       setIsSendingOtp(false);
@@ -296,7 +287,7 @@ export default function EditStep8() {
       } else {
         setEmailVerificationError(data.message);
       }
-    } catch (e) {
+    } catch {
       setEmailVerificationError("Failed to verify OTP");
     }
   };
@@ -343,51 +334,7 @@ export default function EditStep8() {
 
 
 
-  const renderBox = (pos) => {
-    const planets = chartData[pos] || [];
-    return (
-      <div className="rasi-cell" style={{ border: '1px solid var(--input-border)' }}>
-        <span
-          style={{
-            position: "absolute",
-            fontSize: "10px",
-            color: "var(--card-text)",
-            opacity: 0.5,
-            top: "2px",
-            left: "2px",
-          }}
-        >
-          {pos}
-        </span>
-        <span style={{ textAlign: "center", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {planets.length > 0 ? planets.join(", ") : ""}
-        </span>
-      </div>
-    );
-  };
 
-  const renderAmsamBox = (pos) => {
-    const planets = amsamChartData[pos] || [];
-    return (
-      <div className="rasi-cell" style={{ border: '1px solid var(--input-border)' }}>
-        <span
-          style={{
-            position: "absolute",
-            fontSize: "10px",
-            color: "var(--card-text)",
-            opacity: 0.5,
-            top: "2px",
-            left: "2px",
-          }}
-        >
-          {pos}
-        </span>
-        <span style={{ textAlign: "center", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" }}>
-          {planets.length > 0 ? planets.join(", ") : ""}
-        </span>
-      </div>
-    );
-  };
 
   const displayNames = {
     affliction: "Dhosam",
@@ -498,27 +445,6 @@ export default function EditStep8() {
           return formatDate(val);
       }
       return t(String(val ?? ""), language);
-  };
-
-  /* Helper to get Rasi Name */
-  const rasiNames = {
-    1: "Mesham (மேஷம்)",
-    2: "Rishabam (ரிஷபம்)",
-    3: "Midhunam (மிதுனம்)",
-    4: "Kadakam (கடகம்)",
-    5: "Simmam (சிம்மம்)",
-    6: "Kanni (கன்னி)",
-    7: "Thulaam (துலாம்)",
-    8: "Viruchigam (விருச்சிகம்)",
-    9: "Dhanusu (தனுசு)",
-    10: "Magaram (மகரம்)",
-    11: "Kumbam (கும்பம்)",
-    12: "Meenam (மீனம்)"
-  };
-
-  const getRasiName = (pos) => {
-    if (!pos) return "-";
-    return rasiNames[pos] || pos;
   };
 
   /* Helper to render chart grids only for a given dataset */

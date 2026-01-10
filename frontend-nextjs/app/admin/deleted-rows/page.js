@@ -28,10 +28,6 @@ export default function DeletedRows() {
     return key;
   };
 
-  useEffect(() => {
-    fetchDeletedUsers();
-  }, []);
-
   const fetchDeletedUsers = async () => {
     try {
       const res = await fetch(`${API_URL}/deleted-details`);
@@ -45,6 +41,10 @@ export default function DeletedRows() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDeletedUsers();
+  }, []);
 
   const handleRestore = (userId) => {
     setSelectedUserId(userId);

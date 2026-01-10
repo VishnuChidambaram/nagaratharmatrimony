@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function middleware() {
   // Relaxed Middleware:
   // We defer strictly to Client-Side protection (SessionMonitor) to support Multi-Tab / Multi-User.
   // Since specific user session (sessionStorage) is only known to the client, 

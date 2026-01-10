@@ -100,19 +100,13 @@ const styles = {
 };
 
 // Suppress hydration warnings for this component
-const useHydrated = () => {
-  const [hydrated, setHydrated] = useState(false);
-  useEffect(() => {
-    setHydrated(true);
-  }, []);
-  return hydrated;
-};
+
 
 export default function RegisterStep({ params }) {
   const router = useRouter();
   const unwrappedParams = use(params);
   const step = parseInt(unwrappedParams.step);
-  const hydrated = useHydrated();
+  // const hydrated = useHydrated();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -206,7 +200,7 @@ export default function RegisterStep({ params }) {
       const sanitizedData = sanitizeFormData(parsedData);
       setFormData((prevData) => ({ ...prevData, ...sanitizedData }));
     }
-  }, [step, router]);
+  }, [step, router, sanitizeFormData]);
 
   if (isNaN(step) || step < 1 || step > 7) {
     return null;
@@ -259,29 +253,7 @@ export default function RegisterStep({ params }) {
     }
   };
 
-  const handleRegister = async () => {
-    const validationError = validateForm();
-    if (validationError) {
-      setError(validationError);
-      return;
-    }
-    setError("");
 
-    const res = await fetch(`${API_URL}/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-
-    const data = await res.json();
-    alert(data.message);
-
-    if (data.success) {
-      //localStorage.removeItem("registerFormData");
-      localStorage.clear();
-      router.push("/login");
-    }
-  };
 
   const handleStepClick = (newStep) => {
     if (newStep <= 8) {
@@ -289,26 +261,7 @@ export default function RegisterStep({ params }) {
     }
   };
 
-  const rasiNames = [
-    "மேஷம்",
-    "ரிஷபம்",
-    "மிதுனம்",
-    "கடகம்",
-    "சிம்மம்",
-    "கன்னி",
-    "துலாம்",
-    "விருச்சிகம்",
-    "தனுசு",
-    "மகரம்",
-    "கும்பம்",
-    "மீனம்",
-  ];
 
-  const getRasi = (house, selectedRasi) => {
-    if (!selectedRasi) return house;
-    if (house === "rasi") return rasiNames[selectedRasi - 1];
-    return rasiNames[(selectedRasi - 1 + house - 1) % 12];
-  };
 
   return (
     <div

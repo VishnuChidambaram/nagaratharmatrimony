@@ -18,7 +18,6 @@ export default function ForgotPassword() {
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [cooldown, setCooldown] = useState(0);
-  const [otpSent, setOtpSent] = useState(false);
   const [isSendingOtp, setIsSendingOtp] = useState(false);
 
   const { language, toggleLanguage } = useLanguage();
@@ -81,7 +80,6 @@ export default function ForgotPassword() {
       setMessage(data.message);
       setStep(2);
       setCooldown(60);
-      setOtpSent(true);
     } else {
       setError(data.message);
     }

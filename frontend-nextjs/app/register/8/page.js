@@ -399,7 +399,7 @@ export default function Step8() {
       } else {
         setRegistrationError(data.message || "Registration failed");
       }
-    } catch (e) {
+    } catch {
       setRegistrationError("Failed to submit registration");
     }
   };
@@ -481,7 +481,7 @@ export default function Step8() {
       } else {
         setEmailVerificationError(data.message);
       }
-    } catch (e) {
+    } catch {
       setEmailVerificationError("Failed to send OTP");
     } finally {
       setIsSendingOtp(false);
@@ -508,7 +508,7 @@ export default function Step8() {
       } else {
         setEmailVerificationError(data.message);
       }
-    } catch (e) {
+    } catch {
       setEmailVerificationError("Failed to verify OTP");
     }
   };
@@ -534,7 +534,7 @@ export default function Step8() {
         setUserExistsError("");
         return false;
       }
-    } catch (e) {
+    } catch {
       setUserExistsError("Failed to check user availability");
       return true; // Assume exists on error to prevent registration
     }

@@ -875,7 +875,7 @@ export default function Step6() {
            } else {
              photosToLoad = [form.photo];
            }
-         } catch (e) {
+         } catch {
            // Not a JSON array, legitimate single string path (legacy)
            photosToLoad = [form.photo];
          }

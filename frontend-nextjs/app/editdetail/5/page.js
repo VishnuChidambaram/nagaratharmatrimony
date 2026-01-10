@@ -1,21 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { styles, loadFormData, saveFormData, defaultFormData } from "../../register/styles";
+import { useRouter } from "next/navigation";
+import { loadFormData, saveFormData, defaultFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
 import "./../editdetail.css";
-import LanguageToggle from "@/app/components/LanguageToggle";
-import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { normalizeDropdownValue } from "@/app/utils/normalization";
 
 export default function EditStep5() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [form, setForm] = useState(defaultFormData);
   const [loading, setLoading] = useState(true);
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   useEffect(() => {
     loadFormData().then(localData => {
@@ -92,15 +89,7 @@ export default function EditStep5() {
     }
   });
 
-  const cellStyle = {
-    border: "1px solid var(--input-border)",
-    textAlign: "center",
-    verticalAlign: "middle",
-    padding: "20px",
-    width: "100%",
-    height: "100%",
-    color: "var(--card-text)",
-  };
+
 
   const renderBox = (pos) => {
     if (pos === "center") return <div className="center-box">{t("Rasi", language)}</div>;

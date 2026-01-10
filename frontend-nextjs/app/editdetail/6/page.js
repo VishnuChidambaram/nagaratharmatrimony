@@ -1,11 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { styles, loadFormData, saveFormData } from "../../register/styles";
+import { useRouter } from "next/navigation";
+import { loadFormData, saveFormData } from "../../register/styles";
 import Navigation from "../components/Navigation";
 import "./../editdetail.css";
-import LanguageToggle from "@/app/components/LanguageToggle";
-import TamilPopup from "@/app/components/TamilPopup";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import TamilInput from "@/app/components/TamilInput";
@@ -831,16 +829,14 @@ const districtsByState = {
 
 export default function Page() {
   const router = useRouter();
-  const searchParams = useSearchParams();
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [imageUrls, setImageUrls] = useState([]);
   const [photoFiles, setPhotoFiles] = useState([]);
   const [totalSize, setTotalSize] = useState(0);
-  const [error, setError] = useState("");
   const [photoError, setPhotoError] = useState("");
   const [clickedField, setClickedField] = useState("");
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   const handleFieldClick = (fieldName) => {
     setClickedField(fieldName);
@@ -902,7 +898,7 @@ export default function Page() {
            } else {
              photosToLoad = [form.photo];
            }
-         } catch (e) {
+         } catch {
            // Not a JSON array, legitimate single string path (legacy)
            photosToLoad = [form.photo];
          }

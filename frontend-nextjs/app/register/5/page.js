@@ -1,20 +1,18 @@
 
 "use client";
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../styles";
 import Navigation from "../components/Navigation";
 import TamilPopup from "@/app/components/TamilPopup";
 import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
-import TamilInput from "@/app/components/TamilInput";
 import { useLanguage } from "@/app/hooks/useLanguage";
 
 export default function Step5() {
   const router = useRouter();
   const [form, setForm] = useState(defaultFormData);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [error, setError] = useState("");
   const { language, toggleLanguage } = useLanguage();
 
   // Load form data on client side only to prevent hydration errors
@@ -79,15 +77,7 @@ export default function Step5() {
     }
   });
 
-  const cellStyle = {
-    border: "1px solid var(--input-border)",
-    textAlign: "center",
-    verticalAlign: "middle",
-    padding: "20px",
-    width: "100%",
-    height: "100%",
-    color: "var(--card-text)",
-  };
+
 
   const renderBox = (pos) => {
     if (pos === "center") return <div className="center-box">ராசி</div>;

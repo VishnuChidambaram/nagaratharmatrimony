@@ -1,10 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
 import AdminMenu from "../../AdminMenu";
 import { useLanguage } from "../../../hooks/useLanguage";
 import { translations } from "../../../utils/translations";
-import LanguageToggle from "../../../components/LanguageToggle";
 import { API_URL } from "../../../utils/config";
 import { getPhotoUrls } from "../../../utils/photoUtils";
 
@@ -21,7 +20,7 @@ export default function ReviewRequest() {
   const [showRejectPopup, setShowRejectPopup] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectSuccessPopup, setShowRejectSuccessPopup] = useState(false);
-  const { language, toggleLanguage } = useLanguage();
+  const { language } = useLanguage();
 
   // Translation helper function
   const t = (key) => {
@@ -31,11 +30,7 @@ export default function ReviewRequest() {
     return key;
   };
 
-  useEffect(() => {
-    if (id) fetchRequest();
-  }, [id]);
-
-  const fetchRequest = async () => {
+  const fetchRequest = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/${id}`);
       const data = await res.json();
@@ -52,7 +47,11 @@ export default function ReviewRequest() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) fetchRequest();
+  }, [id, fetchRequest]);
 
   const handleApprove = async () => {
     setShowConfirmPopup(false);
