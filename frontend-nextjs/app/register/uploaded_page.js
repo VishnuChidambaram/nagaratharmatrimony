@@ -2,7 +2,6 @@
 
 import { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
-import { API_URL } from "../utils/config";
 
 const styles = {
   container: {
