@@ -7,8 +7,10 @@ import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
 import TamilInput from "@/app/components/TamilInput";
 
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -113,9 +115,9 @@ export default function Login() {
         }
         window.sessionStorage.setItem("userEmail", email);
 
-        // Wait 2 seconds before redirecting
+         // Wait 2 seconds before redirecting
         setTimeout(() => {
-          window.location.href = "/dashboard";
+          router.push("/dashboard");
         }, 2000);
       } else {
         if (data.code === "ALREADY_LOGGED_IN") {

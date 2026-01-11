@@ -128,15 +128,20 @@ async function initDB(retries = 5) {
 }
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, "0.0.0.0", async () => {
-  console.log(`Server is listening on 0.0.0.0:${PORT}`);
-  console.log("Cookie parser middleware initialized");
-  
-  // Initialize DB after server starts listening
-  try {
-    await initDB();
-  } catch (err) {
-    console.error("Critical error during database initialization:", err);
-  }
-});
+
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  app.listen(PORT, "0.0.0.0", async () => {
+    console.log(`Server is listening on 0.0.0.0:${PORT}`);
+    console.log("Cookie parser middleware initialized");
+    
+    // Initialize DB after server starts listening
+    try {
+      await initDB();
+    } catch (err) {
+      console.error("Critical error during database initialization:", err);
+    }
+  });
+}
+
+export { app };
 

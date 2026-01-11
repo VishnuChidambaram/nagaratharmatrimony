@@ -1,2 +1,22 @@
 node_modules
 .env
+PROJECT_NOTES.md
+
+# Logs and Temporary Files
+*.log
+*.txt
+npm-debug.log
+test_output*.txt
+lint_report*.txt
+build_log*.txt
+login_log*.txt
+
+# Build and Runtime
+.next/
+dist/
+build/
+coverage/
+.swc/
+
+# Local Uploads
+uploads/

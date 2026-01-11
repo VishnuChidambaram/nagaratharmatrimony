@@ -7,9 +7,11 @@ import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 
 import { getPhotoUrl, getPhotoUrls } from "../utils/photoUtils";
+import { useRouter } from "next/navigation";
 
 
 export default function Dashboard() {
+  const router = useRouter();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -106,7 +108,7 @@ export default function Dashboard() {
         if (result.message === "Authentication required to view all details") {
           // Clear local storage and redirect
           sessionStorage.removeItem("userEmail");
-          window.location.href = "/login";
+          router.push("/login");
           return;
         }
         setData(result.data);
@@ -144,7 +146,7 @@ export default function Dashboard() {
     // Check if user is logged in
     const userEmail = sessionStorage.getItem("userEmail");
     if (!userEmail) {
-      window.location.href = "/login";
+      router.push("/login");
       return;
     }
 
