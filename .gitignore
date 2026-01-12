@@ -5,11 +5,15 @@ PROJECT_NOTES.md
 # Logs and Temporary Files
 *.log
 *.txt
+*.out
 npm-debug.log
 test_output*.txt
 lint_report*.txt
 build_log*.txt
 login_log*.txt
+reg_test_v*.out
+dash_test_v*.out
+temp_pkg.json
 
 # Build and Runtime
 .next/
@@ -17,6 +21,8 @@ dist/
 build/
 coverage/
 .swc/
+.DS_Store
 
 # Local Uploads
 uploads/
+*.pem

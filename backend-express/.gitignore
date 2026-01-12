@@ -5,3 +5,10 @@ sync_log.txt
 schema_diff.json
 firestore-debug.log
 user_list.txt
+
+# Logs and Temporary Files
+*.log
+*.txt
+*.out
+*.pem
+temp_pkg.json
