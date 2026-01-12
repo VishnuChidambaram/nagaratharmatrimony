@@ -371,7 +371,7 @@ router.get("/admin/users", async (req, res) => {
     const users = await db.UserDetail.findAll({
       order: [['created_at', 'DESC']]
     });
-    res.json({ success: true, users });
+    res.json({ success: true, data: users });
   } catch (error) {
     console.error("Fetch users error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
