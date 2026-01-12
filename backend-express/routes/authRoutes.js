@@ -12,7 +12,7 @@ import validate from "../middleware/validation.js";
 import { loginSchema, registerSchema } from "../schemas/userSchemas.js";
 
 const router = express.Router();
-const SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
+const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 // Rate limiters imported from middleware/rateLimiter.js
 
@@ -314,6 +314,7 @@ router.post("/admin/login", authLimiter, async (req, res) => {
     if (!admin) {
       return res.json({
         success: false,
+        status: "error",
         message: "Invalid email or password",
       });
     }
@@ -322,6 +323,7 @@ router.post("/admin/login", authLimiter, async (req, res) => {
     if (admin.password !== password) {
       return res.json({
         success: false,
+        status: "error",
         message: "Invalid email or password",
       });
     }
@@ -337,7 +339,7 @@ router.post("/admin/login", authLimiter, async (req, res) => {
       httpOnly: true,
       secure: true, // Required for cross-site sameSite: none
       sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
-      maxAge: 10 * 60 * 1000, // 10 minutes session
+      maxAge: SESSION_DURATION,
     });
 
     // Set Admin Session ID cookie
@@ -345,7 +347,7 @@ router.post("/admin/login", authLimiter, async (req, res) => {
       httpOnly: true,
       secure: true, 
       sameSite: "none",
-      maxAge: 10 * 60 * 1000, // 10 minutes session
+      maxAge: SESSION_DURATION,
     });
 
     return res.json({
@@ -385,6 +387,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
     if (!user) {
       return res.json({
         success: false,
+        status: "error",
         message: "Invalid email or password",
       });
     }
@@ -393,6 +396,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
       console.error("Login error: User has no password set");
       return res.json({
         success: false,
+        status: "error",
         message: "Account configuration error. Please contact support.",
       });
     }
@@ -418,6 +422,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
       if (user.sessionId && !forceLogin) {
         return res.json({
           success: false,
+          status: "error",
           code: "ALREADY_LOGGED_IN",
           message: "You are already logged in on another device.",
         });
@@ -434,7 +439,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
         httpOnly: true,
         secure: true, // Required for cross-site sameSite: none
         sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
-        maxAge: 10 * 60 * 1000, // 10 minutes session
+        maxAge: SESSION_DURATION,
       });
 
       // Set Session ID cookie
@@ -442,7 +447,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
         httpOnly: true,
         secure: true,
         sameSite: "none",
-        maxAge: 10 * 60 * 1000, // 10 minutes session
+        maxAge: SESSION_DURATION,
       });
 
       return res.json({
@@ -456,6 +461,7 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
 
     res.json({
       success: false,
+      status: "error",
       message: "Invalid email or password",
     });
   } catch (error) {

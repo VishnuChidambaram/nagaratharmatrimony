@@ -9,6 +9,7 @@ import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "../../hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import { getPhotoUrls } from "../../utils/photoUtils";
 import Image from "next/image";
 
 
@@ -860,62 +861,19 @@ export default function Step6() {
   }, [form, isLoaded]);
 
   useEffect(() => {
-    // Load existing photos from form data and sync all related state
-    let photosToLoad = [];
-    
-    if (form.photos && Array.isArray(form.photos) && form.photos.length > 0) {
-      photosToLoad = form.photos;
-    } else if (form.photo) {
-      // Try to parse if it's a JSON string array (new format storage)
-      if (typeof form.photo === "string" && (form.photo.startsWith("[") || form.photo.startsWith("%5B"))) {
-         try {
-           const parsed = JSON.parse(decodeURIComponent(form.photo));
-           if (Array.isArray(parsed)) {
-             photosToLoad = parsed;
-             // Update form to use photos array properties for future consistency
-             setForm(prev => ({ ...prev, photos: parsed, photo: null })); 
-           } else {
-             photosToLoad = [form.photo];
-           }
-         } catch {
-           // Not a JSON array, legitimate single string path (legacy)
-           photosToLoad = [form.photo];
-         }
-      } else {
-         // Single file object or simple string path
-         photosToLoad = [form.photo];
-      }
-    }
-
-    if (photosToLoad.length > 0) {
-      const urls = photosToLoad.map(photo => {
-        if (typeof photo === "string") {
-           if (photo === "null" || !photo) return null;
-
-           return photo.startsWith("http") 
-             ? photo 
-             : `${API_URL}/${photo.replace(/\\/g, "/")}`;
-        } else if (typeof window !== "undefined" && photo instanceof File) {
-          return URL.createObjectURL(photo);
-        }
-        return null;
-      }).filter(url => url !== null);
-      
+    if (isLoaded && form) {
+      const urls = getPhotoUrls(form);
       setImageUrls(urls);
-      setPhotoFiles(photosToLoad);
+      setPhotoFiles(form.photos || (form.photo ? (Array.isArray(form.photo) ? form.photo : [form.photo]) : []));
       
-      // Calculate total size - fetch sizes for database photos
       const calculateTotalSize = async () => {
         let totalCalculatedSize = 0;
+        const photosToLoad = form.photos || (form.photo ? (Array.isArray(form.photo) ? form.photo : [form.photo]) : []);
         
-        for (let i = 0; i < photosToLoad.length; i++) {
-          const photo = photosToLoad[i];
-          
+        for (const photo of photosToLoad) {
           if (photo instanceof File) {
-            // For File objects, use the size property
             totalCalculatedSize += photo.size;
-          } else if (typeof photo === "string" && photo !== "null" && photo) {
-            // For database photos (string paths), fetch the file size
+          } else if (typeof photo === "string" && photo && photo !== "null") {
             try {
               const photoUrl = photo.startsWith("http") 
                 ? photo 
@@ -923,26 +881,17 @@ export default function Step6() {
               
               const response = await fetch(photoUrl, { method: 'HEAD' });
               const contentLength = response.headers.get('Content-Length');
-              
-              if (contentLength) {
-                totalCalculatedSize += parseInt(contentLength, 10);
-              }
+              if (contentLength) totalCalculatedSize += parseInt(contentLength, 10);
             } catch (error) {
               console.error(`Error fetching size for photo ${photo}:`, error);
             }
           }
         }
-        
         setTotalSize(totalCalculatedSize);
       };
-      
       calculateTotalSize();
-    } else {
-       setImageUrls([]);
-       setPhotoFiles([]);
-       setTotalSize(0);
     }
-  }, [form.photos, form.photo]);
+  }, [form.photos, form.photo, isLoaded]);
   const validateField = (name, value) => {
     let errorMsg = "";
     switch (name) {

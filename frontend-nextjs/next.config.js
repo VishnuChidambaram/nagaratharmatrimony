@@ -6,10 +6,29 @@ const nextConfig = {
     pagesBufferLength: 2,
   },
   images: {
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'http',
         hostname: 'localhost',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '127.0.0.1',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '169.254.156.216',
+        port: '5000',
+        pathname: '/uploads/**',
+      },
+      {
+        protocol: 'http',
+        hostname: '192.168.1.2',
         port: '5000',
         pathname: '/uploads/**',
       },
@@ -26,6 +45,16 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'loremflickr.com',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'picsum.photos',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'fastly.picsum.photos',
         pathname: '/**',
       }
     ],

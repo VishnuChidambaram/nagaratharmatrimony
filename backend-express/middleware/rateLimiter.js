@@ -4,7 +4,7 @@ const isTest = process.env.NODE_ENV === "test" || process.env.JEST_WORKER_ID !==
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: isTest ? 1000 : 5,
+  max: isTest ? 1000 : 10,
   message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
   standardHeaders: true,
   legacyHeaders: false,

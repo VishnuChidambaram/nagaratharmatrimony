@@ -16,7 +16,13 @@ export const getPhotoUrls = (item) => {
       try {
         photoPaths = JSON.parse(photoData);
       } catch {
-        photoPaths = [photoData];
+        // Fallback for malformed JSON strings (e.g., unescaped backslashes)
+        try {
+          const repaired = photoData.replace(/\\/g, "\\\\");
+          photoPaths = JSON.parse(repaired);
+        } catch {
+          photoPaths = [photoData];
+        }
       }
     } else if (Array.isArray(photoData)) {
       photoPaths = photoData;
