@@ -8,6 +8,8 @@ import fs from "fs";
 import { fileTypeFromBuffer } from "file-type";
 import bcrypt from "bcrypt";
 import cookieParser from "cookie-parser";
+import helmet from "helmet";
+import rateLimit from "express-rate-limit";
 import db from "./models/index.js";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -19,7 +21,32 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
+// Security headers
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable CSP for now to avoid breaking existing functionality
+  crossOriginEmbedderPolicy: false,
+}));
+
 app.use(cookieParser());
+
+// Rate limiting for authentication endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // Limit each IP to 5 requests per windowMs
+  message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registrationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 registration attempts per hour
+  message: { success: false, message: "Too many registration attempts, please try again after 1 hour" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const allowedOrigins = [
   "http://localhost:3000",
   "http://169.254.156.216:3000",
@@ -143,5 +170,5 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   });
 }
 
-export { app };
+export { app, authLimiter, registrationLimiter };
 

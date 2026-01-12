@@ -6,9 +6,27 @@ import path from "path";
 import db from "../models/index.js";
 import crypto from "crypto";
 import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
+import rateLimit from "express-rate-limit";
 
 const router = express.Router();
 const SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
+
+// Rate limiting for authentication endpoints
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5,
+  message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const registrationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3,
+  message: { success: false, message: "Too many registration attempts, please try again after 1 hour" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 // Email bridge function to bypass Render SMTP block
 async function sendEmailViaBridge(to, subject, text) {
@@ -60,6 +78,37 @@ const upload = multer({
 
 function generateOtp() {
   return Math.floor(1000 + Math.random() * 9000).toString();
+}
+
+// Password strength validation
+function validatePasswordStrength(password) {
+  const minLength = 8;
+  const hasUpperCase = /[A-Z]/.test(password);
+  const hasLowerCase = /[a-z]/.test(password);
+  const hasNumbers = /\d/.test(password);
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+  const errors = [];
+  if (password.length < minLength) {
+    errors.push(`Password must be at least ${minLength} characters long`);
+  }
+  if (!hasUpperCase) {
+    errors.push("Password must contain at least one uppercase letter");
+  }
+  if (!hasLowerCase) {
+    errors.push("Password must contain at least one lowercase letter");
+  }
+  if (!hasNumbers) {
+    errors.push("Password must contain at least one number");
+  }
+  if (!hasSpecialChar) {
+    errors.push("Password must contain at least one special character");
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
 }
 
 router.post("/send-otp", async (req, res) => {
@@ -184,7 +233,7 @@ router.post("/verify-otp", async (req, res) => {
 });
 
 
-router.post("/admin/login", async (req, res) => {
+router.post("/admin/login", authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -255,7 +304,7 @@ router.get("/admin/users", async (req, res) => {
   }
 });
 
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -506,7 +555,7 @@ router.post("/check-user-exists", async (req, res) => {
   }
 });
 
-router.post("/register", (req, res, next) => {
+router.post("/register", registrationLimiter, (req, res, next) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       // A Multer error occurred when uploading.
@@ -569,6 +618,16 @@ router.post("/register", (req, res, next) => {
       return res.json({
         success: false,
         message: "User already exists",
+      });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(data.password);
+    if (!passwordValidation.isValid) {
+      return res.json({
+        success: false,
+        message: "Password does not meet security requirements",
+        errors: passwordValidation.errors
       });
     }
 
@@ -762,6 +821,16 @@ router.post("/reset-password", async (req, res) => {
     const user = await db.UserDetail.findOne({ where: { email } });
     if (!user) {
       return res.json({ success: false, message: "User not found" });
+    }
+
+    // Validate password strength
+    const passwordValidation = validatePasswordStrength(newPassword);
+    if (!passwordValidation.isValid) {
+      return res.json({
+        success: false,
+        message: "Password does not meet security requirements",
+        errors: passwordValidation.errors
+      });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
