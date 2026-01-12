@@ -158,7 +158,14 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, [fetchData, checkPendingUpdate]);
 
+  const currentUserEmail = typeof window !== 'undefined' ? sessionStorage.getItem("userEmail")?.toLowerCase() : null;
+
   const filteredData = data.filter((item) => {
+    // Exclude own profile from search results
+    if (currentUserEmail && item.email && item.email.toLowerCase() === currentUserEmail) {
+      return false;
+    }
+
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     
@@ -182,7 +189,7 @@ export default function Dashboard() {
     );
   });
 
-  const currentUserEmail = typeof window !== 'undefined' ? sessionStorage.getItem("userEmail")?.toLowerCase() : null;
+
   
   const personalData = data.filter(item => item.email?.toLowerCase() === currentUserEmail);
   const otherData = data.filter(item => item.email?.toLowerCase() !== currentUserEmail);
