@@ -46,12 +46,15 @@ async function seedUsers() {
 }
 
 function createUserObj(name, gender, index, hashedPassword) {
-    // Real Stock Photos (LoremFlickr) with lock for consistency per user
-    // Using 'luxury car' to reduce chance of people in photos
-    const carImage = `https://loremflickr.com/400/400/luxury,car?lock=${index}`; 
-    const flowerImage = `https://loremflickr.com/400/400/flower?lock=${index}`;
+    // Using Picsum Photos with specific IDs for consistent, unchangeable images
+    // Male users get IDs 100-124, Female users get IDs 200-224
+    const maleImageId = 100 + index;
+    const femaleImageId = 200 + (index - 25);
     
-    const photoUrl = gender === "Male" ? carImage : flowerImage;
+    const photoUrl = gender === "Male" 
+        ? `https://picsum.photos/id/${maleImageId}/400/400`
+        : `https://picsum.photos/id/${femaleImageId}/400/400`;
+    
     const photoJson = JSON.stringify([photoUrl]);
 
     const isMale = gender === "Male";
