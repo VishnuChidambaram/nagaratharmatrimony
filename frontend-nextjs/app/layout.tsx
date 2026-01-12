@@ -212,11 +212,22 @@ export default function RootLayout({
         }
       };
 
+      // Listen for user login events
+      const handleUserLogin = (e: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+        const email = e.detail;
+        console.log("RootLayout: Received user-login", email);
+        if (email) {
+          setUserEmail(email);
+        }
+      };
+
       window.addEventListener("theme-sync", handleThemeChange);
+      window.addEventListener("user-login", handleUserLogin);
       
       // Cleanup listener
       return () => {
         window.removeEventListener("theme-sync", handleThemeChange);
+        window.removeEventListener("user-login", handleUserLogin);
       };
     }
   }, []);

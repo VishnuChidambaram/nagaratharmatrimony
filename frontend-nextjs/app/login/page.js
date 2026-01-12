@@ -112,6 +112,9 @@ export default function Login() {
 
           // Set cookie for middleware (not httpOnly as it's set by client-side JS)
           document.cookie = `userEmail=${email}; path=/; samesite=lax`;
+          
+          // Dispatch event to update layout menu profile
+          window.dispatchEvent(new CustomEvent('user-login', { detail: email }));
         }
         window.sessionStorage.setItem("userEmail", email);
 
