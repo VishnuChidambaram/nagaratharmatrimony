@@ -40,7 +40,7 @@ describe('Registration Validation API', () => {
       .post('/register')
       .send({}); // Missing everything
 
-    expect(res.statusCode).toBe(200);
+    expect(res.statusCode).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toBe('Validation failed');
     expect(res.body.errors).toContain('Name is required');

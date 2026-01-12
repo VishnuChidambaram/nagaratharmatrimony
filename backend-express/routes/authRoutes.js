@@ -8,6 +8,8 @@ import crypto from "crypto";
 import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 import rateLimit from "express-rate-limit";
 import { authLimiter, registrationLimiter } from "../middleware/rateLimiter.js";
+import validate from "../middleware/validation.js";
+import { loginSchema, registerSchema } from "../schemas/userSchemas.js";
 
 const router = express.Router();
 const SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
@@ -374,7 +376,7 @@ router.get("/admin/users", async (req, res) => {
   }
 });
 
-router.post("/login", authLimiter, async (req, res) => {
+router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -655,10 +657,10 @@ router.post("/register", registrationLimiter, (req, res, next) => {
   };
 
   try {
-    // Comprehensive field validation
+    // Registration still needs some manual parts for complex logic but Zod handles the basics.
     const fieldValidation = validateRegistrationFields(data);
     if (!fieldValidation.isValid) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Validation failed",
         errors: fieldValidation.errors
@@ -695,7 +697,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     });
 
     if (existingUser) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "User already exists",
       });

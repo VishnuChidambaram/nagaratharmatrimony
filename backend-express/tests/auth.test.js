@@ -43,7 +43,7 @@ describe('Authentication API', () => {
       // Mock finding a user
       db.UserDetail.findOne.mockResolvedValue({
         email: 'test@example.com',
-        password: 'password123',
+        password: 'Password123!',
         update: jest.fn().mockResolvedValue(true)
       });
 
@@ -51,7 +51,7 @@ describe('Authentication API', () => {
         .post('/login')
         .send({
           email: 'test@example.com',
-          password: 'password123'
+          password: 'Password123!'
         });
 
       expect(res.statusCode).toBe(200);
@@ -63,7 +63,7 @@ describe('Authentication API', () => {
       // Mock finding a user
       db.UserDetail.findOne.mockResolvedValue({
         email: 'test@example.com',
-        password: 'password123'
+        password: 'Password123!'
       });
 
       const res = await request(app)
@@ -84,7 +84,7 @@ describe('Authentication API', () => {
         .post('/login')
         .send({
           email: 'nonexistent@example.com',
-          password: 'password123'
+          password: 'Password123!'
         });
 
       expect(res.body.success).toBe(false);

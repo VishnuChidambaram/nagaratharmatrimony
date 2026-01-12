@@ -16,6 +16,9 @@ import userRoutes from "./routes/userRoutes.js";
 import updateRequestRoutes from "./routes/updateRequestRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import morgan from "morgan";
+import logger from "./utils/logger.js";
+import errorHandler from "./middleware/errorHandler.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,7 +50,12 @@ if (process.env.FRONTEND_URL) {
   });
 }
 
-console.log("CORS Configuration: Allowed Origins ->", allowedOrigins);
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms', {
+  stream: { write: (message) => logger.info(message.trim()) }
+}));
+
+logger.info(`CORS Configuration: Allowed Origins -> ${JSON.stringify(allowedOrigins)}`);
 
 app.use(
   cors({
@@ -75,7 +83,7 @@ app.use(express.urlencoded({ extended: true }));
 // Health check route for Render/monitoring - moved earlier for faster availability
 app.get("/api/health", (req, res) => {
   const timestamp = new Date().toISOString();
-  console.log(`[${timestamp}] Health check hit`);
+  logger.info(`Health check hit`);
   res.status(200).json({ 
     status: "ok", 
     timestamp,
@@ -112,29 +120,32 @@ app.use("/", updateRequestRoutes);
 app.use("/", notificationRoutes);
 app.use("/", uploadRoutes);
 
+// Error handling middleware (must be after all routes)
+app.use(errorHandler);
+
 async function initDB(retries = 5) {
   while (retries > 0) {
     try {
-      console.log(`Attempting database connection... (Retries left: ${retries})`);
-      console.log(`DB Host: ${process.env.DB_HOST}, User: ${process.env.DB_USER}, Database: ${process.env.DB_NAME}`);
+      logger.info(`Attempting database connection... (Retries left: ${retries})`);
+      logger.debug(`DB Host: ${process.env.DB_HOST}, User: ${process.env.DB_USER}, Database: ${process.env.DB_NAME}`);
       
       await db.sequelize.authenticate();
-      console.log("Connected to MySQL database successfully");
+      logger.info("Connected to MySQL database successfully");
 
       // Sync the model with the database
       // alter: true removed to prevent startup crashes on production
       await db.sequelize.sync(); 
       return; // Success
     } catch (error) {
-      console.error("Database connection attempt failed:", error.message);
+      logger.error(`Database connection attempt failed: ${error.message}`);
       retries -= 1;
       if (retries === 0) {
-        console.error("Max retries reached. Database connection failed.");
+        logger.error("Max retries reached. Database connection failed.");
         // We don't throw here to allow the server to keep running, 
         // but it will be in a "broken" state for DB-dependent routes.
         return;
       }
-      console.log("Waiting 5 seconds before next attempt...");
+      logger.info("Waiting 5 seconds before next attempt...");
       await new Promise(resolve => setTimeout(resolve, 5000));
     }
   }
@@ -144,14 +155,14 @@ const PORT = process.env.PORT || 5000;
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   app.listen(PORT, "0.0.0.0", async () => {
-    console.log(`Server is listening on 0.0.0.0:${PORT}`);
-    console.log("Cookie parser middleware initialized");
+    logger.info(`Server is listening on 0.0.0.0:${PORT}`);
+    logger.info("Cookie parser middleware initialized");
     
     // Initialize DB after server starts listening
     try {
       await initDB();
     } catch (err) {
-      console.error("Critical error during database initialization:", err);
+      logger.error(`Critical error during database initialization: ${err.message}`);
     }
   });
 }

@@ -36,8 +36,13 @@ describe('Registration API', () => {
     const res = await request(app)
       .post('/register')
       .field('email', 'new@example.com')
-      .field('password', 'password123')
-      .field('phone', '1234567890');
+      .field('password', 'Password123!')
+      .field('phone', '1234567890')
+      .field('firstName', 'John')
+      .field('lastName', 'Doe')
+      .field('gender', 'Male')
+      .field('dateOfBirth', '1990-01-01')
+      .field('mobileNumber', '1234567890');
       // Intentionally not attaching file to avoid multer complexity in basic test
 
     expect(res.statusCode).toBe(200);
@@ -51,8 +56,15 @@ describe('Registration API', () => {
     const res = await request(app)
       .post('/register')
       .field('email', 'existing@example.com')
-      .field('password', 'password123');
+      .field('password', 'Password123!')
+      .field('phone', '1234567890')
+      .field('firstName', 'John')
+      .field('lastName', 'Doe')
+      .field('gender', 'Male')
+      .field('dateOfBirth', '1990-01-01')
+      .field('mobileNumber', '1234567890');
 
+    expect(res.statusCode).toBe(400);
     expect(res.body.success).toBe(false);
     expect(res.body.message).toBe('User already exists');
   });
