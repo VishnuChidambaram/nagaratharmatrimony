@@ -276,7 +276,19 @@ router.post("/login", async (req, res) => {
       });
     }
 
-    const isMatch = password === user.password;
+    let isMatch = false;
+    // Check if password is already hashed (bcrypt hashes typically start with $2b$ or $2a$)
+    if (user.password && (user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$'))) {
+        isMatch = await bcrypt.compare(password, user.password);
+    } else {
+        // Fallback for legacy plain text passwords
+        if (user.password === password) {
+            isMatch = true;
+            // Upgrade security: Hash the password and update
+            const newHash = await bcrypt.hash(password, 10);
+            await user.update({ password: newHash });
+        }
+    }
 
     if (isMatch) {
       // Check if user is already logged in
@@ -561,7 +573,7 @@ router.post("/register", (req, res, next) => {
     }
 
     // Create new user with cleaned data
-    const hashedPassword = data.password;
+    const hashedPassword = await bcrypt.hash(data.password, 10);
     await db.UserDetail.create({
       name: data.name || null,
       email: data.email || null,
@@ -752,7 +764,8 @@ router.post("/reset-password", async (req, res) => {
       return res.json({ success: false, message: "User not found" });
     }
 
-    await db.UserDetail.update({ password: newPassword }, { where: { email } });
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await db.UserDetail.update({ password: hashedPassword }, { where: { email } });
     res.json({ success: true, message: "Password reset successful" });
   } catch (error) {
     console.error("Reset password error:", error);
