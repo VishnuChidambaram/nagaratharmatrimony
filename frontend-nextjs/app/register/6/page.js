@@ -1410,6 +1410,7 @@ export default function Step6() {
                 📷 No photos uploaded yet. Select photos above to get started.
               </div>
             )}
+            {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
           </div>
         </div>
       </div>
@@ -1423,6 +1424,7 @@ export default function Step6() {
           </button>
         </div>
         <div style={styles.rightColumn}>
+          {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
           <button style={styles.button1} onClick={next}>
             {t("Next", language)}
           </button>

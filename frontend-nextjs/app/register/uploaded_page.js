@@ -177,7 +177,7 @@ export default function RegisterStep({ params }) {
   const [error, setError] = useState("");
 
   // Helper function to sanitize saved form data to ensure all keys have defined string values
-  const sanitizeFormData = (data) => {
+  const sanitizeFormData = useCallback((data) => {
     const sanitized = {};
     for (const key in formData) {
       sanitized[key] =
@@ -186,7 +186,7 @@ export default function RegisterStep({ params }) {
           : "";
     }
     return sanitized;
-  };
+  }, [formData]);
 
   useEffect(() => {
     if (isNaN(step) || step < 1 || step > 7) {

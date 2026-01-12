@@ -752,6 +752,7 @@ export default function Step1() {
       <div style={styles.formContainer} className="button-container">
         <div style={styles.leftColumn}></div>
         <div style={styles.rightColumn}>
+          {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
           <button style={styles.button1} onClick={next}>
             {t("Next", language)}
           </button>

@@ -130,7 +130,7 @@ export default function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [t, router]);
 
   const checkPendingUpdate = useCallback(async (email) => {
     try {
@@ -165,7 +165,7 @@ export default function Dashboard() {
     // Check pending status every 15 seconds
     const interval = setInterval(() => checkPendingUpdate(userEmail), 15000);
     return () => clearInterval(interval);
-  }, [fetchData, checkPendingUpdate]);
+  }, [fetchData, checkPendingUpdate, router]);
 
   const currentUserEmail = typeof window !== 'undefined' ? sessionStorage.getItem("userEmail")?.toLowerCase() : null;
 
