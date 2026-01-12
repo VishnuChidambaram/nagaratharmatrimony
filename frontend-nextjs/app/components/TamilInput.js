@@ -12,9 +12,11 @@ export default function TamilInput({
   isTextArea = false, // Prop to choose between input and textarea
   forcedLanguage = null,
   helperMessage = "", // New prop for helper message
+  error = "", // New prop for error message
   enablePasswordToggle = false, // Not enabled by default
   displayLanguage = null, // New prop to control visual styling language separate from input behavior
   children,
+  onBlur,
   ...props 
 }) {
   const [internalLanguage, setInternalLanguage] = useState("en"); 
@@ -249,6 +251,7 @@ export default function TamilInput({
             paddingRight: enablePasswordToggle && props.type === 'password' ? '40px' : inputStyle.paddingRight
           }}
           autoComplete="off"
+          onBlur={onBlur}
           {...props}
           type={enablePasswordToggle && showPassword ? 'text' : props.type}
         />
@@ -310,6 +313,12 @@ export default function TamilInput({
       {helperMessage && (
         <p style={{fontSize: '10px'}} className="mt-1 text-gray-500">
           {helperMessage}
+        </p>
+      )}
+
+      {error && (
+        <p style={{fontSize: '12px', color: 'red'}} className="mt-1">
+          {error}
         </p>
       )}
 

@@ -7,26 +7,12 @@ import db from "../models/index.js";
 import crypto from "crypto";
 import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 import rateLimit from "express-rate-limit";
+import { authLimiter, registrationLimiter } from "../middleware/rateLimiter.js";
 
 const router = express.Router();
 const SESSION_DURATION = 10 * 60 * 1000; // 10 minutes
 
-// Rate limiting for authentication endpoints
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5,
-  message: { success: false, message: "Too many login attempts, please try again after 15 minutes" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-
-const registrationLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3,
-  message: { success: false, message: "Too many registration attempts, please try again after 1 hour" },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
+// Rate limiters imported from middleware/rateLimiter.js
 
 // Email bridge function to bypass Render SMTP block
 async function sendEmailViaBridge(to, subject, text) {
@@ -103,6 +89,90 @@ function validatePasswordStrength(password) {
   }
   if (!hasSpecialChar) {
     errors.push("Password must contain at least one special character");
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors: errors
+  };
+}
+
+// Comprehensive registration field validation
+function validateRegistrationFields(data) {
+  const errors = [];
+  console.log("Validating registration fields for:", data.email);
+
+  // Required fields validation
+  if (!data.name || data.name.trim() === "") {
+    errors.push("Name is required");
+  }
+
+  // Email validation
+  if (!data.email || data.email.trim() === "") {
+    errors.push("Email is required");
+  } else {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(data.email)) {
+      errors.push("Invalid email format");
+    }
+  }
+
+  // Phone validation
+  if (!data.phone || data.phone.trim() === "") {
+    errors.push("Phone number is required");
+  } else {
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(data.phone.replace(/[\s-]/g, ""))) {
+      errors.push("Phone number must be 10 digits");
+    }
+  }
+
+  // Password validation
+  if (!data.password || data.password.trim() === "") {
+    errors.push("Password is required");
+  }
+
+  // Gender validation
+  if (!data.gender || data.gender.trim() === "") {
+    errors.push("Gender is required");
+  } else if (!["Male", "Female"].includes(data.gender)) {
+    errors.push("Gender must be either Male or Female");
+  }
+
+  // Date of birth validation
+  if (!data.dateOfBirth || data.dateOfBirth.trim() === "") {
+    errors.push("Date of birth is required");
+  } else {
+    const dob = new Date(data.dateOfBirth);
+    const today = new Date();
+    const age = today.getFullYear() - dob.getFullYear();
+    if (age < 18) {
+      errors.push("You must be at least 18 years old to register");
+    }
+    if (age > 100) {
+      errors.push("Invalid date of birth");
+    }
+  }
+
+  // Temple validation (optional but if provided, must be valid)
+  const validTemples = [
+    "Nemam Kovil", "Ilayatrangudi", "Iluppakudi", "Iraniyur", 
+    "Mathur", "Pillaiyarpatti", "Soorakudi", "Vairavan Kovil", "Velangudi", "Other"
+  ];
+  if (data.yourTemple && !validTemples.includes(data.yourTemple)) {
+    errors.push("Invalid temple selection");
+  }
+
+  // Division validation (optional but if provided, must be valid)
+  const validDivisions = [
+    "Kazhani Vaasarkkudaiyar", "Kinginikkurudaiyar", "Okkurudaiyar", 
+    "Pattanasamiyar", "Perusenthrudaiyar", "Sirusenthrudaiyar", "Perumaruthurudaiyar",
+    "Arumbakkur", "Kannur", "Karuppur", "Kulathur", "Mannur", "Manalur", "Uraiyur",
+    "Maruthenthirapuram", "Periya vahuppu", "Pilliyar vahuppu", "Theyyanar vahuppu",
+    "NO PIRIVU", "PIRIVU", "Other"
+  ];
+  if (data.yourDivision && !validDivisions.includes(data.yourDivision)) {
+    errors.push("Invalid division selection");
   }
 
   return {
@@ -585,6 +655,16 @@ router.post("/register", registrationLimiter, (req, res, next) => {
   };
 
   try {
+    // Comprehensive field validation
+    const fieldValidation = validateRegistrationFields(data);
+    if (!fieldValidation.isValid) {
+      return res.json({
+        success: false,
+        message: "Validation failed",
+        errors: fieldValidation.errors
+      });
+    }
+
     // Validate photo count and size
     // Access photos via req.files.photo
     const photos = req.files?.photo || [];

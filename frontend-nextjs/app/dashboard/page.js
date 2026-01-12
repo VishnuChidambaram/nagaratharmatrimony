@@ -22,6 +22,7 @@ export default function Dashboard() {
   const [unlockedUsers, setUnlockedUsers] = useState([]); // Changed: Track list of unlocked emails
   const [newPhotoPassword, setNewPhotoPassword] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [notification, setNotification] = useState(null); // New: Notification state
 
   const [pendingUpdateStatus, setPendingUpdateStatus] = useState(false); // Track if user has pending update
@@ -82,6 +83,14 @@ export default function Dashboard() {
       }
     }
   };
+
+  // Debounce search term
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Auto-hide error messages after 2 seconds
   useEffect(() => {
@@ -166,8 +175,8 @@ export default function Dashboard() {
       return false;
     }
 
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
+    if (!debouncedSearchTerm) return true;
+    const term = debouncedSearchTerm.toLowerCase();
     
     if (searchField) {
       const value = item[searchField];
@@ -178,6 +187,8 @@ export default function Dashboard() {
       (item.name && item.name.toLowerCase().includes(term)) ||
       (item.email && item.email.toLowerCase().includes(term)) ||
       (item.phone && item.phone.toLowerCase().includes(term)) ||
+      (item.yourTemple && item.yourTemple.toLowerCase().includes(term)) ||
+      (item.yourDivision && item.yourDivision.toLowerCase().includes(term)) ||
       (item.description && item.description.toLowerCase().includes(term)) ||
       (item.educationQualification &&
         item.educationQualification.toLowerCase().includes(term)) ||
@@ -469,6 +480,18 @@ export default function Dashboard() {
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6), 0 0 30px rgba(40, 167, 69, 0.4);
           }
+        }
+        @keyframes spinner {
+          to { transform: rotate(360deg); }
+        }
+        .loading-spinner {
+          width: 50px;
+          height: 50px;
+          border: 4px solid rgba(40, 167, 69, 0.1);
+          border-left-color: #28a745;
+          border-radius: 50%;
+          animation: spinner 0.8s linear infinite;
+          margin: 0 auto 20px;
         }
         .modal {
           position: fixed;
@@ -860,6 +883,8 @@ export default function Dashboard() {
                <option value="name">{t("Name")}</option>
                <option value="user_id">{t("User ID")}</option>
                <option value="phone">{t("Phone")}</option>
+               <option value="yourTemple">{t("Temple")}</option>
+               <option value="yourDivision">{t("Division")}</option>
                <option value="nativePlace">{t("Native Place")}</option>
                <option value="educationQualification">{t("Education Details")}</option>
                <option value="workDetails">{t("Work Details")}</option>
@@ -897,19 +922,55 @@ export default function Dashboard() {
       <div className={`scrollable-content ${view === "dashboard" ? "no-scroll-desktop" : ""}`}>
         {/* Loading/Error States */}
         {loading ? (
-          <div style={{ textAlign: "center", padding: "40px" }}>
-            <p style={{ fontSize: "18px" }}>{t("Loading data...")}</p>
+          <div 
+            data-testid="loading-state"
+            style={{ 
+            flex: 1, 
+            display: "flex", 
+            flexDirection: "column", 
+            justifyContent: "center", 
+            alignItems: "center", 
+            padding: "40px" 
+          }}>
+            <div className="loading-spinner"></div>
+            <p style={{ fontSize: "18px", color: "var(--page-text)", opacity: 0.8 }}>{t("Loading data...")}</p>
           </div>
         ) : error ? (
           <div
+            data-testid="error-state"
             style={{
-              textAlign: "center",
+              flex: 1,
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
               padding: "40px",
-              backgroundColor: "#fee",
-              borderRadius: "8px",
             }}
           >
-            <p style={{ fontSize: "18px", color: "#c00" }}>{error}</p>
+            <div style={{
+              background: "rgba(255, 68, 68, 0.1)",
+              padding: "30px",
+              borderRadius: "16px",
+              border: "1px solid rgba(255, 68, 68, 0.2)",
+              textAlign: "center",
+              maxWidth: "400px"
+            }}>
+               <div style={{ fontSize: "40px", marginBottom: "15px" }}>⚠️</div>
+               <p style={{ fontSize: "18px", color: "#ff4444", margin: 0 }}>{error}</p>
+               <button 
+                  onClick={() => fetchData()} 
+                  style={{
+                    marginTop: "20px",
+                    padding: "10px 20px",
+                    background: "#ff4444",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer"
+                  }}
+               >
+                 {t("Retry")}
+               </button>
+            </div>
           </div>
         ) : (
           /* Grid Container */

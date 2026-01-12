@@ -232,6 +232,16 @@ export default function RootLayout({
     }
   }, []);
 
+  // Sync userEmail whenever pathname changes to ensure profile is up-to-date
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedEmail = sessionStorage.getItem("userEmail");
+      if (savedEmail && savedEmail !== userEmail) {
+        setUserEmail(savedEmail);
+      }
+    }
+  }, [pathname, userEmail]);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (
