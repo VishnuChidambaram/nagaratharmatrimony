@@ -8,7 +8,8 @@ import { API_URL } from "./config.js";
  */
 export const getPhotoUrls = (item) => {
   if (!item) return [];
-  const photoData = item.photo;
+  // Prioritize 'photos' array over legacy 'photo' field
+  const photoData = item.photos || item.photo;
   let photoPaths = [];
 
   if (photoData) {
@@ -39,8 +40,11 @@ export const getPhotoUrls = (item) => {
   return photoPaths
     .map((p) => {
       if (!p) return null;
+      // Handle File objects - they should be handled by the component using URL.createObjectURL
+      // but for this utility we just return null as it can't generate a stable URL without cleanup
       if (typeof p !== "string") return null;
       if (p.startsWith("http")) return p;
+      if (p.startsWith("blob:")) return p; // Handle existing blob URLs
 
       // Handle full-path strings that might already contain the API_URL (not ideal but safe)
       if (API_URL && p.startsWith(API_URL)) return p;

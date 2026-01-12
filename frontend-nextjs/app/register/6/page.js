@@ -862,9 +862,21 @@ export default function Step6() {
 
   useEffect(() => {
     if (isLoaded && form) {
-      const urls = getPhotoUrls(form);
-      setImageUrls(urls);
-      setPhotoFiles(form.photos || (form.photo ? (Array.isArray(form.photo) ? form.photo : [form.photo]) : []));
+      const photosArray = form.photos || (form.photo ? (Array.isArray(form.photo) ? form.photo : [form.photo]) : []);
+      
+      const combinedUrls = photosArray.map(photo => {
+        if (typeof photo === 'string') {
+          // Resolve string using getPhotoUrls for consistent formatting
+          const resolved = getPhotoUrls({ photo: photo });
+          return resolved.length > 0 ? resolved[0] : null;
+        } else if (photo instanceof File) {
+          return URL.createObjectURL(photo);
+        }
+        return null;
+      }).filter(url => url !== null);
+      
+      setImageUrls(combinedUrls);
+      setPhotoFiles(photosArray);
       
       const calculateTotalSize = async () => {
         let totalCalculatedSize = 0;
@@ -891,6 +903,15 @@ export default function Step6() {
       };
       calculateTotalSize();
     }
+    
+    // Cleanup function to revoke blob URLs
+    return () => {
+      imageUrls.forEach(url => {
+        if (url && url.startsWith('blob:')) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
   }, [form.photos, form.photo, isLoaded]);
   const validateField = (name, value) => {
     let errorMsg = "";
@@ -1013,7 +1034,7 @@ export default function Step6() {
     setPhotoFiles(updatedPhotos);
     setImageUrls(updatedUrls);
     setTotalSize(newTotalSize);
-    setForm((p) => ({ ...p, photos: updatedPhotos }));
+    setForm((p) => ({ ...p, photos: updatedPhotos, photo: null }));
   };
   const validate = () => {
     if (!form.fullStreetAddress.trim())
