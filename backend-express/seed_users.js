@@ -46,9 +46,9 @@ async function seedUsers() {
 }
 
 function createUserObj(name, gender, index, hashedPassword) {
-    // Real Stock Photos (LoremFlickr)
-    const carImage = "https://loremflickr.com/400/400/car"; 
-    const flowerImage = "https://loremflickr.com/400/400/flower";
+    // Real Stock Photos (LoremFlickr) with lock for consistency per user
+    const carImage = `https://loremflickr.com/400/400/car?lock=${index}`; 
+    const flowerImage = `https://loremflickr.com/400/400/flower?lock=${index}`;
     
     const photoUrl = gender === "Male" ? carImage : flowerImage;
     const photoJson = JSON.stringify([photoUrl]);
