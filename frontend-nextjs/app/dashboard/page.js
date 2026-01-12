@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
 import { API_URL } from "@/app/utils/config";
@@ -68,7 +69,7 @@ export default function Dashboard() {
     fetchNotifications(); // Fetch on mount
     const interval = setInterval(fetchNotifications, 10000); // Poll every 10 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [t]); // Added t as dependency
 
   const handleDismissNotification = async () => {
     if (notification) {
@@ -1183,13 +1184,12 @@ export default function Dashboard() {
 
                             return (
                                 <div style={{ display: 'flex', flexDirection: 'column', marginRight: "15px" }}>
-                                    <img
-                                      loading="lazy"
+                                    <Image
                                       src={mainPhoto}
                                       alt={item.name}
+                                      width={80}
+                                      height={80}
                                       style={{
-                                        width: "80px",
-                                        height: "80px",
                                         borderRadius: "50%",
                                         objectFit: "cover",
                                         cursor: "pointer",
@@ -1206,14 +1206,13 @@ export default function Dashboard() {
                                     {isOwnCard && allPhotos.length > 1 && (
                                         <div style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap', maxWidth: '100px' }}>
                                             {allPhotos.slice(1).map((photo, idx) => (
-                                                <img 
-                                                    loading="lazy"
+                                                <Image 
                                                     key={idx}
                                                     src={photo}
                                                     alt="thumb"
+                                                    width={30}
+                                                    height={30}
                                                     style={{
-                                                        width: "30px",
-                                                        height: "30px",
                                                         borderRadius: "50%",
                                                         objectFit: "cover",
                                                         cursor: "pointer",
@@ -1545,14 +1544,13 @@ export default function Dashboard() {
                   if (imageUrl) {
                       return (
                         <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                          <img
-                            loading="lazy"
+                          <Image
                             className="profile-photo"
                             src={imageUrl}
                             alt={selectedUser.name}
+                            width={120}
+                            height={120}
                             style={{
-                              width: "120px",
-                              height: "120px",
                               borderRadius: "50%",
                               objectFit: "cover",
                               border: "2px solid var(--input-border)",
@@ -2239,14 +2237,13 @@ export default function Dashboard() {
                                   marginTop: "10px"
                                 }}>
                                   {allPhotos.map((photoUrl, index) => (
-                                    <img 
-                                      loading="lazy"
+                                    <Image 
                                       key={index}
                                       src={photoUrl}
                                       alt={`User Photo ${index + 1}`}
+                                      width={230}
+                                      height={230}
                                       style={{ 
-                                        width: "230px", 
-                                        height: "230px", 
                                         borderRadius: "8px",
                                         objectFit: "cover",
                                         border: "1px solid var(--input-border)",
@@ -2340,10 +2337,11 @@ export default function Dashboard() {
               <div style={{ position: 'relative', marginBottom: isOwner ? "20px" : "0" }}>
                   {!isPrivacyMode && (
                     <>
-                      <img
-                        loading="lazy"
+                      <Image
                         src={selectedImage}
                         alt="Full size"
+                        width={800} // Large enough for high quality, layout will respect max-width
+                        height={600}
                         style={{
                           maxWidth: "100%",
                           maxHeight: "70vh", // Reduced to make room for inputs
@@ -2352,7 +2350,9 @@ export default function Dashboard() {
                           backgroundColor: "white",
                           display: "block",
                           filter: isBlur ? "blur(20px)" : "none",
-                          transition: "filter 0.3s ease"
+                          transition: "filter 0.3s ease",
+                          width: 'auto',
+                          height: 'auto'
                         }}
                       />
                   

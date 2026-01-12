@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { API_URL } from "../../utils/config";
 import { getPhotoUrl } from "../../utils/photoUtils";
+import Image from "next/image";
 
 export default function PreviewDetail() {
   const { email } = useParams();
@@ -164,13 +165,12 @@ export default function PreviewDetail() {
               const photoUrl = getPhotoUrl(detailData);
               return photoUrl ? (
                 <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                  <img
-                    loading="lazy"
+                  <Image
                     src={photoUrl}
                     alt={detailData.name}
+                    width={120}
+                    height={120}
                     style={{
-                      width: "120px",
-                      height: "120px",
                       borderRadius: "50%",
                       objectFit: "cover",
                       border: "2px solid var(--input-border)",

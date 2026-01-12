@@ -8,6 +8,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/translations";
 import { API_URL } from "../../../utils/config";
 import { getPhotoUrls } from "../../../utils/photoUtils";
+import Image from "next/image";
 
 // Field Groups matching Registration Pages
 const FIELD_GROUPS = {
@@ -201,12 +202,13 @@ function UserDetailCard({ user, editFormData, onSave, onCancel, onInputChange })
                             return photoUrls.length > 0 ? (
                               <div style={{ display: "flex", gap: "15px", overflowX: "auto", paddingBottom: "10px" }}>
                                 {photoUrls.map((photoUrl, index) => (
-                                  <img 
-                                    loading="lazy"
+                                  <Image 
                                     key={index}
                                     src={photoUrl}
                                     alt={`User Photo ${index + 1}`}
-                                    style={{ width: "150px", height: "150px", objectFit: "cover", borderRadius: "8px", border: "1px solid var(--input-border)" }}
+                                    width={150}
+                                    height={150}
+                                    style={{ objectFit: "cover", borderRadius: "8px", border: "1px solid var(--input-border)" }}
                                   />
                                 ))}
                               </div>

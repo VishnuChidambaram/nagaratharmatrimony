@@ -6,6 +6,7 @@ import { useLanguage } from "../../../hooks/useLanguage";
 import { translations } from "../../../utils/translations";
 import { API_URL } from "../../../utils/config";
 import { getPhotoUrls } from "../../../utils/photoUtils";
+import Image from "next/image";
 
 export default function ReviewRequest() {
   const { id } = useParams();
@@ -152,16 +153,16 @@ export default function ReviewRequest() {
         return (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
             {photoUrls.map((photoSrc, idx) => (
-                <img
-                  loading="lazy"
+                <Image
                   key={idx}
                   src={photoSrc}
                   alt={`Photo ${idx + 1}`}
+                  width={100}
+                  height={100}
                   style={{
-                    maxWidth: "100px",
-                    maxHeight: "100px",
                     borderRadius: "4px",
                     border: "1px solid var(--input-border)",
+                    objectFit: "cover"
                   }}
                   onError={(e) => {
                     console.error("Failed to load photo:", photoSrc);

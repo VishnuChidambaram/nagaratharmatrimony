@@ -9,6 +9,7 @@ import { useLanguage } from "@/app/hooks/useLanguage";
 import TamilInput from "@/app/components/TamilInput";
 import { API_URL } from "@/app/utils/config";
 import { normalizeDropdownValue } from "@/app/utils/normalization";
+import Image from "next/image";
 
 // List of Indian states
 const indianStates = [
@@ -1285,10 +1286,11 @@ export default function Page() {
                       aspectRatio: "1/1"
                     }}
                   >
-                    <img
-                      loading="lazy"
+                    <Image
                       src={url}
                       alt={`Photo ${index + 1}`}
+                      width={130}
+                      height={130}
                       style={{
                         width: "100%",
                         height: "100%",

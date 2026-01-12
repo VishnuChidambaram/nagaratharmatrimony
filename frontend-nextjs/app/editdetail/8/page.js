@@ -8,6 +8,7 @@ import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
+import Image from "next/image";
 import "./../editdetail.css";
 
 export default function EditStep8() {
@@ -390,19 +391,20 @@ export default function EditStep8() {
                 }
                 
                 return photoSrc ? (
-                  <img
-                    loading="lazy"
+                  <Image
                     key={idx}
                     src={photoSrc}
                     alt={`Photo ${idx + 1}`}
+                    width={100}
+                    height={100}
                     style={{
-                      maxWidth: "100px",
-                      maxHeight: "100px",
                       borderRadius: "4px",
                       border: "1px solid var(--input-border)",
+                      objectFit: "cover"
                     }}
                     onError={(e) => {
                       console.error("Failed to load photo:", photo);
+                      // Fallback or hide
                       e.target.style.display = "none";
                     }}
                   />
@@ -425,15 +427,15 @@ export default function EditStep8() {
          }
          
          return photoSrc ? (
-            <img
-              loading="lazy"
+            <Image
               src={photoSrc}
               alt="Photo"
+              width={100}
+              height={100}
               style={{
-                maxWidth: "100px",
-                maxHeight: "100px",
                 borderRadius: "4px",
                 border: "1px solid var(--input-border)",
+                objectFit: "cover"
               }}
               onError={(e) => {
                 console.error("Failed to load photo:", val);

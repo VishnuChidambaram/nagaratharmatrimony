@@ -7,6 +7,7 @@ import "./globals.css";
 import { LanguageProvider, useLanguage } from "./context/LanguageContext";
 import { t as translate } from "./utils/translations";
 import NotificationToast from "./components/NotificationToast";
+import Image from "next/image";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -381,12 +382,12 @@ export default function RootLayout({
               gap: "10px",
             }}
           >
-            <img 
+            <Image 
               src="/logo.png" 
               alt="Logo" 
+              width={40}
+              height={40}
               style={{ 
-                height: "40px", 
-                width: "40px", 
                 borderRadius: "50%",
                 objectFit: "cover" 
               }} 

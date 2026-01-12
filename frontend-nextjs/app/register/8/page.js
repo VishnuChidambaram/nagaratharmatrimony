@@ -9,6 +9,7 @@ import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import Image from "next/image";
 
 export default function Step8() {
   const router = useRouter();
@@ -721,8 +722,7 @@ export default function Step8() {
                       {k === "photos" && form[k] && Array.isArray(form[k]) ? (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
                           {form[k].map((photo, idx) => (
-                            <img
-                              loading="lazy"
+                            <Image
                               key={idx}
                               src={
                                 typeof photo === "string"
@@ -734,29 +734,30 @@ export default function Step8() {
                                   : ""
                               }
                               alt={`Photo ${idx + 1}`}
+                              width={100}
+                              height={100}
                               style={{
-                                maxWidth: "100px",
-                                maxHeight: "100px",
                                 borderRadius: "4px",
                                 border: "1px solid var(--input-border)",
+                                objectFit: "cover"
                               }}
                             />
                           ))}
                         </div>
                       ) : k === "photo" && form[k] ? (
-                        <img
-                          loading="lazy"
+                        <Image
                           src={
                             typeof form[k] === "string"
                               ? form[k]
                               : URL.createObjectURL(form[k])
                           }
                           alt="Photo"
+                          width={100}
+                          height={100}
                           style={{
-                            maxWidth: "100px",
-                            maxHeight: "100px",
                             borderRadius: "4px",
                             border: "1px solid var(--input-border)",
+                            objectFit: "cover"
                           }}
                         />
                       ) : (
@@ -772,8 +773,7 @@ export default function Step8() {
                       {k === "photos" && form[k] && Array.isArray(form[k]) ? (
                         <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
                           {form[k].map((photo, idx) => (
-                            <img
-                              loading="lazy"
+                            <Image
                               key={idx}
                               src={
                                 typeof photo === "string"
@@ -785,29 +785,30 @@ export default function Step8() {
                                   : ""
                               }
                               alt={`Photo ${idx + 1}`}
+                              width={100}
+                              height={100}
                               style={{
-                                maxWidth: "100px",
-                                maxHeight: "100px",
                                 borderRadius: "4px",
                                 border: "1px solid var(--input-border)",
+                                objectFit: "cover"
                               }}
                             />
                           ))}
                         </div>
                       ) : k === "photo" && form[k] ? (
-                        <img
-                          loading="lazy"
+                        <Image
                           src={
                             typeof form[k] === "string"
                               ? form[k]
                               : URL.createObjectURL(form[k])
                           }
                           alt="Photo"
+                          width={100}
+                          height={100}
                           style={{
-                            maxWidth: "100px",
-                            maxHeight: "100px",
                             borderRadius: "4px",
                             border: "1px solid var(--input-border)",
+                            objectFit: "cover"
                           }}
                         />
                       ) : (

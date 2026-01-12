@@ -9,6 +9,7 @@ import LanguageToggle from "@/app/components/LanguageToggle";
 import { t } from "@/app/utils/translations";
 import { useLanguage } from "../../hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
+import Image from "next/image";
 
 
 // List of Indian states
@@ -1359,10 +1360,11 @@ export default function Step6() {
                       border: "1px solid var(--input-border)",
                     }}
                   >
-                    <img
-                      loading="lazy"
+                    <Image
                       src={url}
                       alt={`Photo ${index + 1}`}
+                      width={150}
+                      height={150}
                       style={{
                         width: "100%",
                         height: "150px",

@@ -7,6 +7,7 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import styles from "./dashboard.module.css";
 import { API_URL } from "../../utils/config";
 import { getPhotoUrl } from "../../utils/photoUtils";
+import Image from "next/image";
 
   // Field Groups matching Registration Pages
   const FIELD_GROUPS = {
@@ -214,13 +215,12 @@ import { getPhotoUrl } from "../../utils/photoUtils";
                           const photoUrl = getPhotoUrl(user);
                           
                           return photoUrl ? (
-                            <img 
-                              loading="lazy"
+                            <Image 
                               src={photoUrl}
                               alt="User Photo"
+                              width={150}
+                              height={150}
                               style={{ 
-                                maxWidth: "150px", 
-                                maxHeight: "150px", 
                                 borderRadius: "8px",
                                 objectFit: "cover",
                                 border: "1px solid var(--input-border)",
