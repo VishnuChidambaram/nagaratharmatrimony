@@ -15,14 +15,14 @@ router.post("/api/update-requests", async (req, res) => {
       });
     }
 
-    // Strict Auth Check
-    if (!req.user || req.user.email !== user_email) {
+    // Strict Auth Check (Case Insensitive)
+    if (!req.user || req.user.email.toLowerCase() !== user_email.toLowerCase()) {
         return res.status(401).json({ success: false, message: "Unauthorized request" });
     }
 
-    // Fetch current user data as original_data
+    // Fetch current user data using authenticated email
     const currentUser = await db.UserDetail.findOne({
-      where: { email: user_email },
+      where: { email: req.user.email },
     });
 
     if (!currentUser) {
@@ -38,7 +38,7 @@ router.post("/api/update-requests", async (req, res) => {
     // Create update request
     const updateRequest = await db.UpdateRequest.create({
       user_id: currentUser.user_id,
-      user_email: user_email,
+      user_email: req.user.email, // Use consistent, authenticated email
       original_data: original_data,
       new_data: new_data,
       status: "pending",
