@@ -13,7 +13,7 @@ import { API_URL } from "@/app/utils/config";
 export default function Step1() {
   const router = useRouter();
   const [form, setForm] = useState(defaultFormData);
-  const [errors, setErrors] = useState({});
+
   const [error, setError] = useState("");
   const [isLoaded, setIsLoaded] = useState(false);
   const { language, toggleLanguage } = useLanguage();
@@ -52,41 +52,7 @@ export default function Step1() {
     }
   }, [form, isLoaded]);
 
-  const validateField = (name, value) => {
-    let errorMsg = "";
-    switch (name) {
-      case "name":
-        if (!value.trim()) errorMsg = "Name is required";
-        break;
-      case "gender":
-        if (!value) errorMsg = "Gender is required";
-        break;
-      case "password":
-        if (!value.trim()) errorMsg = "Password is required";
-        else {
-          const letters = (value.match(/[a-zA-Z]/g) || []).length;
-          const numbers = (value.match(/[0-9]/g) || []).length;
-          const specialChars = (value.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
-          if (letters < 5) errorMsg = "At least 5 letters required";
-          else if (numbers < 2) errorMsg = "At least 2 numbers required";
-          else if (specialChars < 1) errorMsg = "At least 1 special character required";
-        }
-        break;
-      case "confirmPassword":
-        if (!value.trim()) errorMsg = "Confirm Password is required";
-        else if (value !== form.password) errorMsg = "Passwords must match";
-        break;
-      case "phone":
-        if (value && !/^\d{10}$/.test(value)) errorMsg = "Phone number must be 10 digits";
-        break;
-      case "pincode":
-        if (value && value !== "NA" && !/^\d{6}$/.test(value)) errorMsg = "Pincode must be 6 digits";
-        break;
-      default:
-        break;
-    }
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
-  };
+
 
   const getDivisionOptions = (temple) => {
     if (temple === "Ilayatrangudi") {
@@ -143,11 +109,7 @@ export default function Step1() {
       }
       return updatedForm;
     });
-    validateField(name, value);
     setError(""); // Clear global error on any field change
-    if (name === "password" && form.confirmPassword) {
-      validateField("confirmPassword", form.confirmPassword);
-    }
   };
 
   const nativePlaceOptions = [
@@ -230,76 +192,30 @@ export default function Step1() {
     "Viramathi – 630212",
   ];
   const validate = () => {
-    let firstError = "";
-    const newErrors = {};
-
-    if (!form.name.trim()) {
-      newErrors.name = "Name is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.name;
-    }
-    if (!form.gender) {
-      newErrors.gender = "Gender is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.gender;
-    }
-    if (!form.password.trim()) {
-      newErrors.password = "Create Password is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.password;
-    }
+    if (!form.name.trim()) return "Name is required OR Enter NA for unknown fields";
+    if (!form.gender) return "Gender is required OR Enter NA for unknown fields";
+    if (!form.password.trim()) return "Create Password is required OR Enter NA for unknown fields";
     
-    else {
-      const letters = (form.password.match(/[a-zA-Z]/g) || []).length;
-      const numbers = (form.password.match(/[0-9]/g) || []).length;
-      const specialChars = (form.password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
-      
-      if (letters < 5)  {
-        newErrors.password = "Password must contain at least 5 letters";
-        if (!firstError) firstError = newErrors.password;
-      } else if (numbers < 2) {
-        newErrors.password = "Password must contain at least 2 numbers";
-        if (!firstError) firstError = newErrors.password;
-      } else if (specialChars < 1) {
-        newErrors.password = "Password must contain at least 1 special character";
-        if (!firstError) firstError = newErrors.password;
-      }
-    }
+    const letters = (form.password.match(/[a-zA-Z]/g) || []).length;
+    const numbers = (form.password.match(/[0-9]/g) || []).length;
+    const specialChars = (form.password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/g) || []).length;
     
-    if (!form.confirmPassword.trim()) {
-      newErrors.confirmPassword = "Confirm Password is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.confirmPassword;
-    } else if (form.password !== form.confirmPassword) {
-      newErrors.confirmPassword = "Passwords must match";
-      if (!firstError) firstError = newErrors.confirmPassword;
-    }
-    if (!form.maritalStatus) {
-      newErrors.maritalStatus = "Marital Status is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.maritalStatus;
-    }
-    if (!form.fatherName.trim()) {
-      newErrors.fatherName = "Father Name is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.fatherName;
-    }
-    if (!form.yourTemple) {
-      newErrors.yourTemple = "Your Temple is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.yourTemple;
-    }
-    if (!form.presentResidence.trim()) {
-      newErrors.presentResidence = "Present Residence is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.presentResidence;
-    }
-    if (!form.pincode.trim()) {
-      newErrors.pincode = "Pincode is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.pincode;
-    } else if (form.pincode !== "NA" && !/^\d{6}$/.test(form.pincode)) {
-      newErrors.pincode = "Pincode must be a 6-digit number";
-      if (!firstError) firstError = newErrors.pincode;
-    }
-    if (!form.profileCreatedBy) {
-      newErrors.profileCreatedBy = "Profile Created By is required OR Enter NA for unknown fields";
-      if (!firstError) firstError = newErrors.profileCreatedBy;
-    }
+    if (letters < 5) return "Password must contain at least 5 letters";
+    if (numbers < 2) return "Password must contain at least 2 numbers";
+    if (specialChars < 1) return "Password must contain at least 1 special character";
+    
+    if (!form.confirmPassword.trim()) return "Confirm Password is required OR Enter NA for unknown fields";
+    if (form.password !== form.confirmPassword) return "Passwords must match";
+    
+    if (!form.maritalStatus) return "Marital Status is required OR Enter NA for unknown fields";
+    if (!form.fatherName.trim()) return "Father Name is required OR Enter NA for unknown fields";
+    if (!form.yourTemple) return "Your Temple is required OR Enter NA for unknown fields";
+    if (!form.presentResidence.trim()) return "Present Residence is required OR Enter NA for unknown fields";
+    if (!form.pincode.trim()) return "Pincode is required OR Enter NA for unknown fields";
+    if (form.pincode !== "NA" && !/^\d{6}$/.test(form.pincode)) return "Pincode must be a 6-digit number";
+    if (!form.profileCreatedBy) return "Profile Created By is required OR Enter NA for unknown fields";
 
-    setErrors(newErrors);
-    return firstError;
+    return "";
   };
   const next = () => {
     const v = validate();
@@ -421,20 +337,18 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Name", language)}
             forcedLanguage={language}
-            error={errors.name}
           />
           <select
             style={styles.input}
             name="gender"
             value={form.gender}
             onChange={handleChange}
-            className={errors.gender ? "border-red-500" : ""}
           >
             <option value="">{t("Select Gender", language)}</option>
             <option value="Male">{t("Male", language)}</option>
             <option value="Female">{t("Female", language)}</option>
           </select>
-          {errors.gender && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.gender}</p>}
+
           <div>
             <input
               style={styles.input}
@@ -443,9 +357,7 @@ export default function Step1() {
               value={form.password}
               onChange={handleChange}
               placeholder={t("Create Password", language)}
-              className={errors.password ? "border-red-500" : ""}
             />
-            {errors.password && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.password}</p>}
             {t("Type in English only", language) && (
               <p style={{ fontSize: "12px", color: "#666", marginTop: "5px", marginLeft: "5px" }}>
                 {t("Type in English only", language)}
@@ -460,9 +372,7 @@ export default function Step1() {
               value={form.confirmPassword}
               onChange={handleChange}
               placeholder={t("Confirm Password", language)}
-              className={errors.confirmPassword ? "border-red-500" : ""}
             />
-            {errors.confirmPassword && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.confirmPassword}</p>}
             {t("Type in English only", language) && (
               <p style={{ fontSize: "12px", color: "#666", marginTop: "5px", marginLeft: "5px" }}>
                 {t("Type in English only", language)}
@@ -474,7 +384,6 @@ export default function Step1() {
             name="maritalStatus"
             value={form.maritalStatus}
             onChange={handleChange}
-            className={errors.maritalStatus ? "border-red-500" : ""}
           >
             <option value="">{t("Select Marital Status", language)}</option>
             <option value="unmarried">{t("unmarried", language)}</option>
@@ -482,7 +391,7 @@ export default function Step1() {
             <option value="divorced">{t("divorced", language)}</option>
             <option value="widower">{t("widower", language)}</option>
           </select>
-          {errors.maritalStatus && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.maritalStatus}</p>}
+
           <TamilInput
             style={styles.input}
             name="fatherName"
@@ -490,7 +399,6 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Father Name", language)}
             forcedLanguage={language}
-            error={errors.fatherName}
           />
           <TamilInput
             style={styles.input}
@@ -499,7 +407,6 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Father Occupation / Business", language)}
             forcedLanguage={language}
-            error={errors.fatherOccupation}
           />
           <TamilInput
             style={styles.input}
@@ -508,7 +415,6 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Mother Name", language)}
             forcedLanguage={language}
-            error={errors.motherName}
           />
           <TamilInput
             style={styles.input}
@@ -517,7 +423,6 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Mother Occupation / Business", language)}
             forcedLanguage={language}
-            error={errors.motherOccupation}
           />
           <select
             style={styles.input}
@@ -576,7 +481,6 @@ export default function Step1() {
             name="yourTemple"
             value={form.yourTemple}
             onChange={handleChange}
-            className={errors.yourTemple ? "border-red-500" : ""}
           >
             <option value="">{t("Select Your Temple", language)}</option>
             <option value="Nemam Kovil">{t("Nemam Kovil", language)}</option>
@@ -589,14 +493,13 @@ export default function Step1() {
             <option value="Vairavan Kovil">{t("Vairavan Kovil", language)}</option>
             <option value="Velangudi">{t("Velangudi", language)}</option>
           </select>
-          {errors.yourTemple && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.yourTemple}</p>}
+
           <select
             style={styles.input}
             name="yourDivision"
             value={form.yourDivision}
             onChange={handleChange}
             disabled={form.yourDivision === "NO PIRIVU"}
-            className={errors.yourDivision ? "border-red-500" : ""}
           >
             <option value="">{t("Select Your Division", language)}</option>
             {getDivisionOptions(form.yourTemple).map((option, index) => (
@@ -605,7 +508,6 @@ export default function Step1() {
               </option>
             ))}
           </select>
-          {errors.yourDivision && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.yourDivision}</p>}
           <TamilInput
             style={styles.input}
             name="knownLanguages"
@@ -653,16 +555,13 @@ export default function Step1() {
             value={form.pincode}
             onChange={handleChange}
             placeholder={t("Present Pincode", language)}
-            className={errors.pincode ? "border-red-500" : ""}
             data-testid="pincode"
           />
-          {errors.pincode && <p data-testid="error-pincode" style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.pincode}</p>}
           <select
             style={styles.input}
             name="profileCreatedBy"
             value={form.profileCreatedBy}
             onChange={handleChange}
-            className={errors.profileCreatedBy ? "border-red-500" : ""}
             data-testid="profileCreatedBy"
           >
             <option value="">{t("Select Profile Created By", language)}</option>
@@ -681,7 +580,7 @@ export default function Step1() {
             <option value="Periyamma">{t("Periyamma", language)}</option>
             <option value="Periyappa">{t("Periyappa", language)}</option>
           </select>
-          {errors.profileCreatedBy && <p data-testid="error-profileCreatedBy" style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.profileCreatedBy}</p>}
+
           <TamilInput
             style={styles.input}
             name="referredBy"
@@ -749,10 +648,10 @@ export default function Step1() {
         </div>
       </div>
 
+      {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
       <div style={styles.formContainer} className="button-container">
         <div style={styles.leftColumn}></div>
         <div style={styles.rightColumn}>
-          {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
           <button style={styles.button1} onClick={next}>
             {t("Next", language)}
           </button>

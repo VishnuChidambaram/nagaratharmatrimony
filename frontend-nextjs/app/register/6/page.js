@@ -833,7 +833,7 @@ const districtsByState = {
 export default function Step6() {
   const router = useRouter();
   const [form, setForm] = useState(defaultFormData);
-  const [errors, setErrors] = useState({});
+
   const [error, setError] = useState("");
   const [imageUrls, setImageUrls] = useState([]);
   const [photoFiles, setPhotoFiles] = useState([]);
@@ -913,56 +913,11 @@ export default function Step6() {
       });
     };
   }, [form.photos, form.photo, isLoaded]);
-  const validateField = (name, value) => {
-    let errorMsg = "";
-    switch (name) {
-      case "phone":
-        if (!value.trim()) errorMsg = "Phone is required";
-        else if (value.trim() !== "0" && (!value.trim().startsWith("+91") || value.trim().length !== 13))
-          errorMsg = "Phone must start with +91 and be 13 chars total";
-        break;
-      case "whatsAppNo":
-        if (!value.trim()) errorMsg = "WhatsApp No. is required";
-        else if (value.trim() !== "0" && !/^[6-9]\d{9}$/.test(value.trim()))
-          errorMsg = "WhatsApp No. must be 10 digits starting with 6-9";
-        break;
-      case "email":
-        if (!value.trim()) errorMsg = "Email is required";
-        else if (value.trim() !== "NA") {
-          if (!/\S+@\S+\.\S+/.test(value)) errorMsg = "Invalid email format";
-          else if (!value.toLowerCase().endsWith("@gmail.com")) errorMsg = "Must be @gmail.com";
-        }
-        break;
-      case "postalCode":
-        if (!value.trim()) errorMsg = "Postal Code is required";
-        else if (value.trim() !== "NA" && !/^\d{6}$/.test(value.trim()))
-          errorMsg = "Postal Code must be 6 digits";
-        break;
-      case "fullStreetAddress":
-        if (!value.trim()) errorMsg = "Full Street Address is required";
-        break;
-      case "city":
-        if (!value.trim()) errorMsg = "City is required";
-        break;
-      case "state":
-        if (!value.trim()) errorMsg = "State is required";
-        break;
-      case "district":
-        if (!value.trim()) errorMsg = "District is required";
-        break;
-      case "country":
-        if (!value.trim()) errorMsg = "Country is required";
-        break;
-      default:
-        break;
-    }
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
-  };
+
 
   const handle = (e) => {
     const { name, value } = e.target;
     setForm((p) => ({ ...p, [name]: value }));
-    validateField(name, value);
     setError(""); // Clear global error
   };
   const handleFileChange = (e) => {
@@ -1146,7 +1101,6 @@ export default function Step6() {
             placeholder={t("Full Street Address", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
             style={styles.input}
-            error={errors.fullStreetAddress}
           />
           <TamilInput
             name="city"
@@ -1155,14 +1109,12 @@ export default function Step6() {
             placeholder={t("City", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
             style={styles.input}
-            error={errors.city}
           />
           <select
             style={styles.input}
             name="state"
             value={form.state}
             onChange={handle}
-            className={errors.state ? "border-red-500" : ""}
           >
             <option value="">{t("Select State", language)}</option>
             {indianStates.map((s) => (
@@ -1171,13 +1123,11 @@ export default function Step6() {
               </option>
             ))}
           </select>
-          {errors.state && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.state}</p>}
           <select
             style={styles.input}
             name="district"
             value={form.district}
             onChange={handle}
-            className={errors.district ? "border-red-500" : ""}
           >
             <option value="">{t("Select District", language)}</option>
             {form.state && districtsByState[form.state]
@@ -1188,13 +1138,11 @@ export default function Step6() {
                 ))
               : null}
           </select>
-          {errors.district && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.district}</p>}
           <select
             style={styles.input}
             name="country"
             value={form.country}
             onChange={handle}
-            className={errors.country ? "border-red-500" : ""}
           >
             <option value="">{t("Select Country", language)}</option>
             <option value="Afghanistan">{t("Afghanistan", language)}</option>
@@ -1233,7 +1181,7 @@ export default function Step6() {
             <option value="United States of America">{t("United States of America", language)}</option>
             <option value="Vietnam">{t("Vietnam", language)}</option>
           </select>
-          {errors.country && <p style={{color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px'}}>{errors.country}</p>}
+
           <TamilInput
             name="postalCode"
             value={form.postalCode}
@@ -1241,7 +1189,6 @@ export default function Step6() {
             placeholder={t("Postal Code", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
             style={styles.input}
-            error={errors.postalCode}
           />
         </div>
         <div style={styles.rightColumn} className="right-column">
@@ -1252,7 +1199,6 @@ export default function Step6() {
             placeholder={t("Phone Number (+91...)", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
             style={styles.input}
-            error={errors.phone}
           />
           <TamilInput
             style={styles.input}
@@ -1270,7 +1216,6 @@ export default function Step6() {
             onChange={handle}
             placeholder={t("WhatsApp No.", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
-            error={errors.whatsAppNo}
           />
           <TamilInput
             style={styles.input}
@@ -1281,7 +1226,6 @@ export default function Step6() {
             placeholder={t("Email", language)}
             forcedLanguage={language === "ta" ? "ta" : "en"}
             helperMessage={t("Type in English only", language)}
-            error={errors.email}
           />
           <label style={{ marginLeft: "20px" }}>
             <br></br>
@@ -1382,10 +1326,11 @@ export default function Step6() {
                 📷 No photos uploaded yet. Select photos above to get started.
               </div>
             )}
-            {error && <p style={{ color: 'red', marginTop: '10px' }}>{error}</p>}
+
           </div>
         </div>
       </div>
+      {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
       <div style={styles.formContainer} className="button-container">
         <div style={styles.leftColumn}>
           <button
@@ -1396,7 +1341,6 @@ export default function Step6() {
           </button>
         </div>
         <div style={styles.rightColumn}>
-          {error && <p style={{ color: 'red', textAlign: 'center', marginBottom: '10px' }}>{error}</p>}
           <button style={styles.button1} onClick={next}>
             {t("Next", language)}
           </button>
