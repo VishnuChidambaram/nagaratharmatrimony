@@ -60,6 +60,6 @@ describe('Admin API', () => {
     
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
-    expect(res.body.users).toHaveLength(1);
+    expect(res.body.data).toHaveLength(1);
   });
 });
