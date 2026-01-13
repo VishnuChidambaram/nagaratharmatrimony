@@ -128,6 +128,47 @@ function PreventInspect() {
   return null;
 }
 
+// Global Button click restriction - Allow only one click every 3 seconds
+function GlobalButtonClickLockout() {
+  useEffect(() => {
+    let lastClickTime = 0;
+    const LOCKOUT_DURATION = 3000; // 3 seconds
+
+    const handleGlobalClick = (e: MouseEvent) => {
+      // Find if the clicked element or any of its parents is a button
+      let target = e.target as HTMLElement;
+      let button: HTMLButtonElement | null = null;
+
+      while (target && target !== document.body) {
+        if (target.tagName === 'BUTTON') {
+          button = target as HTMLButtonElement;
+          break;
+        }
+        target = target.parentElement as HTMLElement;
+      }
+
+      if (button) {
+        const currentTime = Date.now();
+        if (currentTime - lastClickTime < LOCKOUT_DURATION) {
+          console.log("Button click blocked - Lockout active");
+          e.preventDefault();
+          e.stopPropagation();
+          return;
+        }
+        lastClickTime = currentTime;
+      }
+    };
+
+    document.addEventListener("click", handleGlobalClick, true); // Use capture phase to intercept early
+
+    return () => {
+      document.removeEventListener("click", handleGlobalClick, true);
+    };
+  }, []);
+
+  return null;
+}
+
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 import { clearFormData } from "@/app/register/styles";
@@ -356,6 +397,7 @@ export default function RootLayout({
         <LanguageProvider>
         <LanguageEffects />
         <PreventInspect />
+        <GlobalButtonClickLockout />
         <NotificationToast />
         {/* Global Header */}
         <header

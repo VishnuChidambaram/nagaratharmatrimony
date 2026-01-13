@@ -41,7 +41,7 @@ export default function AdminDashboard() {
 
   const fetchDeletedCount = useCallback(async () => {
     try {
-      const response = await fetch(`${API_URL}/admin/users`, {
+      const response = await fetch(`${API_URL}/deleted-details`, {
         credentials: "include",
         headers: { ...getAuthHeaders() }
       });
