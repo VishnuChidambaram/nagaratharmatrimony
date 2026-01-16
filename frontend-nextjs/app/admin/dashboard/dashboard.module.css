@@ -323,6 +323,7 @@
 
   .header {
     flex-direction: row; /* Align horizontal */
+    flex-wrap: wrap; /* Allow wrapping */
     align-items: center; 
     justify-content: space-between;
     gap: 10px;
