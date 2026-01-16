@@ -34,6 +34,12 @@
   gap: 15px;
 }
 
+.navigationButtons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .searchContainer {
   position: relative;
 }
@@ -308,6 +314,7 @@
   border: 1px solid var(--input-border);
   border-radius: 4px;
   background: transparent;
+  min-width: 100px;
 }
 
 .btnRestore {
@@ -420,6 +427,37 @@
   .paginationButton {
     padding: 6px 10px;
     font-size: 14px;
+  }
+
+  .btn, .btnNav {
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: normal; /* Ensure consistent height */
+    margin-right: 5px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+  }
+  
+  .btnNav {
+    min-width: auto;
+  }
+
+  .navigationButtons {
+    grid-column: 1 / -1;
+    display: flex;
+    width: 100%;
+    gap: 10px;
+    margin-top: 10px;
+  }
+
+  .navigationButtons .btn, 
+  .navigationButtons .btnNav {
+    flex: 1;
+    margin: 0; /* Reset user defined margins for this specific context */
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 

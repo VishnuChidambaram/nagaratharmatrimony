@@ -338,30 +338,32 @@ export default function UserDetail() {
             </h1>
         </div>
         <div className={styles.headerActions}>
-             <button 
-                onClick={() => router.push("/admin/dashboard")}
-                className={`${styles.btn} ${styles.btnRestore}`}
-                style={{ 
-                    marginRight: "10px",
-                    color: "white",
-                    whiteSpace: "nowrap"
-                 }}
-             >
-                {t("Go to Dashboard", language)}
-             </button>
-             <button 
-                onClick={() => router.push("/admin/users")} 
-                className={styles.btnNav} 
-                style={{
-                    backgroundColor: "#6c757d", // Grey background for back button
-                    color: "white", 
-                    border: "none",
-                    minWidth: "100px"
-                }}
-             >
-                 ← {t("Back to List", language)}
-             </button>
-             <AdminMenu />
+             <div className={styles.navigationButtons}>
+                 <button 
+                    onClick={() => router.push("/admin/dashboard")}
+                    className={`${styles.btn} ${styles.btnRestore}`}
+                    style={{ 
+                        color: "white",
+                        whiteSpace: "nowrap"
+                     }}
+                 >
+                    {t("Go to Dashboard", language)}
+                 </button>
+                 <button 
+                    onClick={() => router.push("/admin/users")} 
+                    className={styles.btnNav} 
+                    style={{
+                        backgroundColor: "#6c757d", // Grey background for back button
+                        color: "white", 
+                        border: "none",
+                    }}
+                 >
+                     ← {t("Back to List", language)}
+                 </button>
+             </div>
+             <div className={styles.menuWrapper}>
+                 <AdminMenu />
+             </div>
         </div>
       </div>
 
