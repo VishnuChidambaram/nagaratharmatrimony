@@ -249,7 +249,9 @@ export default function EditStep4() {
               name="dateOfBirth"
               value={form.dateOfBirth ?? ""}
               onChange={handle}
-              max="9999-12-31"
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 20)).toISOString().split('T')[0]}
+              onKeyDown={(e) => e.preventDefault()}
+              onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
           {errors.dateOfBirth && (
