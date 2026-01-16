@@ -879,8 +879,21 @@ router.post("/forgot-password", async (req, res) => {
       console.log("OTP sent via bridge:", otp);
       res.json({ success: true, message: "OTP sent to your email" });
     } else {
-      console.error("Bridge failed to send email");
-      res.json({ success: false, message: "Failed to send OTP" });
+      // Fallback for development: Log OTP to console when email bridge is unavailable
+      const isDevelopment = process.env.NODE_ENV !== "production";
+      if (isDevelopment) {
+        console.log("\n========================================");
+        console.log("🔐 PASSWORD RESET OTP (DEVELOPMENT MODE)");
+        console.log("========================================");
+        console.log(`Email: ${email}`);
+        console.log(`OTP: ${otp}`);
+        console.log(`Expires: ${expiration.toLocaleString()}`);
+        console.log("========================================\n");
+        res.json({ success: true, message: "OTP sent successfully" });
+      } else {
+        console.error("Bridge failed to send email in production");
+        res.json({ success: false, message: "Failed to send OTP" });
+      }
     }
   } catch (error) {
     console.error("Forgot password error:", error);

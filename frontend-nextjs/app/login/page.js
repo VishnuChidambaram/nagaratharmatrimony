@@ -19,34 +19,28 @@ export default function Login() {
 
   const t = language === "en" ? en : ta;
 
-  // Check for existing session on load - Auto-login disabled
-  // useEffect(() => {
-  //   const checkSession = async () => {
-  //     try {
-  //       const res = await fetch(`${API_URL}/check-auth`, {
-  //         credentials: "include"
-  //       });
-  //       const data = await res.json();
-  //       if (data.success) {
-  //          // Already logged in - Do not redirect automatically
-  //          // Just ensure localStorage is synced if needed
-  //          if (typeof window !== "undefined") {
-  //            if (data.user && data.user.email) {
-  //               localStorage.setItem("userEmail", data.user.email);
-  //            }
-  //          }
-  //       } else {
-  //          // Not logged in or session invalid
-  //          if (typeof window !== "undefined") {
-  //            localStorage.removeItem("userEmail");
-  //          }
-  //       }
-  //     } catch (e) {
-  //        console.error("Auth check failed", e);
-  //     }
-  //   };
-  //   checkSession();
-  // }, []);
+
+  // Auto-Logout on visit
+  useEffect(() => {
+    const handleLogout = async () => {
+      try {
+        await fetch(`${API_URL}/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+        
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("userEmail");
+          sessionStorage.removeItem("sessionExpiresAt");
+          localStorage.removeItem("userEmail");
+        }
+      } catch (e) {
+         console.error("Logout failed", e);
+      }
+    };
+    
+    handleLogout();
+  }, []);
 
 
 
@@ -118,10 +112,8 @@ export default function Login() {
         }
         window.sessionStorage.setItem("userEmail", email);
 
-         // Wait 2 seconds before redirecting
-        setTimeout(() => {
-          router.push("/dashboard");
-        }, 2000);
+         // Redirect immediately without delay
+        router.push("/dashboard");
       } else {
         if (data.code === "ALREADY_LOGGED_IN") {
           setShowForceLoginModal(true);
@@ -140,6 +132,8 @@ export default function Login() {
       }));
     }
   };
+
+
 
   return (
     <>

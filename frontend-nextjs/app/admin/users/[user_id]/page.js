@@ -8,6 +8,7 @@ import { useLanguage } from "../../../context/LanguageContext";
 import { t } from "../../../utils/translations";
 import { API_URL } from "../../../utils/config";
 import { getPhotoUrls } from "../../../utils/photoUtils";
+import { getAuthHeaders } from "../../../utils/auth-headers";
 import Image from "next/image";
 
 // Field Groups matching Registration Pages
@@ -304,6 +305,7 @@ export default function UserDetail() {
 
       const res = await fetch(`${API_URL}/upload-details/${email}`, {
         method: "PUT",
+        headers: getAuthHeaders(),
         body: formData,
       });
 

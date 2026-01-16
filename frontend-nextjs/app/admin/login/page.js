@@ -22,11 +22,26 @@ export default function AdminLogin() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  // Clear admin session when login page loads to force authentication
+  // Auto-Logout Admin on visit
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      sessionStorage.removeItem("adminEmail");
-    }
+    const handleAdminLogout = async () => {
+      try {
+        await fetch(`${API_URL}/admin/logout`, {
+          method: "POST",
+          credentials: "include"
+        });
+        
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("adminEmail");
+          sessionStorage.removeItem("adminSessionId");
+          sessionStorage.removeItem("adminSessionExpiresAt");
+        }
+      } catch (e) {
+         console.error("Admin logout failed", e);
+      }
+    };
+    
+    handleAdminLogout();
   }, []);
 
   // Auto-hide error messages after 2 seconds
@@ -62,39 +77,45 @@ export default function AdminLogin() {
 
     setError("");
 
-    const res = await fetch(`${API_URL}/admin/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/admin/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
       
-    if (data.success) {
-      window.dispatchEvent(new CustomEvent('show-notification', { 
-        detail: { message: data.message || 'Login Successful', type: 'success' }
-      }));
-      
-      if (typeof window !== "undefined") {
-        sessionStorage.setItem("adminEmail", email);
-        if (data.sessionId) sessionStorage.setItem("adminSessionId", data.sessionId);
-        if (data.expiresAt) sessionStorage.setItem("adminSessionExpiresAt", data.expiresAt);
+      if (data.success) {
+        window.dispatchEvent(new CustomEvent('show-notification', { 
+          detail: { message: data.message || 'Login Successful', type: 'success' }
+        }));
         
-        // Set cookie for middleware
-        document.cookie = `adminEmail=${email}; path=/; samesite=lax`;
-      }
-      window.sessionStorage.setItem("adminEmail", email); 
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("adminEmail", email);
+          if (data.sessionId) sessionStorage.setItem("adminSessionId", data.sessionId);
+          if (data.expiresAt) sessionStorage.setItem("adminSessionExpiresAt", data.expiresAt);
+          
+          // Set cookie for middleware
+          document.cookie = `adminEmail=${email}; path=/; samesite=lax`;
+        }
+        window.sessionStorage.setItem("adminEmail", email); 
 
-      setTimeout(() => {
+        // Redirect immediately
         router.push("/admin/dashboard");
-      }, 2000);
-    } else {
-      window.dispatchEvent(new CustomEvent('show-notification', { 
-        detail: { message: data.message || 'Login Failed', type: 'error' }
-      }));
+      } else {
+        window.dispatchEvent(new CustomEvent('show-notification', { 
+          detail: { message: data.message || 'Login Failed', type: 'error' }
+        }));
+      }
+    } catch (e) {
+      console.error("Login Error", e);
+      setError(t.errorGeneric || "Login Error");
     }
   };
+
+
 
   return (
     <>
