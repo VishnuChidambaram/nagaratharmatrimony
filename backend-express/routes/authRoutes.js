@@ -332,8 +332,22 @@ router.post("/admin/login", authLimiter, async (req, res) => {
       });
     }
 
-    // Direct password comparison to match existing patterns
-    if (admin.password !== password) {
+    let isMatch = false;
+    // Check if password is already hashed (bcrypt hashes start with $2b$ or $2a$)
+    if (admin.password && (admin.password.startsWith('$2b$') || admin.password.startsWith('$2a$') || admin.password.startsWith('$2y$'))) {
+        isMatch = await bcrypt.compare(password, admin.password);
+    } else {
+        // Fallback for legacy plain text passwords
+        if (admin.password === password) {
+            isMatch = true;
+            // Upgrade security: Hash the password and update
+            const newHash = await bcrypt.hash(password, 10);
+            await admin.update({ password: newHash });
+            console.log(`Upgraded password security for admin: ${admin.email}`);
+        }
+    }
+
+    if (!isMatch) {
       return res.json({
         success: false,
         status: "error",

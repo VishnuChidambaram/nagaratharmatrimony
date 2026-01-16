@@ -32,9 +32,10 @@ describe('Admin API', () => {
   });
 
   it('should login admin successfully', async () => {
+    const hashedPassword = await (await import('bcrypt')).default.hash('adminpassword', 10);
     db.AdminLogin.findOne.mockResolvedValue({
       email: 'admin@example.com',
-      password: 'adminpassword',
+      password: hashedPassword,
       update: jest.fn().mockResolvedValue(true)
     });
 
