@@ -477,8 +477,23 @@
     font-size: 2.5em;
   }
 
-  .gridContainer {
+   .gridContainer {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+
+  /* Tab Navigation wrapping on tablet */
+  .tabNavigation {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    gap: 10px;
+    padding-bottom: 5px;
+  }
+  
+  .tabButton {
+    flex: 1 1 auto;
+    background-color: var(--menu-item-bg, #f0f0f0);
+    padding: 8px 15px;
+    margin-bottom: 5px; 
   }
 }
 
