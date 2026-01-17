@@ -205,9 +205,22 @@ export default function TamilInput({
 
   const InputComponent = isTextArea ? 'textarea' : 'input';
 
-  // Extract margins AND width properties from props.style to apply to the wrapper
-  const { width, ...inputStyle } = props.style || {};
-  const wrapperStyle = { width };
+  // Extract layout properties for the wrapper div
+  const { 
+    width, maxWidth, minWidth, 
+    margin, marginTop, marginRight, marginBottom, marginLeft, 
+    display, flex, flexGrow, flexShrink, flexBasis,
+    position, top, right, bottom, left, zIndex,
+    ...inputStyle 
+  } = props.style || {};
+
+  const wrapperStyle = { 
+    width, maxWidth, minWidth, 
+    margin, marginTop, marginRight, marginBottom, marginLeft, 
+    display: display || 'block', // Default to block if not specified
+    flex, flexGrow, flexShrink, flexBasis,
+    position, top, right, bottom, left, zIndex
+  };
 
   return (
     <div style={wrapperStyle} className="relative">

@@ -675,8 +675,92 @@ export default function Step8() {
           justify-content: center;
         }
 
-        @media (max-width: 768px) {
-          
+        .email-verification-row {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 20px;
+          margin-bottom: 5px;
+          width: 100%;
+          flex-wrap: wrap;
+        }
+
+        .edit-send-otp-button-register {
+          width: 250px;
+          padding: 6px 10px;
+          margin: 10px 5px;
+          border-radius: 6px;
+          border: none;
+          background: var(--button-bg);
+          color: var(--button-text);
+          font-size: 14px;
+          cursor: pointer;
+          min-height: 36px;
+          font-weight: bold;
+        }
+
+        .preview-email-input, .preview-otp-input {
+          width: 250px !important;
+          padding: 6px 10px !important;
+          margin: 10px 5px !important;
+          border-radius: 6px !important;
+          border: 1px solid var(--input-border, #ccc) !important;
+          font-size: 14px !important;
+          background: var(--input-bg, #fff) !important;
+          color: var(--input-text, #000) !important;
+          box-sizing: border-box !important;
+          display: inline-block !important;
+          min-height: 36px !important;
+        }
+
+        /* Tablet specific refinement - side by side */
+        @media (min-width: 768px) and (max-width: 1024px) {
+          .email-verification-row {
+             flex-direction: row !important;
+             justify-content: center !important;
+             align-items: center !important;
+             gap: 15px !important;
+             width: 100% !important;
+             margin: 10px 0 !important;
+          }
+          .preview-email-input, .preview-otp-input {
+             width: 250px !important;
+             max-width: 250px !important;
+             padding: 6px 10px !important;
+             font-size: 13px !important;
+             margin: 0 !important;
+             box-sizing: border-box !important;
+             display: inline-block !important;
+             border: 1px solid var(--input-border, #ccc) !important;
+             background: var(--input-bg, #fff) !important;
+             border-radius: 6px !important;
+             min-height: 36px !important;
+          }
+          .edit-send-otp-button-register {
+             width: 250px !important;
+             max-width: 250px !important;
+             padding: 6px 10px !important;
+             font-size: 13px !important;
+             margin: 0 !important;
+             box-sizing: border-box !important;
+             display: inline-block !important;
+             border-radius: 6px !important;
+             min-height: 36px !important;
+             background: var(--button-bg, #000) !important;
+             color: var(--button-text, #fff) !important;
+             font-weight: bold !important;
+             cursor: pointer !important;
+             transition: all 0.3s ease !important;
+             border: none !important;
+          }
+          .edit-send-otp-button-register:hover {
+             opacity: 0.8 !important;
+             transform: translateY(-1px) !important;
+             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
+          }
+        }
+
+        @media (max-width: 767px) {
           .button-container {
             flex-direction: column !important;
             gap: 10px !important;
@@ -688,61 +772,14 @@ export default function Step8() {
           }
           
           .email-verification-row {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin-bottom: 5px;
-            width: 100%;
-            flex-wrap: wrap;
+            flex-direction: column !important;
+            gap: 10px !important;
           }
 
-          .edit-send-otp-button-register {
-            width: 250px;
-            padding: 10px;
-            margin: 10px 5px;
-            border-radius: 6px;
-            border: none;
-            background: var(--button-bg);
-            color: var(--button-text);
-            font-size: 16px;
-            cursor: pointer;
-            min-height: 44px;
-            font-weight: bold;
-          }
-
-          @media (max-width: 768px) {
-            .email-verification-row {
-              flex-direction: column !important;
-              gap: 10px !important;
-            }
-
-            .edit-send-otp-button-register {
-                width: 100% !important;
-                max-width: 100% !important;
-                margin: 10px 0 !important;
-            }
-
-            .preview-email-input {
-                width: 100% !important;
-            }
-          }
-
-          .preview-email-input, .preview-otp-input {
-            width: 250px;
-            padding: 10px;
-            margin: 10px 5px;
-            border-radius: 6px;
-            border: 1px solid var(--input-border);
-            font-size: 16px;
-            background: var(--input-bg);
-            color: var(--input-text);
-          }
-          .email-verification-row input,
-          .email-verification-row button {
+          .edit-send-otp-button-register, .preview-email-input, .preview-otp-input {
             width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
+            max-width: 400px !important;
+            margin: 5px 0 !important;
           }
           
           .rasi-grid {
@@ -1007,6 +1044,18 @@ export default function Step8() {
               value={form.email || ""}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="preview-email-input"
+              style={{
+                width: '250px',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: '2px solid var(--input-border, #ccc)',
+                background: 'var(--input-bg, #fff)',
+                color: 'var(--input-text, #000)',
+                fontSize: '14px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                display: 'inline-block',
+                minHeight: '36px'
+              }}
               placeholder={t("Enter your email", language)}
               forcedLanguage={language === "ta" ? "ta" : "en"}
             />
@@ -1027,10 +1076,10 @@ export default function Step8() {
                 disabled={resendCooldown > 0 || isSendingOtp}
               >
                 {isSendingOtp
-                  ? "Sending..."
+                  ? t("Sending...", language)
                   : resendCooldown > 0
-                  ? `Resend OTP (${resendCooldown}s)`
-                  : "Resend OTP"}
+                  ? `${t("Resend OTP in", language)} ${resendCooldown}s`
+                  : t("Send OTP", language)}
               </button>
             )}
           </div>
@@ -1040,10 +1089,22 @@ export default function Step8() {
           <div className="email-verification-row">
             <TamilInput
               name="otp"
-              placeholder="Enter OTP"
+              placeholder={t("Enter OTP", language)}
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
               className="preview-otp-input"
+              style={{
+                width: '250px',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: '2px solid var(--input-border, #ccc)',
+                background: 'var(--input-bg, #fff)',
+                color: 'var(--input-text, #000)',
+                fontSize: '14px',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                display: 'inline-block',
+                minHeight: '36px'
+              }}
               maxLength={4}
               forcedLanguage={language === "ta" ? "ta" : "en"}
             />

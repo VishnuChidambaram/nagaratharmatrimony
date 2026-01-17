@@ -1202,7 +1202,18 @@ export const translations = {
   "toAge": { ta: "வயது வரை" },
   "fromHeight": { ta: "உயரம் முதல்" },
   "toHeight": { ta: "உயரம் வரை" },
-
+  "Email": { ta: "மின்னஞ்சல்" },
+  "Enter OTP": { ta: "OTP-ஐ உள்ளிடவும்" },
+  "OTP Message": { ta: "OTP செய்தி" },
+  "OTP Check": { ta: "OTP சரிபார்ப்பு" },
+  "Send OTP": { ta: "OTP அனுப்பவும்" },
+  "Verify OTP": { ta: "OTP-ஐ சரிபார்க்கவும்" },
+  "Resend OTP in": { ta: "மீண்டும் OTP அனுப்ப" },
+  "Enter your email": { ta: "உங்கள் மின்னஞ்சலை உள்ளிடவும்" },
+  "Sending...": { ta: "அனுப்பப்படுகிறது..." },
+  "OTP sended to email": { ta: "OTP மின்னஞ்சலுக்கு அனுப்பப்பட்டது" },
+  "Email verified successfully": { ta: "மின்னஞ்சல் வெற்றிகரமாக சரிபார்க்கப்பட்டது" },
+  "Email verification is required before registration": { ta: "பதிவு செய்வதற்கு முன் மின்னஞ்சல் சரிபார்ப்பு அவசியம்" },
 };
 export const t = (text, lang) => {
   if (translations[text]) {
