@@ -912,7 +912,7 @@ export default function Step6() {
         }
       });
     };
-  }, [form.photos, form.photo, isLoaded]);
+  }, [form.photos, form.photo, isLoaded, imageUrls]);
 
 
   const handle = (e) => {

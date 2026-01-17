@@ -934,7 +934,8 @@ export default function Page() {
         }
       });
     };
-  }, [form, loading]);
+    // ... (logic remains same)
+  }, [form, loading, imageUrls]);
 
   const handleStateChange = (e) => {
     setForm({ ...form, state: e.target.value, district: "" });

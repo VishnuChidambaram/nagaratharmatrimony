@@ -430,13 +430,7 @@ export default function EditStep8() {
     periodType: "DisaiType",
   };
 
-  const formatFieldName = (key) => {
-    if (displayNames[key]) return displayNames[key];
-    // Convert camelCase to Title Case
-    const result = key.replace(/([A-Z])/g, " $1");
-    const finalResult = result.charAt(0).toUpperCase() + result.slice(1);
-    return finalResult;
-  };
+
 
   const formatDate = (value) => {
     if (!value) return "";

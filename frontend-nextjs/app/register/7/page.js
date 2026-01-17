@@ -190,7 +190,6 @@ export default function Step7() {
             name="educationQualification1"
             value={form.educationQualification1 || ""}
             onChange={handle}
-            onChange={handle}
             style={{ ...styles.select, display: "block", margin: "10px auto" }}
           >
             <option value="">{t("Select Education Qualification", language)}</option>
@@ -282,7 +281,6 @@ export default function Step7() {
           <select
             name="willingnessToWork1"
             value={form.willingnessToWork1 || ""}
-            onChange={handle}
             onChange={handle}
             style={{ ...styles.select, display: "block", margin: "10px auto" }}
             placeholder="Willingness to Work After Marriage"
