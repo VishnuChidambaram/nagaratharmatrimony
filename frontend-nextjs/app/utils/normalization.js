@@ -435,6 +435,13 @@ export const normalizeDropdownValue = (field, value) => {
         "வெற்றியூர் – 630321": "Vetriyur – 630321",
         "விராச்சிலை – 622412": "Virachilai – 622412",
         "விராமதி – 630212": "Viramathi – 630212"
+    },
+    // Referred By
+    referredBy: {
+      "குடும்ப உறுப்பினர்": "Family Member",
+      "தோழர்கள்/நண்பர்கள்": "Friends",
+      "தேடல் இயந்திரம்": "Search Engine",
+      "மற்றவை": "Others"
     } 
   };
 

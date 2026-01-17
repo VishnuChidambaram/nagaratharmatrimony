@@ -187,14 +187,27 @@ function UserDetailCard({ user, editFormData, onSave, onCancel, onInputChange })
                        onChange={(e) => onInputChange(e, field.key)}
                        className={styles.inputField}
                      />
-                   ) : (
-                     <input
-                       type="text"
-                       value={editFormData[field.key] || ""}
-                       onChange={(e) => onInputChange(e, field.key)}
-                       className={styles.inputField}
-                     />
-                   )
+                    ) : field.key === 'referredBy' ? (
+                      <select
+                        name={field.key}
+                        value={editFormData[field.key] || ""}
+                        onChange={(e) => onInputChange(e, field.key)}
+                        className={styles.inputField}
+                      >
+                        <option value="">{t("Select Referred By", language)}</option>
+                        <option value="Family Member">{t("Family Member", language)}</option>
+                        <option value="Friends">{t("Friends", language)}</option>
+                        <option value="Search Engine">{t("Search Engine", language)}</option>
+                        <option value="Others">{t("Others", language)}</option>
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={editFormData[field.key] || ""}
+                        onChange={(e) => onInputChange(e, field.key)}
+                        className={styles.inputField}
+                      />
+                    )
                  ) : (
                    <div className={styles.readOnlyField} style={{ background: field.readOnly ? "rgba(0,0,0,0.05)" : "transparent" }}>
                      {(() => {

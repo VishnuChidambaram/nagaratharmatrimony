@@ -581,14 +581,18 @@ export default function Step1() {
             <option value="Periyappa">{t("Periyappa", language)}</option>
           </select>
 
-          <TamilInput
+          <select
             style={styles.input}
             name="referredBy"
             value={form.referredBy}
             onChange={handleChange}
-            placeholder={t("Referred By", language)}
-            forcedLanguage={language}
-          />
+          >
+            <option value="">{t("Select Referred By", language)}</option>
+            <option value="Family Member">{t("Family Member", language)}</option>
+            <option value="Friends">{t("Friends", language)}</option>
+            <option value="Search Engine">{t("Search Engine", language)}</option>
+            <option value="Others">{t("Others", language)}</option>
+          </select>
           <TamilInput
             style={styles.input}
             name="reference"

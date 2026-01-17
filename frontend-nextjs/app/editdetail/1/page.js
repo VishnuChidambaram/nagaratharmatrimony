@@ -68,6 +68,7 @@ export default function EditStep1() {
           userData.yourTemple = normalizeDropdownValue("yourTemple", userData.yourTemple);
           userData.yourDivision = normalizeDropdownValue("yourDivision", userData.yourDivision);
           userData.nativePlace = normalizeDropdownValue("nativePlace", userData.nativePlace);
+          userData.referredBy = normalizeDropdownValue("referredBy", userData.referredBy);
 
 
           console.log("Step 1: Loaded fresh data:", userData);
@@ -552,14 +553,18 @@ export default function EditStep1() {
           </div>
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Referred By", language)}:</label>
-            <TamilInput
+            <select
               className="edit-field-input"
               name="referredBy"
               value={form.referredBy ?? ""}
               onChange={handleChange}
-              placeholder={t("Referred By", language)}
-              forcedLanguage={language}
-            />
+            >
+              <option value="">{t("Select Referred By", language)}</option>
+              <option value="Family Member">{t("Family Member", language)}</option>
+              <option value="Friends">{t("Friends", language)}</option>
+              <option value="Search Engine">{t("Search Engine", language)}</option>
+              <option value="Others">{t("Others", language)}</option>
+            </select>
           </div>
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Reference", language)}:</label>
