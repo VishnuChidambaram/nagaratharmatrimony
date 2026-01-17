@@ -101,7 +101,7 @@
 .edit-button-container {
     display: flex;
     justify-content: center;
-    gap: 20%;
+    gap: 15%;
     margin: 20px 6%;
 }
 
@@ -603,7 +603,9 @@
         transform: translateX(-50%) !important;
         height: auto !important;
         min-height: 85vh;
-        margin-bottom: 40px !important;
+        margin-top: 80px !important;
+        margin-bottom: 80px !important;
+        width: calc(100% - 10px) !important;
     }
 
     /* Stack labels and inputs vertically for Tablet (Pages 1-7 except 5) */
@@ -634,7 +636,7 @@
     .edit-button-container {
         flex-direction: row !important;
         justify-content: center !important;
-        gap: 120px !important;
+        gap: 130px !important;
     }
 
     .edit-single-button {
@@ -678,6 +680,11 @@
         width: 250px !important;
         max-width: 250px !important;
         min-width: 250px !important;
+    }
+
+    /* Normalize h1 tags in tablet view */
+    .edit-detail-container h1 {
+        font-size: 24px !important;
     }
 }
 
