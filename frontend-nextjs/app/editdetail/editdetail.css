@@ -324,7 +324,7 @@
     width: 100%;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .preview-comparison-row, .page5-comparison-container {
         flex-direction: column !important;
         display: flex !important;
@@ -365,12 +365,35 @@
     }
 }
 
-/* Tablet View - Side-by-Side */
-@media (min-width: 769px) {
+/* Tablet View - Side-by-Side Columns, but Vertical Fields on Tablet */
+@media (min-width: 768px) {
     .preview-comparison-row, .page5-comparison-container {
         display: flex !important;
         flex-direction: row !important;
         align-items: stretch !important;
+    }
+    
+    /* Force new line for field values on Tablets (768px - 1024px) */
+    @media (max-width: 1024px) {
+        .preview-field-row {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            gap: 4px !important;
+        }
+        .preview-field-label {
+            width: 100% !important;
+            opacity: 0.8 !important;
+            font-size: 14px !important;
+        }
+    }
+
+    /* Keep Side-by-Side on Desktop (1025px+) if desired, but user asked for tablet specifically */
+    @media (min-width: 1025px) {
+        .preview-field-row {
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: baseline !important;
+        }
     }
 
     .preview-column, .comparison-column-original, .comparison-column-new {
@@ -429,7 +452,7 @@
     font-size: 16px;
     font-weight: 700;
     color: var(--card-text);
-    width: 150px;
+    width: 180px;
     flex-shrink: 0;
     text-align: left;
 }
@@ -558,7 +581,7 @@
     justify-content: center;
 }
 /* Tablet View - 50% Button Width */
-@media (min-width: 769px) and (max-width: 1024px) {
+@media (min-width: 768px) and (max-width: 1024px) {
     .edit-detail-button,
     .edit-detail-previous-button,
     .edit-single-button,
