@@ -606,22 +606,40 @@
         margin-bottom: 40px !important;
     }
 
+    /* Stack labels and inputs vertically for Tablet (Pages 1-7 except 5) */
+    .edit-field-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 5px !important;
+        margin-bottom: 15px !important;
+    }
+
+    .edit-field-label {
+        min-width: 250px !important;
+        max-width: 250px !important;
+        text-align: left !important;
+        margin-bottom: 5px !important;
+        width: 250px !important;
+    }
+
     .edit-detail-button,
     .edit-detail-previous-button,
     .edit-page8-update-button,
     .edit-page8-previous-button {
-        width: 45% !important;
-        max-width: 45% !important;
+        width: 250px !important;
+        max-width: 250px !important;
         margin: 10px 0 !important;
     }
 
     .edit-button-container {
-        gap: 10px !important;
+        flex-direction: row !important;
+        justify-content: center !important;
+        gap: 120px !important;
     }
 
     .edit-single-button {
-        width: 45% !important;
-        max-width: 45% !important;
+        width: 250px !important;
+        max-width: 250px !important;
         margin: 10px auto !important;
         display: block;
     }
@@ -632,15 +650,34 @@
         margin: 10px 0 !important;
     }
 
-    /* Standardize Field Widths for Steps 1-7 */
+    /* Standardize Field Widths for Steps 1-7 (Responsive) */
+    /* Standardize Field Widths for Steps 1-7 (Responsive) */
     .edit-field-input, 
     .edit-field-input-wrapper,
     .edit-form-container select,
     .edit-form-container input:not([type="checkbox"]):not([type="radio"]),
+    .edit-form-container textarea,
     .edit-form-container .tamil-input-container input,
     .edit-form-container .tamil-input-container textarea {
-        width: 100% !important;
-        max-width: 300px !important;
+        width: 250px !important;
+        max-width: 250px !important;
+        min-width: 250px !important;
+    }
+
+    /* Group Wrapper for Time/Dasa */
+    .edit-field-group-wrapper {
+        width: 250px !important;
+        max-width: 250px !important;
+        box-sizing: border-box;
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Page 5 Planet Select Inputs - Tablet Width */
+    .edit-detail-container .input2 {
+        width: 250px !important;
+        max-width: 250px !important;
+        min-width: 250px !important;
     }
 }
 
@@ -664,8 +701,9 @@
         transform: translateX(-50%) !important;
         height: auto !important;
         min-height: 85vh;
-        margin-bottom: 20px !important;
-        width: 98% !important;
+        margin-top: 80px !important;
+        margin-bottom: 80px !important;
+        width: 90% !important;
         padding: 10px !important;
     }
 
@@ -675,8 +713,8 @@
     .edit-otp-button,
     .edit-page8-update-button,
     .edit-page8-previous-button {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 250px !important;
+        max-width: 250px !important;
         margin: 10px 0 !important;
         display: block;
     }
@@ -684,42 +722,61 @@
     .edit-button-container, .edit-page8-button-container, .email-verification-row {
         flex-direction: column !important;
         align-items: center !important;
-        gap: 15px !important;
+        gap: 0px !important;
         width: 100%;
         margin: 10px 0 !important;
     }
 
     .edit-send-otp-button {
-        width: 100% !important;
-        max-width: 100% !important;
+        width: 250px !important;
+        max-width: 250px !important;
     }
 
     /* Vertical Stacking for Editing Rows */
     .edit-field-row {
     flex-direction: column !important;
-    align-items: flex-start !important;
+    align-items: center !important;
     gap: 5px !important;
     margin: 0 0 20px 0 !important;
     width: 100% !important;
 }
 
     .edit-field-label {
-        min-width: 100% !important;
-        max-width: 100% !important;
+        min-width: 250px !important;
+        max-width: 250px !important;
         text-align: left !important;
         margin-bottom: 5px !important;
+        width: 250px !important;
         font-size: 14px !important;
     }
 
-    /* Standardize Field Widths for Steps 1-7 */
+    /* Standardize Field Widths for Steps 1-7 (Responsive) */
     .edit-field-input, 
     .edit-field-input-wrapper,
     .edit-form-container select,
     .edit-form-container input:not([type="checkbox"]):not([type="radio"]),
+    .edit-form-container textarea,
     .edit-form-container .tamil-input-container input,
     .edit-form-container .tamil-input-container textarea {
-        width: 100% !important;
-        max-width: 300px !important;
+        width: 250px !important;
+        max-width: 250px !important;
+        min-width: 250px !important;
+    }
+
+    /* Group Wrapper for Time/Dasa */
+    .edit-field-group-wrapper {
+        width: 250px !important;
+        max-width: 250px !important;
+        box-sizing: border-box;
+        display: flex;
+        gap: 10px;
+    }
+
+    /* Page 5 Planet Select Inputs - Smaller Width */
+    .edit-detail-container .input2 {
+        width: 60px !important;
+        max-width: 60px !important;
+        min-width: 60px !important;
     }
 
     /* Step 8 Preview Field Alignment */
