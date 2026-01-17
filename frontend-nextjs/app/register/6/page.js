@@ -1048,27 +1048,42 @@ export default function Step6() {
   return (
     <>
       <style jsx>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .form-container {
             flex-direction: column !important;
             gap: 5px !important;
+            align-items: center !important;
           }
           .left-column, .right-column {
             min-width: 100% !important;
             margin: 0 !important;
             max-width: 95% !important;
+            align-items: center !important;
           }
           .form-row {
             flex-direction: column !important;
+            align-items: center !important;
           }
           .button-container {
             flex-direction: column !important;
             gap: 10px !important;
+            align-items: center !important;
           }
-          .button-container button {
-            width: 90% !important;
+
+          /* Tablet and Mobile Standardized Widths */
+          select, 
+          input:not([type="checkbox"]):not([type="radio"]), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea) {
+            width: 250px !important;
+            max-width: 250px !important;
             margin: 10px auto !important;
-            max-width: 400px;
+          }
+
+          .button-container button {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
           }
         }
         @media (max-width: 480px) {

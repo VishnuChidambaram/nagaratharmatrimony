@@ -130,15 +130,25 @@ export default function Step5() {
   return (
     <>
       <style jsx>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .button-container {
             flex-direction: column !important;
             gap: 10px !important;
+            align-items: center !important;
           }
+
+          /* Tablet and Mobile Standardized Widths for Buttons */
           .button-container button {
-            width: 90% !important;
+            width: 250px !important;
+            max-width: 250px !important;
             margin: 10px auto !important;
-            max-width: 400px;
+          }
+
+          /* Tablet and Mobile Standardized Widths for Planet Selects */
+          .input2 {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
           }
         }
         

@@ -266,7 +266,6 @@ export default function EditStep5() {
       <div className="edit-form-container button-container">
         <div className="edit-left-column">
           <button
-            style={{width: "80%"}}
             className="edit-detail-previous-button"
             onClick={async () => {
               await saveFormData(form);
@@ -278,7 +277,6 @@ export default function EditStep5() {
         </div>
         <div className="edit-right-column">
           <button
-            style={{width: "80%"}}
             className="edit-detail-button"
             onClick={async () => {
               await saveFormData(form);

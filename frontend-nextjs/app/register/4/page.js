@@ -92,37 +92,51 @@ export default function Step4() {
   return (
     <>
       <style jsx>{`
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
           .form-container {
             flex-direction: column !important;
             gap: 5px !important;
+            align-items: center !important;
           }
           
           .left-column, .right-column {
             min-width: 100% !important;
             margin: 0 !important;
+            align-items: center !important;
           }
           
           .button-container {
             flex-direction: column !important;
             gap: 10px !important;
+            align-items: center !important;
           }
-          .button-container button {
-            width: 90% !important;
+
+          /* Tablet and Mobile Standardized Widths */
+          select, 
+          input:not([type="checkbox"]):not([type="radio"]), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea) {
+            width: 250px !important;
+            max-width: 250px !important;
             margin: 10px auto !important;
-            max-width: 400px;
+          }
+
+          .button-container button {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
           }
           
           .small-input {
-            width: 40px !important;
-            min-width: 30px !important;
-            margin-left: 0px !important;
+            width: 60px !important; /* Slightly larger for easier tap */
+            min-width: 60px !important;
+            margin: 5px !important;
           }
 
           .date-input {
-            margin-left: -15px !important;
-            width: 60% !important;
-            min-width: 80px !important;
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
           }
         }
         

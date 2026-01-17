@@ -208,64 +208,62 @@ export default function EditStep7() {
             </select>
           </div>
           <div className="edit-field-row">
-            <label className="edit-field-label">{t("Age Range (From - To)", language)}:</label>
-            <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-              <input
-                className="edit-field-input-small"
-                type="number"
-                name="fromAge"
-                value={form.fromAge ?? ""}
-                onChange={handle}
-                min="22"
-                max="60"
-                placeholder={t("From", language)}
-              />
-              <span>-</span>
-              <input
-                className="edit-field-input-small"
-                type="number"
-                name="toAge"
-                value={form.toAge ?? ""}
-                onChange={handle}
-                min="22"
-                max="60"
-                placeholder={t("To", language)}
-              />
-            </div>
+            <label className="edit-field-label">{t("From Age", language)}:</label>
+            <input
+              className="edit-field-input"
+              type="number"
+              name="fromAge"
+              value={form.fromAge ?? ""}
+              onChange={handle}
+              min="22"
+              max="60"
+              placeholder={t("From", language)}
+            />
           </div>
           <div className="edit-field-row">
-            <label className="edit-field-label">{t("Height Range (From - To)", language)}:</label>
-            <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
-              <select
-                className="edit-field-input-small"
-                style={{width: '95px !important', maxWidth: '95px !important'}}
-                name="fromHeight"
-                value={form.fromHeight ?? ""}
-                onChange={handle}
-              >
-                <option value="">{t("From", language)}</option>
-                {heightOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <span>-</span>
-              <select
-                className="edit-field-input-small"
-                style={{width: '95px !important', maxWidth: '95px !important'}}
-                name="toHeight"
-                value={form.toHeight ?? ""}
-                onChange={handle}
-              >
-                <option value="">{t("To", language)}</option>
-                {heightOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <label className="edit-field-label">{t("To Age", language)}:</label>
+            <input
+              className="edit-field-input"
+              type="number"
+              name="toAge"
+              value={form.toAge ?? ""}
+              onChange={handle}
+              min="22"
+              max="60"
+              placeholder={t("To", language)}
+            />
+          </div>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("From Height", language)}:</label>
+            <select
+              className="edit-field-input"
+              name="fromHeight"
+              value={form.fromHeight ?? ""}
+              onChange={handle}
+            >
+              <option value="">{t("From", language)}</option>
+              {heightOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("To Height", language)}:</label>
+            <select
+              className="edit-field-input"
+              name="toHeight"
+              value={form.toHeight ?? ""}
+              onChange={handle}
+            >
+              <option value="">{t("To", language)}</option>
+              {heightOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
       </div>

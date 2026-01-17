@@ -14,7 +14,7 @@
     border-radius: 10px;
     margin: 0 auto;
     position: fixed;
-    top: 55%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
@@ -40,7 +40,7 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    margin: 10px 0;
+    margin: 0 0 20px 0;
     width: 100%;
 }
 
@@ -56,8 +56,6 @@
 }
 
 .edit-field-input {
-    width: 300px !important;
-    max-width: 300px !important;
     padding: 10px;
     border-radius: 6px;
     border: 1px solid var(--input-border);
@@ -68,10 +66,13 @@
     box-sizing: border-box;
 }
 
-.edit-field-input-small {
-    width: 80px !important;
-    max-width: 80px !important;
-    padding: 10px;
+/* High specificity to override generic input rules */
+.edit-detail-container .edit-form-container .edit-field-group-wrapper .edit-field-input-small {
+    width: 0 !important; /* Allow flex to control width */
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 1;
+    padding: 5px !important;
     border-radius: 6px;
     border: 1px solid var(--input-border);
     background: var(--input-bg);
@@ -84,8 +85,17 @@
 
 /* Ensure TamilInput wrapper also respects the width if needed */
 .edit-field-input-wrapper {
+    box-sizing: border-box;
+    width: 300px;
+    max-width: 300px;
+}
+
+.edit-field-group-wrapper {
+    display: flex;
+    gap: 10px;
     width: 300px !important;
     max-width: 300px !important;
+    box-sizing: border-box;
 }
 
 .edit-button-container {
@@ -373,17 +383,19 @@
         align-items: stretch !important;
     }
     
-    /* Force new line for field values on Tablets (768px - 1024px) */
+    /* Keep Side-by-Side on Tablet as well, matching Desktop quality */
     @media (max-width: 1024px) {
         .preview-field-row {
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            gap: 4px !important;
+            flex-direction: row !important;
+            flex-wrap: nowrap !important;
+            align-items: baseline !important;
+            gap: 15px !important;
         }
         .preview-field-label {
-            width: 100% !important;
-            opacity: 0.8 !important;
-            font-size: 14px !important;
+            width: 180px !important;
+            min-width: 180px !important;
+            opacity: 1 !important;
+            font-size: 16px !important;
         }
     }
 
@@ -436,12 +448,12 @@
 }
 
 .preview-field-row {
-    padding: 8px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--input-border);
     min-height: 50px;
     display: flex;
     align-items: baseline;
-    gap: 8px;
+    gap: 15px;
 }
 
 .field-changed {
@@ -460,6 +472,8 @@
 .preview-field-value {
     color: var(--card-text);
     flex: 1;
+    word-break: break-all;
+    overflow-wrap: break-word;
 }
 
 .value-changed {
@@ -473,10 +487,10 @@
 }
 
 .preview-email-input, .preview-otp-input {
-    width: 250px !important;
-    max-width: 100% !important;
-    padding: 6px 10px !important;
-    margin: 10px 5px !important;
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 10px !important;
+    margin: 10px 0 !important;
     border-radius: 6px !important;
     border: 1px solid var(--input-border, #ccc) !important;
     font-size: 14px !important;
@@ -484,7 +498,7 @@
     color: var(--input-text, #000) !important;
     box-sizing: border-box !important;
     display: inline-block !important;
-    min-height: 36px !important;
+    min-height: 40px !important;
 }
 
 .email-verification-row {
@@ -496,10 +510,10 @@
 }
 
 .preview-email-input, .preview-otp-input {
-    width: 250px !important;
-    max-width: 100% !important;
-    padding: 6px 10px !important;
-    margin: 10px 5px !important;
+    width: 100% !important;
+    max-width: 500px !important;
+    padding: 10px !important;
+    margin: 10px 0 !important;
     border-radius: 6px !important;
     border: 1px solid var(--input-border, #ccc) !important;
     font-size: 14px !important;
@@ -507,7 +521,7 @@
     color: var(--input-text, #000) !important;
     box-sizing: border-box !important;
     display: inline-block !important;
-    min-height: 36px !important;
+    min-height: 40px !important;
 }
 
 /* Tablet Verification Refinement - Inline (Side by Side) */
@@ -521,17 +535,17 @@
         margin: 10px 0 !important;
     }
     .preview-email-input, .preview-otp-input, .edit-otp-button, .edit-send-otp-button {
-        width: 250px !important;
-        max-width: 250px !important;
-        padding: 6px 10px !important;
-        font-size: 13px !important;
-        margin: 0 !important;
+        width: 100% !important;
+        max-width: 500px !important;
+        padding: 10px !important;
+        font-size: 14px !important;
+        margin: 10px 0 !important;
         box-sizing: border-box !important;
         display: inline-block !important;
         border: 1px solid var(--input-border, #ccc) !important;
         background: var(--input-bg, #fff) !important;
         border-radius: 6px !important;
-        min-height: 36px !important;
+        min-height: 40px !important;
     }
 }
 
@@ -580,23 +594,77 @@
     align-items: center;
     justify-content: center;
 }
-/* Tablet View - 50% Button Width */
+/* Tablet View - Standardize Fields & 50% Button Width */
 @media (min-width: 768px) and (max-width: 1024px) {
+    .edit-detail-container {
+        position: absolute !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: auto !important;
+        min-height: 85vh;
+        margin-bottom: 40px !important;
+    }
+
     .edit-detail-button,
     .edit-detail-previous-button,
-    .edit-single-button,
-    .edit-otp-button,
     .edit-page8-update-button,
     .edit-page8-previous-button {
-        width: 50% !important;
-        max-width: 50% !important;
+        width: 45% !important;
+        max-width: 45% !important;
+        margin: 10px 0 !important;
+    }
+
+    .edit-single-button {
+        width: 45% !important;
+        max-width: 45% !important;
         margin: 10px auto !important;
         display: block;
     }
+
+    .edit-otp-button {
+        width: 250px !important;
+        max-width: 250px !important;
+        margin: 10px 0 !important;
+    }
+
+    /* Standardize Field Widths for Steps 1-7 */
+    .edit-field-input, 
+    .edit-field-input-wrapper,
+    .edit-form-container select,
+    .edit-form-container input:not([type="checkbox"]):not([type="radio"]),
+    .edit-form-container .tamil-input-container input,
+    .edit-form-container .tamil-input-container textarea {
+        width: 100% !important;
+        max-width: 300px !important;
+    }
 }
 
-/* Mobile View - 100% Button Width */
+@media (min-width: 1025px) {
+    .edit-form-container select,
+    .edit-form-container input:not([type="checkbox"]):not([type="radio"]),
+    .edit-form-container textarea,
+    .edit-form-container .tamil-input-container input,
+    .edit-form-container .tamil-input-container textarea {
+        width: 300px !important;
+        max-width: 300px !important;
+    }
+}
+
+/* Mobile View - Standardize Fields & 100% Button Width */
 @media (max-width: 767px) {
+    .edit-detail-container {
+        position: absolute !important;
+        top: 20px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        height: auto !important;
+        min-height: 85vh;
+        margin-bottom: 20px !important;
+        width: 98% !important;
+        padding: 10px !important;
+    }
+
     .edit-detail-button,
     .edit-detail-previous-button,
     .edit-single-button,
@@ -612,7 +680,7 @@
     .edit-button-container, .edit-page8-button-container, .email-verification-row {
         flex-direction: column !important;
         align-items: center !important;
-        gap: 10px !important;
+        gap: 15px !important;
         width: 100%;
         margin: 10px 0 !important;
     }
@@ -620,6 +688,34 @@
     .edit-send-otp-button {
         width: 100% !important;
         max-width: 100% !important;
+    }
+
+    /* Vertical Stacking for Editing Rows */
+    .edit-field-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 5px !important;
+    margin: 0 0 20px 0 !important;
+    width: 100% !important;
+}
+
+    .edit-field-label {
+        min-width: 100% !important;
+        max-width: 100% !important;
+        text-align: left !important;
+        margin-bottom: 5px !important;
+        font-size: 14px !important;
+    }
+
+    /* Standardize Field Widths for Steps 1-7 */
+    .edit-field-input, 
+    .edit-field-input-wrapper,
+    .edit-form-container select,
+    .edit-form-container input:not([type="checkbox"]):not([type="radio"]),
+    .edit-form-container .tamil-input-container input,
+    .edit-form-container .tamil-input-container textarea {
+        width: 100% !important;
+        max-width: 300px !important;
     }
 
     /* Step 8 Preview Field Alignment */
@@ -722,13 +818,15 @@
 }
 
 .input2 {
-    width: 150px;
-    padding: 4px;
+    width: 300px;
+    padding: 10px;
     border-radius: 6px;
     border: 1px solid var(--input-border);
     background: var(--input-bg);
     color: var(--input-text);
-    font-size: 16px;
+    font-size: 14px;
+    box-sizing: border-box;
+    min-height: 40px;
 }
 
 .rasi-grid-container {
@@ -741,7 +839,8 @@
 
 @media (max-width: 600px) {
     .input2 {
-        width: 40%;
+        width: 100% !important;
+        max-width: 300px !important;
     }
 }
 
@@ -839,12 +938,12 @@
     .edit-verification-container .preview-otp-input,
     .edit-verification-container .edit-send-otp-button,
     .edit-verification-container .edit-otp-button {
-        width: 250px !important;
-        max-width: 250px !important;
-        min-height: 36px !important;
-        padding: 6px 12px !important;
+        width: 100% !important;
+        max-width: 300px !important;
+        min-height: 40px !important;
+        padding: 10px !important;
         font-size: 14px !important;
-        margin: 0 !important;
+        margin: 10px 0 !important;
         box-sizing: border-box !important;
         display: inline-block !important;
     }

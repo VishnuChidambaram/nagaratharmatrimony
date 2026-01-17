@@ -261,7 +261,7 @@ export default function EditStep4() {
           )}
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Time of Birth", language)}:</label>
-            <div style={{display: 'flex', gap: '8px'}}>
+            <div className="edit-field-group-wrapper">
               <input
                 className="edit-field-input-small"
                 name="timeOfBirthHours"
@@ -331,7 +331,7 @@ export default function EditStep4() {
           )}
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Dasa Remain", language)}:</label>
-            <div style={{display: 'flex', gap: '8px'}}>
+            <div className="edit-field-group-wrapper">
               <input
                 className="edit-field-input-small"
                 name="dasaRemainYears"
