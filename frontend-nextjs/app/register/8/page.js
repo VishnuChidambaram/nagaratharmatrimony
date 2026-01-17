@@ -163,13 +163,98 @@ export default function Step8() {
   };
 
   const displayNames = {
+    // Step 1
+    name: "Name",
+    gender: "Gender",
+    password: "Password",
+    maritalStatus: "Marital Status",
+    fatherName: "Father Name",
+    fatherOccupation: "Father Occupation",
+    motherName: "Mother Name",
+    motherOccupation: "Mother Occupation",
+    brothers: "Number of Brothers",
+    brothersMarried: "Married Number of Brothers",
+    sisters: "Number of Sisters",
+    sistersMarried: "Married Number of Sisters",
+    yourTemple: "Your Temple",
+    yourDivision: "Your Division",
+    knownLanguages: "Known Languages",
+    reference: "Reference",
+    nativePlace: "Native Place",
+    nativePlaceHouseName: "Native Place House Name",
+    presentResidence: "Present Residence",
+    pincode: "Pincode",
+    profileCreatedBy: "Profile Created By",
+    referredBy: "Referred By",
+    referralDetails1Name: "Referral 1 Name",
+    referralDetails1Phone: "Referral 1 Phone",
+    referralDetails1Address: "Referral 1 Address",
+    referralDetails2Name: "Referral 2 Name",
+    referralDetails2Phone: "Referral 2 Phone",
+    referralDetails2Address: "Referral 2 Address",
+
+    // Step 2
+    educationQualification: "Education Qualification",
+    otherEducation: "Other Education",
+    occupationBusiness: "Occupation / Business",
+    otherOccupation: "Other Occupation",
+    workingPlace: "Working Place",
+    workDetails: "Work Details",
+    educationDetails: "Education Details",
+    income: "Income",
+
+    // Step 3
+    height: "Height",
+    complexion: "Complexion",
+    weight: "Weight",
+    diet: "Diet",
+    specialCases: "Special Cases",
+    specialCasesDetails: "Special Cases Details",
+
+    // Step 4
+    zodiacSign: "Zodiac Sign",
+    ascendant: "Ascendant",
+    birthStar: "Birth Star",
+    dosham: "Dosham",
+    placeOfBirth: "Place of Birth",
+    dateOfBirth: "Date of Birth",
+    timeOfBirthHours: "Time of Birth (Hours)",
+    timeOfBirthMinutes: "Time of Birth (Minutes)",
+    timeOfBirthSeconds: "Time of Birth (Seconds)",
+    DasaType: "Dasa Type",
+    dasaRemainYears: "Dasa Years",
+    dasaRemainMonths: "Dasa Months",
+    dasaRemainDays: "Dasa Days",
+
+    // Step 6
+    fullStreetAddress: "Full Street Address",
+    city: "City",
+    state: "State",
+    district: "District",
+    country: "Country",
+    postalCode: "Postal Code",
+    phone: "Phone",
+    otherPhone: "Other Phone",
+    whatsAppNo: "WhatsApp No",
+    email: "Email",
+    photos: "Photos",
+    photo: "Photo",
+
+    // Step 7
+    educationQualification1: "Partner Education",
+    otherEducation1: "Other Education",
+    educationDetails1: "Partner Education Details",
+    complexion1: "Partner Complexion",
+    personalPreference1: "Personal Preference",
+    willingnessToWork1: "Willingness to Work After Marriage",
+    fromAge: "From Age",
+    toAge: "To Age",
+    fromHeight: "From Height",
+    toHeight: "To Height",
+
+    // Other legacy or specific ones
     affliction: "Dhosam",
     periodType: "DisaiType",
-    dosham: "Dosham",
-    DasaType: "DasaType",
-    dasaRemainYears: "Dasa Remain Years",
-    dasaRemainMonths: "Dasa Remain Months",
-    dasaRemainDays: "Dasa Remain Days",
   };
 
   const stepGroups = {
@@ -205,7 +290,9 @@ export default function Step8() {
     ],
     "Step 2 - Education & Occupation": [
       "educationQualification",
+      "otherEducation",
       "occupationBusiness",
+      "otherOccupation",
       "workingPlace",
       "workDetails",
       "educationDetails",
@@ -707,117 +794,129 @@ export default function Step8() {
               </div>
             );
           }
-          const mid = Math.ceil(fields.length / 2);
-          const leftFields = fields.slice(0, mid);
-          const rightFields = fields.slice(mid);
-          return (
-            <div key={step} style={{ marginBottom: 20 }}>
-              <h2 style={{ borderBottom: "1px solid #ccc", paddingBottom: 5 }}>
-                {t(step, language)}
-              </h2>
-              <div style={{ display: "flex", flexWrap: "wrap" }}>
-                <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
-                  {leftFields.map((k) => (
-                    <div key={k} style={{ padding: 6 }}>
-                      <strong>{t(k, language)}:</strong>{" "}
-                      {k === "photos" && form[k] && Array.isArray(form[k]) ? (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
-                          {form[k].map((photo, idx) => (
-                            <Image
-                              key={idx}
-                              src={
-                                typeof photo === "string"
-                                  ? photo
-                                  : photo?.base64
-                                  ? photo.base64
-                                  : (photo instanceof File || photo instanceof Blob)
-                                  ? URL.createObjectURL(photo)
-                                  : ""
-                              }
-                              alt={`Photo ${idx + 1}`}
-                              width={100}
-                              height={100}
-                              style={{
-                                borderRadius: "4px",
-                                border: "1px solid var(--input-border)",
-                                objectFit: "cover"
-                              }}
-                            />
-                          ))}
-                        </div>
-                      ) : k === "photo" && form[k] ? (
-                        <Image
-                          src={
-                            typeof form[k] === "string"
-                              ? form[k]
-                              : URL.createObjectURL(form[k])
-                          }
-                          alt="Photo"
-                          width={100}
-                          height={100}
-                          style={{
-                            borderRadius: "4px",
-                            border: "1px solid var(--input-border)",
-                            objectFit: "cover"
-                          }}
-                        />
-                      ) : (
-                        t(String(form[k] || ""), language)
-                      )}
-                    </div>
-                  ))}
-                </div>
-                <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
-                  {rightFields.map((k) => (
-                    <div key={k} style={{ padding: 6 }}>
-                      <strong>{t(displayNames[k] || k, language)}:</strong>{" "}
-                      {k === "photos" && form[k] && Array.isArray(form[k]) ? (
-                        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
-                          {form[k].map((photo, idx) => (
-                            <Image
-                              key={idx}
-                              src={
-                                typeof photo === "string"
-                                  ? photo
-                                  : photo?.base64
-                                  ? photo.base64
-                                  : (photo instanceof File || photo instanceof Blob)
-                                  ? URL.createObjectURL(photo)
-                                  : ""
-                              }
-                              alt={`Photo ${idx + 1}`}
-                              width={100}
-                              height={100}
-                              style={{
-                                borderRadius: "4px",
-                                border: "1px solid var(--input-border)",
-                                objectFit: "cover"
-                              }}
-                            />
-                          ))}
-                        </div>
-                      ) : k === "photo" && form[k] ? (
-                        <Image
-                          src={
-                            typeof form[k] === "string"
-                              ? form[k]
-                              : URL.createObjectURL(form[k])
-                          }
-                          alt="Photo"
-                          width={100}
-                          height={100}
-                          style={{
-                            borderRadius: "4px",
-                            border: "1px solid var(--input-border)",
-                            objectFit: "cover"
-                          }}
-                        />
-                      ) : (
-                        t(String(form[k] || ""), language)
-                      )}
-                    </div>
-                  ))}
-                </div>
+  const shouldShowField = (k, form) => {
+    if (k === "otherEducation") return form.educationQualification === "Others";
+    if (k === "otherOccupation") return form.occupationBusiness === "Other";
+    if (k === "otherEducation1") return form.educationQualification1 === "Others";
+    if (k === "specialCasesDetails") return form.specialCases === "Yes";
+    return true;
+  };
+
+  const mid = Math.ceil(fields.length / 2);
+  const leftFields = fields.slice(0, mid);
+  const rightFields = fields.slice(mid);
+  return (
+    <div key={step} style={{ marginBottom: 20 }}>
+      <h2 style={{ borderBottom: "1px solid #ccc", paddingBottom: 5 }}>
+        {t(step, language)}
+      </h2>
+      <div style={{ display: "flex", flexWrap: "wrap" }}>
+        <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
+          {leftFields.filter(k => shouldShowField(k, form)).map((k) => (
+            <div key={k} style={{ padding: 6, display: "flex", alignItems: "baseline", gap: "10px" }}>
+              <strong style={{ minWidth: "180px", flexShrink: 0, fontSize: "16px", fontWeight: "700", textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
+              <div style={{ flex: 1 }}>
+                {k === "photos" && form[k] && Array.isArray(form[k]) ? (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
+                    {form[k].map((photo, idx) => (
+                      <Image
+                        key={idx}
+                        src={
+                          typeof photo === "string"
+                            ? photo
+                            : photo?.base64
+                            ? photo.base64
+                            : (photo instanceof File || photo instanceof Blob)
+                            ? URL.createObjectURL(photo)
+                            : ""
+                        }
+                        alt={`Photo ${idx + 1}`}
+                        width={100}
+                        height={100}
+                        style={{
+                          borderRadius: "4px",
+                          border: "1px solid var(--input-border)",
+                          objectFit: "cover"
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : k === "photo" && form[k] ? (
+                  <Image
+                    src={
+                      typeof form[k] === "string"
+                        ? form[k]
+                        : URL.createObjectURL(form[k])
+                    }
+                    alt="Photo"
+                    width={100}
+                    height={100}
+                    style={{
+                      borderRadius: "4px",
+                      border: "1px solid var(--input-border)",
+                      objectFit: "cover"
+                    }}
+                  />
+                ) : (
+                  t(String(form[k] || ""), language)
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
+          {rightFields.filter(k => shouldShowField(k, form)).map((k) => (
+            <div key={k} style={{ padding: 6, display: "flex", alignItems: "baseline", gap: "10px" }}>
+              <strong style={{ minWidth: "180px", flexShrink: 0, fontSize: "16px", fontWeight: "700", textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
+              <div style={{ flex: 1 }}>
+                {k === "photos" && form[k] && Array.isArray(form[k]) ? (
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
+                    {form[k].map((photo, idx) => (
+                      <Image
+                        key={idx}
+                        src={
+                          typeof photo === "string"
+                            ? photo
+                            : photo?.base64
+                            ? photo.base64
+                            : (photo instanceof File || photo instanceof Blob)
+                            ? URL.createObjectURL(photo)
+                            : ""
+                        }
+                        alt={`Photo ${idx + 1}`}
+                        width={100}
+                        height={100}
+                        style={{
+                          borderRadius: "4px",
+                          border: "1px solid var(--input-border)",
+                          objectFit: "cover"
+                        }}
+                      />
+                    ))}
+                  </div>
+                ) : k === "photo" && form[k] ? (
+                  <Image
+                    src={
+                      typeof form[k] === "string"
+                        ? form[k]
+                        : URL.createObjectURL(form[k])
+                    }
+                    alt="Photo"
+                    width={100}
+                    height={100}
+                    style={{
+                      borderRadius: "4px",
+                      border: "1px solid var(--input-border)",
+                      objectFit: "cover"
+                    }}
+                  />
+                ) : (
+                  t(String(form[k] || ""), language)
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
               </div>
             </div>
           );

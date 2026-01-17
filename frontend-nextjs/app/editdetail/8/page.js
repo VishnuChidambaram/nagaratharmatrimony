@@ -338,13 +338,96 @@ export default function EditStep8() {
 
 
   const displayNames = {
+    // Step 1
+    name: "Name",
+    gender: "Gender",
+    maritalStatus: "Marital Status",
+    fatherName: "Father Name",
+    fatherOccupation: "Father Occupation",
+    motherName: "Mother Name",
+    motherOccupation: "Mother Occupation",
+    brothers: "Number of Brothers",
+    brothersMarried: "Married Number of Brothers",
+    sisters: "Number of Sisters",
+    sistersMarried: "Married Number of Sisters",
+    yourTemple: "Your Temple",
+    yourDivision: "Your Division",
+    knownLanguages: "Known Languages",
+    reference: "Reference",
+    nativePlace: "Native Place",
+    nativePlaceHouseName: "Native Place House Name",
+    presentResidence: "Present Residence",
+    pincode: "Pincode",
+    profileCreatedBy: "Profile Created By",
+    referredBy: "Referred By",
+    referralDetails1Name: "Referral 1 Name",
+    referralDetails1Phone: "Referral 1 Phone",
+    referralDetails1Address: "Referral 1 Address",
+    referralDetails2Name: "Referral 2 Name",
+    referralDetails2Phone: "Referral 2 Phone",
+    referralDetails2Address: "Referral 2 Address",
+
+    // Step 2
+    educationQualification: "Education Qualification",
+    otherEducation: "Other Education",
+    occupationBusiness: "Occupation / Business",
+    otherOccupation: "Other Occupation",
+    workingPlace: "Working Place",
+    workDetails: "Work Details",
+    educationDetails: "Education Details",
+    income: "Income",
+
+    // Step 3
+    height: "Height",
+    complexion: "Complexion",
+    weight: "Weight",
+    diet: "Diet",
+    specialCases: "Special Cases (Disability)",
+    specialCasesDetails: "Special Cases Details",
+
+    // Step 4
+    zodiacSign: "Zodiac Sign",
+    ascendant: "Ascendant",
+    birthStar: "Birth Star",
+    dosham: "Dosham",
+    placeOfBirth: "Place of Birth",
+    dateOfBirth: "Date of Birth",
+    timeOfBirthHours: "Time of Birth (Hours)",
+    timeOfBirthMinutes: "Time of Birth (Minutes)",
+    timeOfBirthSeconds: "Time of Birth (Seconds)",
+    DasaType: "Dasa Type",
+    dasaRemainYears: "Dasa Years",
+    dasaRemainMonths: "Dasa Months",
+    dasaRemainDays: "Dasa Days",
+
+    // Step 6
+    fullStreetAddress: "Full Street Address",
+    city: "City",
+    state: "State",
+    district: "District",
+    country: "Country",
+    postalCode: "Postal Code",
+    phone: "Phone",
+    otherPhone: "Other Phone",
+    whatsAppNo: "WhatsApp No",
+    email: "Email",
+    photos: "Photos",
+
+    // Step 7
+    educationQualification1: "Partner Education",
+    otherEducation1: "Partner Other Education",
+    educationDetails1: "Partner Education Details",
+    complexion1: "Partner Complexion",
+    personalPreference1: "Personal Preference",
+    willingnessToWork1: "Willingness to Work After Marriage",
+    fromAge: "From Age",
+    toAge: "To Age",
+    fromHeight: "From Height",
+    toHeight: "To Height",
+
+    // Old/Legacy
     affliction: "Dhosam",
     periodType: "DisaiType",
-    dosham: "Dosham",
-    DasaType: "DasaType",
-    dasaRemainYears: "Dasa Remain Years",
-    dasaRemainMonths: "Dasa Remain Months",
-    dasaRemainDays: "Dasa Remain Days",
   };
 
   const formatFieldName = (key) => {
@@ -636,7 +719,9 @@ export default function EditStep8() {
     ],
     "Step 2 - Education & Occupation": [
       "educationQualification",
+      "otherEducation",
       "occupationBusiness",
+      "otherOccupation",
       "workingPlace",
       "workDetails",
       "educationDetails",
@@ -681,6 +766,7 @@ export default function EditStep8() {
     ],
     "Step 7 - Partner Preference": [
       "educationQualification1",
+      "otherEducation1",
       "educationDetails1",
       "complexion1",
       "personalPreference1",
@@ -690,6 +776,15 @@ export default function EditStep8() {
       "fromHeight",
       "toHeight",
     ],
+  };
+
+  const shouldShowField = (k, data) => {
+    if (!data) return true;
+    if (k === "otherEducation") return data.educationQualification === "Others";
+    if (k === "otherOccupation") return data.occupationBusiness === "Other";
+    if (k === "otherEducation1") return data.educationQualification1 === "Others";
+    if (k === "specialCasesDetails") return data.specialCases === "Yes";
+    return true;
   };
 
   return (
@@ -713,62 +808,65 @@ export default function EditStep8() {
       </div>
 
       <div style={{ textAlign: "left", maxWidth: "1000px", width: "100%", margin: "0 auto" }}>
-        {Object.keys(stepGroups).map((step) => {
-          const fields = stepGroups[step];
-          
-          if (fields === "chart") {
-             return (
-                 <div key={step} style={{ marginBottom: 30, borderBottom: "1px solid var(--input-border)", paddingBottom: "20px" }}>
-                    <h3 style={{ borderBottom: "1px solid var(--input-border)", paddingBottom: 5, marginBottom: "15px", textAlign: "center", color: "var(--card-text)" }}>{step}</h3>
-                    {/* Render Page 5 Style Comparison */}
-                    {renderPage5Comparison()}
-                 </div>
-             );
-          }
-
+      {Object.keys(stepGroups).map((step) => {
+        const fields = stepGroups[step];
+        
+        if (fields === "chart") {
           return (
             <div key={step} style={{ marginBottom: 30, borderBottom: "1px solid var(--input-border)", paddingBottom: "20px" }}>
-              <h3 style={{ borderBottom: "1px solid var(--input-border)", paddingBottom: 5, marginBottom: "15px", color: "var(--card-text)" }}>
-                {t(step, language)}
-              </h3>
-              
-              <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap" }}>
-                 {/* Left Column: Before Edit */}
-                 <div style={{ flex: 1, minWidth: "300px", borderRight: "1px dashed var(--input-border)", paddingRight: "10px" }}>
-                    <div className="step-label-mobile" style={{ backgroundColor: "var(--input-bg)", color: "var(--card-text)", opacity: 0.7 }}>{t("Before Edit (Original)", language)}</div>
-                    {fields.map((k) => (
-                        <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)" }}>
-                             <strong style={{ display: "block", fontSize: "12px", color: "var(--card-text)", opacity: 0.7 }}>{language === "ta" && t(k, "ta") !== k ? t(k, "ta") : formatFieldName(k)}:</strong>
-                             <div style={{ color: "var(--card-text)", minHeight: "20px" }}>
-                                 {renderFieldValue(originalForm, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
-                             </div>
-                        </div>
-                    ))}
-                 </div>
-
-                 {/* Right Column: After Edit */}
-                 <div style={{ flex: 1, minWidth: "300px", paddingLeft: "10px" }}>
-                    <div className="step-label-mobile" style={{ backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e" }}>{t("After Edit (New)", language)}</div>
-                    {fields.map((k) => {
-                        const originalVal = JSON.stringify(originalForm[k]);
-                        const newVal = JSON.stringify(form[k]);
-                        const isChanged = originalVal !== newVal;
-                        
-                        return (
-                            <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)", backgroundColor: isChanged ? "rgba(34, 197, 94, 0.1)" : "transparent" }}>
-                                <strong style={{ display: "block", fontSize: "12px", color: "var(--card-text)", opacity: 0.7 }}>{language === "ta" && t(k, "ta") !== k ? t(k, "ta") : formatFieldName(k)}:</strong>
-                                <div style={{ color: "var(--card-text)", fontWeight: isChanged ? "bold" : "normal" }}>
-                                    {renderFieldValue(form, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
-                                </div>
-                            </div>
-                        );
-                    })}
-                 </div>
-              </div>
+              <h3 style={{ borderBottom: "1px solid var(--input-border)", paddingBottom: 5, marginBottom: "15px", textAlign: "center", color: "var(--card-text)" }}>{step}</h3>
+              {renderPage5Comparison()}
             </div>
           );
-        })}
-      </div>
+        }
+
+        return (
+          <div key={step} style={{ marginBottom: 30, borderBottom: "1px solid var(--input-border)", paddingBottom: "20px" }}>
+            <h3 style={{ borderBottom: "1px solid var(--input-border)", paddingBottom: 5, marginBottom: "15px", color: "var(--card-text)" }}>
+              {t(step, language)}
+            </h3>
+            
+            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "100%", alignItems: "stretch" }}>
+              {/* Left Column: Before Edit */}
+              <div style={{ flex: "1 1 300px", borderRight: "1px dashed var(--input-border)", padding: "15px", backgroundColor: "rgba(0,0,0,0.02)", borderRadius: "8px 0 0 8px", boxSizing: "border-box" }}>
+                <div className="step-label-mobile" style={{ backgroundColor: "#e9ecef", color: "#495057", padding: "10px", textAlign: "center", fontWeight: "bold", borderRadius: "4px", marginBottom: "15px" }}>{t("Before Edit (Original)", language)}</div>
+                <div>
+                  {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => (
+                    <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)", minHeight: "50px", display: "flex", alignItems: "baseline", gap: "8px" }}>
+                      <strong style={{ fontSize: "16px", fontWeight: "700", color: "var(--card-text)", opacity: 1, width: "150px", flexShrink: 0, textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
+                      <div style={{ color: "var(--card-text)", flex: 1 }}>
+                        {renderFieldValue(originalForm, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: After Edit */}
+              <div style={{ flex: "1 1 300px", padding: "15px", backgroundColor: "rgba(34, 197, 94, 0.03)", borderRadius: "0 8px 8px 0", boxSizing: "border-box" }}>
+                <div className="step-label-mobile" style={{ backgroundColor: "#d4edda", color: "#155724", padding: "10px", textAlign: "center", fontWeight: "bold", borderRadius: "4px", marginBottom: "15px" }}>{t("After Edit (New)", language)}</div>
+                <div>
+                  {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => {
+                    const originalVal = JSON.stringify(originalForm[k]);
+                    const newVal = JSON.stringify(form[k]);
+                    const isChanged = originalVal !== newVal;
+                    
+                    return (
+                      <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)", backgroundColor: isChanged ? "rgba(34, 197, 94, 0.08)" : "transparent", minHeight: "50px", display: "flex", alignItems: "baseline", gap: "8px" }}>
+                        <strong style={{ fontSize: "16px", fontWeight: "700", color: "var(--card-text)", opacity: 1, width: "150px", flexShrink: 0, textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
+                        <div style={{ color: "var(--card-text)", fontWeight: isChanged ? "bold" : "normal", flex: 1 }}>
+                          {renderFieldValue(form, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
       {/* Email Verification Section */}
       <div
         style={{
