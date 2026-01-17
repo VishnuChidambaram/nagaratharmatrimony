@@ -144,10 +144,10 @@ export default function Step5() {
             margin: 10px auto !important;
           }
 
-          /* Tablet and Mobile Standardized Widths for Planet Selects */
+          /* Tablet Standardized Widths for Planet Selects */
           .input2 {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 100px !important;
+            max-width: 100px !important;
             margin: 10px auto !important;
           }
         }
@@ -155,6 +155,12 @@ export default function Step5() {
         @media (max-width: 480px) {
           h1 {
             font-size: 22px !important;
+          }
+
+          .input2 {
+            width: 60px !important;
+            max-width: 60px !important;
+            margin: 10px auto !important;
           }
         }
       `}</style>
@@ -194,12 +200,7 @@ export default function Step5() {
           color: var(--input-text);
           font-size: 16px;
         }
-        /* Mobile screen */
-        @media (max-width: 600px) {
-          .input2 {
-            width: 40%;
-          }
-        }
+
           @media (max-width: 768px) {
             .step5-layout {
               flex-direction: column;

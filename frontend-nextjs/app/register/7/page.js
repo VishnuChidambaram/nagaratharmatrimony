@@ -111,26 +111,59 @@ export default function Step7() {
             align-items: center !important;
           }
 
-          /* Tablet and Mobile Standardized Widths */
+          /* Tablet Standardized Widths */
           select, 
           input:not([type="checkbox"]):not([type="radio"]), 
           :global(.tamil-input-container input),
-          :global(.tamil-input-container textarea) {
-            width: 250px !important;
-            max-width: 250px !important;
+          :global(.tamil-input-container textarea),
+          .responsive-container {
+            width: 450px !important;
+            max-width: 450px !important;
             margin: 10px auto !important;
           }
-
-          .button-container button {
-            width: 250px !important;
-            max-width: 250px !important;
+           .button-container button {
+            width: 450px !important;
+            max-width: 450px !important;
             margin: 10px auto !important;
           }
+           .age-height-container {
+             width: 450px !important;
+             max-width: 450px !important;
+             gap: 10px !important;
+           }
+           .age-height-label {
+             margin: 10px 0 0 0 !important;
+             width: 120px !important;
+           }
         }
         @media (max-width: 480px) {
+           select, 
+          input:not([type="checkbox"]):not([type="radio"]), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea),
+          .responsive-container {
+             width: 250px !important;
+            max-width: 250px !important;
+             margin: 10px auto !important;
+          }
+           .button-container button {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
+          }
           h1 {
             font-size: 22px !important;
           }
+          .age-height-container {
+             width: 250px !important;
+             max-width: 250px !important;
+             gap: 5px !important;
+           }
+           .age-height-label {
+             margin: 10px 0 0 0 !important;
+             width: 100px !important;
+             font-size: 14px !important;
+           }
         }
       `}</style>
       <div style={styles.container}>
@@ -157,7 +190,8 @@ export default function Step7() {
             name="educationQualification1"
             value={form.educationQualification1 || ""}
             onChange={handle}
-            style={styles.select}
+            onChange={handle}
+            style={{ ...styles.select, display: "block", margin: "10px auto" }}
           >
             <option value="">{t("Select Education Qualification", language)}</option>
             <option value="Engineering">{t("Engineering", language)}</option>
@@ -192,7 +226,7 @@ export default function Step7() {
             <option value="Others">{t("Others", language)}</option>
           </select>
           {form.educationQualification1 === "Others" && (
-            <div style={{ width: "90%", margin: "10px auto" }}>
+            <div className="responsive-container" style={{ width: "450px", maxWidth: "450px", margin: "10px auto" }}>
               <TamilInput
                 name="otherEducation1"
                 value={form.otherEducation1 || ""}
@@ -203,7 +237,7 @@ export default function Step7() {
               />
             </div>
           )}
-          <div style={{ width: "90%", margin: "10px auto" }}>
+          <div className="responsive-container" style={{ width: "450px", maxWidth: "450px", margin: "10px auto" }}>
             <TamilInput
               isTextArea={true}
               name="educationDetails1"
@@ -231,7 +265,7 @@ export default function Step7() {
             <option value="Black (karuppu)">{t("Black (karuppu)", language)}</option>
           </select>
 
-          <div style={{ width: "90%", margin: "10px auto" }}>
+          <div className="responsive-container" style={{ width: "450px", maxWidth: "450px", margin: "10px auto" }}>
             <TamilInput
               isTextArea={true}
               name="personalPreference1"
@@ -249,15 +283,16 @@ export default function Step7() {
             name="willingnessToWork1"
             value={form.willingnessToWork1 || ""}
             onChange={handle}
-            style={styles.select}
+            onChange={handle}
+            style={{ ...styles.select, display: "block", margin: "10px auto" }}
             placeholder="Willingness to Work After Marriage"
           >
             <option value="">{t("Select", language)}</option>
             <option value="Yes">{t("Yes", language)}</option>
             <option value="No">{t("No", language)}</option>
           </select>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' ,marginLeft:'30px'}}>
-            <label style={{ width: '120px' }}>{t("From Age", language)}</label>
+          <div className="age-height-container" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' ,marginLeft:'0', gap: 15, width: "450px", maxWidth: "450px" }}>
+            <label className="age-height-label" style={{ margin: "10px 0px 0px 40px", fontWeight: "normal", width: "140px" }}>{t("From Age", language)}:</label>
             <input
               type="number"
               name="fromAge"
@@ -268,8 +303,8 @@ export default function Step7() {
               max="60"
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',marginLeft:'30px' }}>
-            <label style={{ width: '120px' }}>{t("To Age", language)}</label>
+          <div className="age-height-container" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',marginLeft:'0', gap: 15, width: "450px", maxWidth: "450px" }}>
+            <label className="age-height-label" style={{ margin: "10px 0px 0px 40px", fontWeight: "normal", width: "140px" }}>{t("To Age", language)}:</label>
             <input
               type="number"
               name="toAge"
@@ -280,8 +315,8 @@ export default function Step7() {
               max="60"
             />
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' ,marginLeft:'30px'}}>
-            <label style={{ width: '120px' }}>{t("From Height", language)}</label>
+          <div className="age-height-container" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' ,marginLeft:'0', gap: 15, width: "450px", maxWidth: "450px" }}>
+            <label className="age-height-label" style={{ margin: "10px 0px 0px 40px", fontWeight: "normal", width: "140px" }}>{t("From Height", language)}:</label>
             <select
               name="fromHeight"
               value={form.fromHeight || ""}
@@ -296,8 +331,8 @@ export default function Step7() {
               ))}
             </select>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',marginLeft:'30px' }}>
-            <label style={{ width: '120px' }}>{t("To Height", language)}:</label>
+          <div className="age-height-container" style={{ display: 'flex', alignItems: 'center', marginBottom: '10px',marginLeft:'0', gap: 15, width: "450px", maxWidth: "450px" }}>
+            <label className="age-height-label" style={{ margin: "10px 0px 0px 40px", fontWeight: "normal", width: "140px" }}>{t("To Height", language)}:</label>
             <select
               name="toHeight"
               value={form.toHeight || ""}

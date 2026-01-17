@@ -248,8 +248,26 @@ export default function Step1() {
             align-items: center !important;
           }
 
-          /* Tablet and Mobile Standardized Widths */
+          /* Tablet Standardized Widths */
           .field-input, 
+          select, 
+          input:not([type="checkbox"]):not([type="radio"]), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea) {
+            width: 450px !important;
+            max-width: 450px !important;
+            margin: 10px auto !important;
+          }
+
+          .button-container button {
+            width: 450px !important;
+            max-width: 450px !important;
+            margin: 10px auto !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+           .field-input, 
           select, 
           input:not([type="checkbox"]):not([type="radio"]), 
           :global(.tamil-input-container input),
@@ -264,9 +282,7 @@ export default function Step1() {
             max-width: 250px !important;
             margin: 10px auto !important;
           }
-        }
-        
-        @media (max-width: 480px) {
+
           h1 {
             font-size: 22px !important;
           }

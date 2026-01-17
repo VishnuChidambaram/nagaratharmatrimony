@@ -111,19 +111,19 @@ export default function Step4() {
             align-items: center !important;
           }
 
-          /* Tablet and Mobile Standardized Widths */
+          /* Tablet Standardized Widths */
           select, 
-          input:not([type="checkbox"]):not([type="radio"]), 
+          input:not([type="checkbox"]):not([type="radio"]):not(.small-input):not(.date-input), 
           :global(.tamil-input-container input),
           :global(.tamil-input-container textarea) {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 450px !important;
+            max-width: 450px !important;
             margin: 10px auto !important;
           }
 
           .button-container button {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 450px !important;
+            max-width: 450px !important;
             margin: 10px auto !important;
           }
           
@@ -136,11 +136,60 @@ export default function Step4() {
           .date-input {
             width: 250px !important;
             max-width: 250px !important;
+            margin: 10px 0 !important;
+            margin-left: 0px !important;
+          }
+
+          .responsive-container {
+            width: 450px !important;
+            max-width: 450px !important;
+            gap: 10px !important;
             margin: 10px auto !important;
+          }
+
+          .responsive-container label {
+            margin: 10px 10px 0 0 !important;
+            width: 120px !important;
+            margin-left: 0px !important;
           }
         }
         
         @media (max-width: 480px) {
+           select, 
+          input:not([type="checkbox"]):not([type="radio"]):not(.small-input):not(.date-input), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea) {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
+          }
+
+          .button-container button {
+            width: 250px !important;
+            max-width: 250px !important;
+            margin: 10px auto !important;
+          }
+
+          .date-input {
+            width: 100px !important;
+            max-width: 100px !important;
+            margin-left: 0px !important;
+          }
+
+          .responsive-container {
+            width: 250px !important;
+            max-width: 250px !important;
+            gap: 5px !important;
+            margin: 10px auto !important;
+          }
+
+          .responsive-container label {
+            margin: 10px 10px 0 0 !important;
+            width: 100px !important;
+            font-size: 14px !important;
+            margin-left: 0px !important;
+          }
+
           h1 {
             font-size: 22px !important;
           }
@@ -149,10 +198,47 @@ export default function Step4() {
         .date-label {
             margin: 10px 20px 0px 10px;
         } 
-        @media (max-width: 768px) {
-           .date-label {
-             margin: 20px 0px 0px 40px !important;
-           }
+        .date-input {
+            width: 250px;
+            margin-left: 15px;
+        }
+
+        .date-birth-label {
+            margin: 10px 0px 0px 0px;
+            font-weight: bold;
+        }
+
+        .date-birth-container {
+            gap: 15px;
+        }
+
+        @media (max-width: 1024px) {
+            .date-birth-container {
+                gap: 10px !important;
+                width: 450px !important;
+                max-width: 450px !important;
+                margin: 10px auto !important;
+            }
+            .date-birth-label {
+                margin-right: 10px !important;
+                margin-left: 0px !important;
+                width: 120px !important;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .date-birth-container {
+                width: 250px !important;
+                max-width: 250px !important;
+                gap: 5px !important;
+                margin: 10px auto !important;
+            }
+            .date-birth-label {
+                width: 100px !important;
+                font-size: 14px !important;
+                margin-right: 10px !important;
+                margin-left: 0px !important;
+            }
         }
       `}</style>
       <div style={styles.container}>
@@ -279,20 +365,17 @@ export default function Step4() {
             style={styles.input}
           />
           <div
+            className="date-birth-container"
             style={{
               display: "flex",
               alignItems: "center",
-              gap: "10px",
-              margin: "10px 0",
+              marginTop: 8,
+              width: "450px", 
+              maxWidth: "450px",
             }}
           >
             <label
-              className="date-label"
-              style={{
-                margin: "10px 20px 0px 40px",
-                fontWeight: "bold",
-                whiteSpace: "nowrap",
-              }}
+              className="date-birth-label"
             >
               {t("Date of Birth", language)}:
             </label>
@@ -311,14 +394,17 @@ export default function Step4() {
 
 
           <div
+            className="responsive-container"
             style={{
               display: "flex",
-              gap: 8,
+              gap: 15,
               alignItems: "center",
               marginTop: 8,
+              width: "450px",
+              maxWidth: "450px",
             }}
           >
-            <label style={{ margin: "10px 0px 0px 40px", fontWeight: "bold" }}>
+            <label style={{ margin: "10px 0px 0px 0px", fontWeight: "bold" }}>
               {t("Time of Birth", language)}: 
             </label>
             <input
@@ -386,14 +472,17 @@ export default function Step4() {
           </select>
 
           <div
+            className="responsive-container"
             style={{
               display: "flex",
-              gap: 8,
+              gap: 15,
               alignItems: "center",
               marginTop: 8,
+              width: "450px",
+              maxWidth: "450px",
             }}
           >
-            <label style={{ margin: "10px 0px 0px 40px", fontWeight: "bold" }}>
+            <label style={{ margin: "10px 0px 0px 0px", fontWeight: "bold" }}>
               {t("Dasa Remain", language)}:
             </label>
             <input
