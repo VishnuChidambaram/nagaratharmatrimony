@@ -757,8 +757,10 @@ export default function EditStep8() {
           </div>
       )}
 
+      <h1 style={{ fontWeight: 'bold' }}>{t("Edit Form", language)} </h1>
+      <br/>
       <Navigation current={8} />
-      <h1 className="edit-step-title">{t("Step 8 - Preview & Submit", language)}</h1>
+      <h1 >{t("Step 8 - Preview & Submit", language)}</h1>
       <br/>
       
       {/* Legend / Header for Comparison - Desktop Only */}
