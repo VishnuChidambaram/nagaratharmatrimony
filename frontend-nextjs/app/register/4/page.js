@@ -155,39 +155,72 @@ export default function Step4() {
         }
         
         @media (max-width: 480px) {
-           select, 
-          input:not([type="checkbox"]):not([type="radio"]):not(.small-input):not(.date-input), 
+          select, 
+          input:not([type="checkbox"]):not([type="radio"]):not(.small-input), 
           :global(.tamil-input-container input),
           :global(.tamil-input-container textarea) {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 300px !important;
+            max-width: 300px !important;
             margin: 10px auto !important;
+            display: block !important;
+            box-sizing: border-box !important;
           }
 
           .button-container button {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 300px !important;
+            max-width: 300px !important;
             margin: 10px auto !important;
+            box-sizing: border-box !important;
           }
 
           .date-input {
-            width: 100px !important;
-            max-width: 100px !important;
+            width: 200px !important;
+            max-width: 200px !important;
+            margin: 10px 0 !important;
             margin-left: 0px !important;
+            box-sizing: border-box !important;
           }
 
           .responsive-container {
-            width: 250px !important;
-            max-width: 250px !important;
+            width: 300px !important;
+            max-width: 300px !important;
             gap: 5px !important;
             margin: 10px auto !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            box-sizing: border-box !important;
           }
 
-          .responsive-container label {
-            margin: 10px 10px 0 0 !important;
+          .date-birth-container {
+            width: 300px !important;
+            max-width: 300px !important;
+            gap: 0px !important;
+            margin: 10px auto !important;
+            display: flex !important;
+            flex-direction: row !important;
+            align-items: center !important;
+            justify-content: flex-start !important;
+            box-sizing: border-box !important;
+          }
+
+          .responsive-container label, .date-birth-label {
+            margin: 10px 0px 0 0 !important;
             width: 100px !important;
+            min-width: 100px !important;
             font-size: 14px !important;
-            margin-left: 0px !important;
+            text-align: left !important;
+            flex-shrink: 0 !important;
+          }
+
+          .small-input {
+            margin: 10px 0 0 0px !important;
+            width: 45px !important;
+            min-width: 45px !important;
+            box-sizing: border-box !important;
+            padding: 8px 5px !important;
+            text-align: center !important;
           }
 
           h1 {
@@ -226,20 +259,7 @@ export default function Step4() {
             }
         }
 
-        @media (max-width: 480px) {
-            .date-birth-container {
-                width: 250px !important;
-                max-width: 250px !important;
-                gap: 5px !important;
-                margin: 10px auto !important;
-            }
-            .date-birth-label {
-                width: 100px !important;
-                font-size: 14px !important;
-                margin-right: 10px !important;
-                margin-left: 0px !important;
-            }
-        }
+
       `}</style>
       <div style={styles.container}>
       <LanguageToggle language={language} toggleLanguage={toggleLanguage} />
