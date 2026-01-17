@@ -829,11 +829,14 @@ export default function EditStep8() {
     </div>
       {/* Email Verification Section */}
       <div
+        className="edit-verification-section"
         style={{
           marginTop: 20,
           padding: 20,
           border: "1px solid var(--input-border)",
-          borderRadius: 4,
+          borderRadius: 8,
+          background: "var(--card-bg-elevated, transparent)",
+          boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
         }}
       >
         <h3>{t("Email Verification", language)}</h3>
@@ -848,12 +851,22 @@ export default function EditStep8() {
         )}
           <div style={{ marginBottom: 10, textAlign: "center" }}>
             <label style={{ display: "block", marginBottom: 5 }}>{t("Email", language)}:</label>
-            <div
-              className="email-verification-row"
-            >
+            <div className="email-verification-row edit-verification-container">
               <TamilInput
                 className="edit-field-input preview-email-input"
-                style={{ cursor: "pointer" }}
+                style={{ 
+                  cursor: "pointer",
+                  width: '250px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '2px solid var(--input-border, #ccc)',
+                  background: 'var(--input-bg, #fff)',
+                  color: 'var(--input-text, #000)',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  display: 'inline-block',
+                  minHeight: '36px'
+                }}
                 name="email"
                 value={form.email || ""}
                 readOnly
@@ -867,6 +880,19 @@ export default function EditStep8() {
                   className="edit-detail-button edit-send-otp-button"
                   onClick={handleSendOtp}
                   disabled={!form.email || isSendingOtp}
+                  style={{
+                    width: '250px',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: 'var(--button-bg, #000)',
+                    color: 'var(--button-text, #fff)',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    minHeight: '36px',
+                    display: 'inline-block'
+                  }}
                 >
                   {isSendingOtp ? t("Sending...", language) : t("Send OTP", language)}
                 </button>
@@ -876,6 +902,19 @@ export default function EditStep8() {
                   className="edit-otp-button"
                   onClick={handleSendOtp}
                   disabled={resendCooldown > 0 || isSendingOtp}
+                  style={{
+                    width: '250px',
+                    padding: '6px 10px',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: resendCooldown > 0 ? '#6c757d' : 'var(--button-bg, #000)',
+                    color: 'var(--button-text, #fff)',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    cursor: 'pointer',
+                    minHeight: '36px',
+                    display: 'inline-block'
+                  }}
                 >
                   {resendCooldown > 0
                     ? `${t("Resend OTP in", language)} ${resendCooldown}s`
@@ -895,19 +934,44 @@ export default function EditStep8() {
 
 
         {otpSent && !otpVerified && (
-            <div className="email-verification-row">
+            <div className="email-verification-row edit-verification-container">
               <TamilInput
                 name="otp"
                 placeholder={t("Enter OTP", language)}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
                 className="edit-field-input preview-otp-input"
+                style={{
+                  width: '250px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '2px solid var(--input-border, #ccc)',
+                  background: 'var(--input-bg, #fff)',
+                  color: 'var(--input-text, #000)',
+                  fontSize: '14px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+                  display: 'inline-block',
+                  minHeight: '36px'
+                }}
                 maxLength={4}
                 forcedLanguage={language === "ta" ? "ta" : "en"}
               />
               <button 
                 className="edit-otp-button"
                 onClick={handleVerifyOtp}
+                style={{
+                  width: '250px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: 'var(--button-bg, #000)',
+                  color: 'var(--button-text, #fff)',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  minHeight: '36px',
+                  display: 'inline-block'
+                }}
               >
                 {t("Verify OTP", language)}
               </button>

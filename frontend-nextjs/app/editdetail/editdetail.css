@@ -464,7 +464,30 @@
     min-height: 36px !important;
 }
 
-/* Tablet Verification Refinement - Side by Side */
+.email-verification-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.preview-email-input, .preview-otp-input {
+    width: 250px !important;
+    max-width: 100% !important;
+    padding: 6px 10px !important;
+    margin: 10px 5px !important;
+    border-radius: 6px !important;
+    border: 1px solid var(--input-border, #ccc) !important;
+    font-size: 14px !important;
+    background: var(--input-bg, #fff) !important;
+    color: var(--input-text, #000) !important;
+    box-sizing: border-box !important;
+    display: inline-block !important;
+    min-height: 36px !important;
+}
+
+/* Tablet Verification Refinement - Inline (Side by Side) */
 @media (min-width: 768px) and (max-width: 1024px) {
     .email-verification-row {
         flex-direction: row !important;
@@ -474,7 +497,7 @@
         width: 100% !important;
         margin: 10px 0 !important;
     }
-    .preview-email-input, .preview-otp-input {
+    .preview-email-input, .preview-otp-input, .edit-otp-button, .edit-send-otp-button {
         width: 250px !important;
         max-width: 250px !important;
         padding: 6px 10px !important;
@@ -486,28 +509,6 @@
         background: var(--input-bg, #fff) !important;
         border-radius: 6px !important;
         min-height: 36px !important;
-    }
-    .edit-otp-button, .edit-send-otp-button {
-        width: 250px !important;
-        max-width: 250px !important;
-        padding: 6px 10px !important;
-        font-size: 13px !important;
-        margin: 0 !important;
-        box-sizing: border-box !important;
-        display: inline-block !important;
-        border-radius: 6px !important;
-        min-height: 36px !important;
-        background: var(--button-bg, #000) !important;
-        color: var(--button-text, #fff) !important;
-        font-weight: bold !important;
-        cursor: pointer !important;
-        transition: all 0.3s ease !important;
-        border: none !important;
-    }
-    .edit-otp-button:hover, .edit-send-otp-button:hover {
-        opacity: 0.8 !important;
-        transform: translateY(-1px) !important;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
     }
 }
 
@@ -789,4 +790,54 @@
     border-radius: 6px;
     background-color: rgba(0,0,0,0.02);
     font-size: 14px;
+}
+
+/* Dedicated Tablet Styles for EditDetail Verification Section */
+@media (min-width: 768px) and (max-width: 1024px) {
+    .edit-verification-section {
+        padding: 25px !important;
+        margin: 20px auto !important;
+        max-width: 900px !important;
+        border-radius: 12px !important;
+        background: var(--card-bg) !important;
+        border: 1px solid var(--input-border) !important;
+    }
+
+    .edit-verification-container {
+        flex-direction: row !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 15px !important;
+        flex-wrap: nowrap !important;
+    }
+
+    /* Target specific components to override general 50% width rules */
+    .edit-verification-container .preview-email-input,
+    .edit-verification-container .preview-otp-input,
+    .edit-verification-container .edit-send-otp-button,
+    .edit-verification-container .edit-otp-button {
+        width: 250px !important;
+        max-width: 250px !important;
+        min-height: 36px !important;
+        padding: 6px 12px !important;
+        font-size: 14px !important;
+        margin: 0 !important;
+        box-sizing: border-box !important;
+        display: inline-block !important;
+    }
+
+    .edit-verification-container button {
+        background: var(--button-bg, #000) !important;
+        color: var(--button-text, #fff) !important;
+        font-weight: bold !important;
+        border: none !important;
+        border-radius: 6px !important;
+        cursor: pointer !important;
+        transition: transform 0.2s ease, opacity 0.2s ease !important;
+    }
+
+    .edit-verification-container button:hover {
+        opacity: 0.9 !important;
+        transform: scale(1.02) !important;
+    }
 }

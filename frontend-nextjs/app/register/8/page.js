@@ -712,8 +712,8 @@ export default function Step8() {
           display: inline-block !important;
           min-height: 36px !important;
         }
-
-        /* Tablet specific refinement - side by side */
+        
+        /* Tablet specific refinement - inline (side by side) */
         @media (min-width: 768px) and (max-width: 1024px) {
           .email-verification-row {
              flex-direction: row !important;
@@ -1064,6 +1064,19 @@ export default function Step8() {
                 className="edit-send-otp-button-register"
                 onClick={handleSendOtp}
                 disabled={!form.email || isSendingOtp}
+                style={{
+                  width: '250px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  background: 'var(--button-bg, #000)',
+                  color: 'var(--button-text, #fff)',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  minHeight: '36px',
+                  display: 'inline-block'
+                }}
               >
                 {isSendingOtp ? t("Sending...", language) : t("Send OTP", language)}
               </button>
@@ -1071,7 +1084,19 @@ export default function Step8() {
             {otpSent && !otpVerified && (
               <button
                 className="edit-send-otp-button-register"
-                style={{ backgroundColor: "#6c757d" }}
+                style={{ 
+                  backgroundColor: resendCooldown > 0 ? "#6c757d" : "var(--button-bg, #000)",
+                  width: '250px',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: 'none',
+                  color: 'var(--button-text, #fff)',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  cursor: 'pointer',
+                  minHeight: '36px',
+                  display: 'inline-block'
+                }}
                 onClick={handleSendOtp}
                 disabled={resendCooldown > 0 || isSendingOtp}
               >
@@ -1108,7 +1133,23 @@ export default function Step8() {
               maxLength={4}
               forcedLanguage={language === "ta" ? "ta" : "en"}
             />
-            <button className="edit-send-otp-button-register" onClick={handleVerifyOtp}>
+            <button 
+              className="edit-send-otp-button-register" 
+              onClick={handleVerifyOtp}
+              style={{
+                width: '250px',
+                padding: '6px 10px',
+                borderRadius: '6px',
+                border: 'none',
+                background: 'var(--button-bg, #000)',
+                color: 'var(--button-text, #fff)',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                minHeight: '36px',
+                display: 'inline-block'
+              }}
+            >
                 {t("Verify OTP", language)}
             </button>
           </div>
