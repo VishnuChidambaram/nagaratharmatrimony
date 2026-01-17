@@ -1281,38 +1281,32 @@ export default function Page() {
           </div>
 
         </div>
-      <div className="edit-form-container button-container">
-        <div className="edit-left-column">
-          <button
-            style={{width: "80%"}}
-            className="edit-detail-previous-button"
-            onClick={async () => {
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/5");
-            }}
-          >
-            {t("Previous", language)}
-          </button>
-        </div>
-        <div className="edit-right-column">
-          <button
-            style={{width: "80%"}}
-            className="edit-detail-button"
-            onClick={async () => {
-              if (!form.photos || form.photos.length === 0) {
-                  setPhotoError(t("At least one photo is required", language));
-                  setTimeout(() => setPhotoError(""), 4000);
-                  return;
-              }
-              await saveFormData(form); // Save before navigating
-              router.push("/editdetail/7");
-            }}
-          >
-            {t("Next", language)}
-          </button>
-        </div>
       </div>
-    </div>
+      <div className="edit-button-container">
+        <button
+          className="edit-detail-previous-button"
+          onClick={async () => {
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/5");
+          }}
+        >
+          {t("Previous", language)}
+        </button>
+        <button
+          className="edit-detail-button"
+          onClick={async () => {
+            if (!form.photos || form.photos.length === 0) {
+                setPhotoError(t("At least one photo is required", language));
+                setTimeout(() => setPhotoError(""), 4000);
+                return;
+            }
+            await saveFormData(form); // Save before navigating
+            router.push("/editdetail/7");
+          }}
+        >
+          {t("Next", language)}
+        </button>
+      </div>
 
       <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
         {t("Go To Dashboard", language)} <span style={{ color: "blue", cursor: "pointer", textDecoration: "underline" }} onClick={() => router.push("/dashboard")}>{t("ClickHere", language)}</span>

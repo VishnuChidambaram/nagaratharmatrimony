@@ -263,29 +263,25 @@ export default function EditStep5() {
         </div>
       </div>
 
-      <div className="edit-form-container button-container">
-        <div className="edit-left-column">
-          <button
-            className="edit-detail-previous-button"
-            onClick={async () => {
-              await saveFormData(form);
-              router.push("/editdetail/4");
-            }}
-          >
-            {t("Previous", language)}
-          </button>
-        </div>
-        <div className="edit-right-column">
-          <button
-            className="edit-detail-button"
-            onClick={async () => {
-              await saveFormData(form);
-              router.push("/editdetail/6");
-            }}
-          >
-            {t("Next", language)}
-          </button>
-        </div>
+      <div className="edit-button-container">
+        <button
+          className="edit-detail-previous-button"
+          onClick={async () => {
+            await saveFormData(form);
+            router.push("/editdetail/4");
+          }}
+        >
+          {t("Previous", language)}
+        </button>
+        <button
+          className="edit-detail-button"
+          onClick={async () => {
+             await saveFormData(form);
+             router.push("/editdetail/6");
+          }}
+        >
+          {t("Next", language)}
+        </button>
       </div>
 
       <div style={{ textAlign: "center", marginTop: "20px", marginBottom: "20px" }}>
