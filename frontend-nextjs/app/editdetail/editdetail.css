@@ -17,6 +17,8 @@
     top: 55%;
     left: 50%;
     transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
 }
 
 .edit-form-container {
@@ -132,8 +134,8 @@
 
 /* OTP Button Styles - For Send OTP, Verify OTP buttons */
 .edit-otp-button {
-    width: 300px;
-    max-width: 300px;
+    width: 250px;
+    max-width: 250px;
     padding: 8px 20px;
     margin: 10px 0;
     border-radius: 6px;
@@ -209,6 +211,21 @@
     margin: 20px 6%;
 }
 
+.edit-send-otp-button {
+    width: 250px;
+    margin: 10px 0;
+}
+
+.email-verification-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 5px;
+    width: 100%;
+    flex-wrap: wrap;
+}
+
 /* Mobile/Desktop View Toggle for Charts */
 .step-label-mobile {
     display: none; /* Hide mobile view by default */
@@ -220,12 +237,83 @@
 
 @media (max-width: 1024px) {
     .step-label-mobile {
-        display: block; /* Show mobile view on small screens */
+        display: block !important; /* Show mobile view on small screens */
     }
     
     .step-label-desktop {
-        display: none; /* Hide desktop view on small screens */
+        display: none !important; /* Hide desktop view on small screens */
     }
+}
+
+/* Page 8 Preview Specific Styles */
+.edit-step-title {
+    font-weight: bold;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.step-label-desktop-preview {
+    display: flex;
+    justify-content: space-between;
+    max-width: 1000px;
+    margin: 0 auto 20px auto;
+    font-weight: bold;
+    border-bottom: 2px solid var(--input-border);
+    padding-bottom: 10px;
+}
+
+@media (max-width: 768px) {
+    .step-label-desktop-preview {
+        display: none !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .step-label-desktop-preview {
+        display: flex !important;
+    }
+}
+
+.page5-comparison-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.comparison-column-original, .comparison-column-new {
+    flex: 1;
+    min-width: 300px;
+}
+
+.comparison-header-original {
+    background-color: var(--input-bg);
+    color: var(--card-text);
+    opacity: 0.7;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.comparison-header-new {
+    background-color: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    text-align: center;
+    font-weight: bold;
+    font-size: 16px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+}
+
+.comparison-charts-wrapper {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .edit-referral-heading {
@@ -236,64 +324,180 @@
     width: 100%;
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 1024px) {
-    .edit-form-container {
+@media (max-width: 768px) {
+    .preview-comparison-row, .page5-comparison-container {
         flex-direction: column !important;
-        gap: 5px !important;
+        display: flex !important;
     }
 
-    .edit-left-column, .edit-right-column {
-        min-width: 100% !important;
-        margin: 0 !important;
+    .comparison-column-original {
+        order: 1 !important;
     }
 
-    .edit-field-row {
+    .comparison-column-new {
+        order: 2 !important;
+    }
+
+    .preview-column, .comparison-column-original, .comparison-column-new {
+        width: 100% !important;
+        border-right: none !important;
+        border-bottom: 1px dashed var(--input-border);
+        border-radius: 8px !important;
+        margin-bottom: 20px;
+        padding-top: 0 !important; /* Let the section header take top space */
+    }
+
+    .preview-field-row {
         flex-direction: column !important;
-        align-items: center !important;
-        gap: 5px !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        padding: 12px 0 !important;
     }
 
-    .edit-field-label {
-        text-align: left !important;
-        min-width: 300px !important;
-        max-width: 300px !important;
-        width: 300px !important;
-        margin: 0 auto !important;
+    .preview-field-label {
+        width: 100% !important;
+        opacity: 0.8 !important;
+        font-size: 14px !important;
     }
 
-    .edit-field-input {
-        width: 300px !important;
-        max-width: 300px !important;
-        margin: 5px auto !important;
+    .preview-email-input, .preview-otp-input {
+        width: 100% !important;
+    }
+}
+
+/* Tablet View - Side-by-Side */
+@media (min-width: 769px) {
+    .preview-comparison-row, .page5-comparison-container {
+        display: flex !important;
+        flex-direction: row !important;
+        align-items: stretch !important;
     }
 
-    .edit-button-container {
-        flex-direction: column !important;
-        gap: 10px !important;
-        width: 100%;
-        margin: 10px 0 !important;
-        align-items: center !important;
+    .preview-column, .comparison-column-original, .comparison-column-new {
+        flex: 1 !important;
+        min-width: 0 !important; /* Allow shrinking */
     }
 
-    .edit-button-container button {
-        width: 90% !important;
-        margin: 10px auto !important;
-        max-width: 400px;
+    .comparison-column-original {
+        border-right: 1px dashed var(--input-border);
+        border-radius: 8px 0 0 8px !important;
     }
 
-    .email-verification-row {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 10px !important;
+    .comparison-column-new {
+        border-radius: 0 8px 8px 0 !important;
     }
+}
 
-    .edit-page8-button-container {
-        flex-direction: column !important;
-        align-items: center !important;
-        gap: 10px !important;
-        margin: 20px auto !important;
-    }
+/* Page 8 Preview Field Styles */
+.preview-comparison-row {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.preview-column {
+    padding: 15px;
+    box-sizing: border-box;
+}
+
+.comparison-column-original {
+    background-color: rgba(0,0,0,0.02);
+}
+
+.comparison-column-new {
+    background-color: rgba(34, 197, 94, 0.03);
+}
+
+.preview-fields-container {
+    width: 100%;
+}
+
+.preview-field-row {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--input-border);
+    min-height: 50px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.field-changed {
+    background-color: rgba(34, 197, 94, 0.08);
+}
+
+.preview-field-label {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--card-text);
+    width: 150px;
+    flex-shrink: 0;
+    text-align: left;
+}
+
+.preview-field-value {
+    color: var(--card-text);
+    flex: 1;
+}
+
+.value-changed {
+    font-weight: bold;
+}
+
+.preview-empty-value {
+    font-style: italic;
+    color: var(--card-text);
+    opacity: 0.5;
+}
+
+.preview-email-input, .preview-otp-input {
+    width: 250px !important;
+    max-width: 100% !important;
+}
+
+/* Horoscope Preview Styles */
+.horoscope-preview-item {
+    flex: 1;
+    min-width: 300px;
+    text-align: center;
+}
+
+.horoscope-preview-title {
+    margin-bottom: 20px;
+    font-weight: bold;
+    font-size: 18px;
+    color: var(--card-text);
+}
+
+.horoscope-chart-section {
+    margin-bottom: 40px;
+}
+
+.horoscope-chart-label {
+    margin-bottom: 15px;
+    color: var(--card-text);
+}
+
+.preview-rasi-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 1;
+    margin: 20px auto;
+    border: 1px solid var(--input-border);
+}
+
+.preview-center-box {
+    grid-column: 2 / span 2;
+    grid-row: 2 / span 2;
+    font-weight: bold;
+    font-size: 18px;
+    background-color: var(--card-bg);
+    color: var(--card-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 /* Tablet View - 50% Button Width */
 @media (min-width: 769px) and (max-width: 1024px) {
@@ -322,6 +526,33 @@
         max-width: 100% !important;
         margin: 10px 0 !important;
         display: block;
+    }
+
+    .edit-button-container, .edit-page8-button-container, .email-verification-row {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 10px !important;
+        width: 100%;
+        margin: 10px 0 !important;
+    }
+
+    .edit-send-otp-button {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    /* Step 8 Preview Field Alignment */
+    .edit-detail-container [style*="display: flex; alignItems: baseline"] {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+        padding: 12px 0 !important;
+    }
+
+    .edit-detail-container [style*="width: 150px"] {
+        width: 100% !important;
+        opacity: 0.8 !important;
+        font-size: 14px !important;
     }
 }
 

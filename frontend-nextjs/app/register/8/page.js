@@ -688,10 +688,56 @@ export default function Step8() {
           }
           
           .email-verification-row {
-            flex-direction: column !important;
-            gap: 10px !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 5px;
+            width: 100%;
+            flex-wrap: wrap;
           }
-          
+
+          .edit-send-otp-button-register {
+            width: 250px;
+            padding: 10px;
+            margin: 10px 5px;
+            border-radius: 6px;
+            border: none;
+            background: var(--button-bg);
+            color: var(--button-text);
+            font-size: 16px;
+            cursor: pointer;
+            min-height: 44px;
+            font-weight: bold;
+          }
+
+          @media (max-width: 768px) {
+            .email-verification-row {
+              flex-direction: column !important;
+              gap: 10px !important;
+            }
+
+            .edit-send-otp-button-register {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 10px 0 !important;
+            }
+
+            .preview-email-input {
+                width: 100% !important;
+            }
+          }
+
+          .preview-email-input, .preview-otp-input {
+            width: 250px;
+            padding: 10px;
+            margin: 10px 5px;
+            border-radius: 6px;
+            border: 1px solid var(--input-border);
+            font-size: 16px;
+            background: var(--input-bg);
+            color: var(--input-text);
+          }
           .email-verification-row input,
           .email-verification-row button {
             width: 100% !important;
@@ -955,26 +1001,18 @@ export default function Step8() {
         )}
         <div style={{ marginBottom: 10, textAlign: "center" }}>
           <label style={{ display: "block", marginBottom: 5 }}>{t("OTP Check", language)}:</label>
-          <div
-            className="email-verification-row"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "20px",
-            }}
-          >
+          <div className="email-verification-row">
             <TamilInput
               name="email"
               value={form.email || ""}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
-              style={styles.input241}
+              className="preview-email-input"
               placeholder={t("Enter your email", language)}
               forcedLanguage={language === "ta" ? "ta" : "en"}
             />
             {!otpSent && (
               <button
-                style={styles.input123}
+                className="edit-send-otp-button-register"
                 onClick={handleSendOtp}
                 disabled={!form.email || isSendingOtp}
               >
@@ -983,10 +1021,8 @@ export default function Step8() {
             )}
             {otpSent && !otpVerified && (
               <button
-                style={{
-                  ...styles.input123,
-                  backgroundColor: "#6c757d",
-                }}
+                className="edit-send-otp-button-register"
+                style={{ backgroundColor: "#6c757d" }}
                 onClick={handleSendOtp}
                 disabled={resendCooldown > 0 || isSendingOtp}
               >
@@ -1001,26 +1037,17 @@ export default function Step8() {
         </div>
 
         {otpSent && !otpVerified && (
-          <div
-            className="email-verification-row"
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              gap: "20px",
-              marginBottom: 5,
-            }}
-          >
+          <div className="email-verification-row">
             <TamilInput
               name="otp"
               placeholder="Enter OTP"
               value={otp}
               onChange={(e) => setOtp(e.target.value)}
-              style={styles.input241}
+              className="preview-otp-input"
               maxLength={4}
               forcedLanguage={language === "ta" ? "ta" : "en"}
             />
-            <button style={styles.input123} onClick={handleVerifyOtp}>
+            <button className="edit-send-otp-button-register" onClick={handleVerifyOtp}>
                 {t("Verify OTP", language)}
             </button>
           </div>

@@ -580,38 +580,19 @@ export default function EditStep8() {
     };
 
     return (
-      <div style={{ flex: 1, minWidth: "300px", textAlign: "center" }}>
-        <h4 style={{ marginBottom: "20px", fontWeight: "bold", fontSize: "18px", color: "var(--card-text)" }}>{t(title, language)}</h4>
+      <div className="horoscope-preview-item">
+        <h4 className="horoscope-preview-title">{t(title, language)}</h4>
         
         {/* Rasi Chart */}
-        <div style={{ marginBottom: "40px" }}>
-          <h5 style={{ marginBottom: "15px", color: "var(--card-text)" }}>{t("Rasi Chart", language)}</h5>
-          <div className="rasi-grid" style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(4, 1fr)', 
-            gap: '2px', 
-            width: '100%', 
-            maxWidth: '400px', 
-            aspectRatio: '1', 
-            margin: '20px auto', 
-            border: '1px solid var(--input-border)' 
-          }}>
+        <div className="horoscope-chart-section">
+          <h5 className="horoscope-chart-label">{t("Rasi Chart", language)}</h5>
+          <div className="rasi-grid preview-rasi-grid">
             {renderLocalBox(1, localChartData)}
             {renderLocalBox(2, localChartData)}
             {renderLocalBox(3, localChartData)}
             {renderLocalBox(4, localChartData)}
             {renderLocalBox(12, localChartData)}
-            <div className="center-box" style={{ 
-               gridColumn: '2 / span 2', 
-               gridRow: '2 / span 2', 
-               fontWeight: 'bold', 
-               fontSize: '18px', 
-               backgroundColor: 'var(--card-bg)', 
-               color: 'var(--card-text)', 
-               display: 'flex', 
-               alignItems: 'center', 
-               justifyContent: 'center' 
-            }}>{t("Rasi", language)}</div>
+            <div className="center-box preview-center-box">{t("Rasi", language)}</div>
             {renderLocalBox(5, localChartData)}
             {renderLocalBox(11, localChartData)}
             {renderLocalBox(6, localChartData)}
@@ -623,34 +604,15 @@ export default function EditStep8() {
         </div>
 
         {/* Amsam Chart */}
-        <div>
-          <h5 style={{ marginBottom: "15px", color: "var(--card-text)" }}>{t("Amsam Chart", language)}</h5>
-          <div className="rasi-grid" style={{ 
-            display: 'grid', 
-            gridTemplateColumns: 'repeat(4, 1fr)', 
-            gap: '2px', 
-            width: '100%', 
-            maxWidth: '400px', 
-            aspectRatio: '1', 
-            margin: '20px auto', 
-            border: '1px solid var(--input-border)' 
-          }}>
+        <div className="horoscope-chart-section">
+          <h5 className="horoscope-chart-label">{t("Amsam Chart", language)}</h5>
+          <div className="rasi-grid preview-rasi-grid">
             {renderLocalBox(1, localAmsamChartData)}
             {renderLocalBox(2, localAmsamChartData)}
             {renderLocalBox(3, localAmsamChartData)}
             {renderLocalBox(4, localAmsamChartData)}
             {renderLocalBox(12, localAmsamChartData)}
-            <div className="center-box" style={{ 
-               gridColumn: '2 / span 2', 
-               gridRow: '2 / span 2', 
-               fontWeight: 'bold', 
-               fontSize: '18px', 
-               backgroundColor: 'var(--card-bg)', 
-               color: 'var(--card-text)', 
-               display: 'flex', 
-               alignItems: 'center', 
-               justifyContent: 'center' 
-            }}>{t("Amsam", language)}</div>
+            <div className="center-box preview-center-box">{t("Amsam", language)}</div>
             {renderLocalBox(5, localAmsamChartData)}
             {renderLocalBox(11, localAmsamChartData)}
             {renderLocalBox(6, localAmsamChartData)}
@@ -669,20 +631,20 @@ export default function EditStep8() {
     return (
       <>
         {/* Unified View: Side-by-Side (Parallel) with Labels */}
-        <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "space-between" }}>
-          <div style={{ flex: 1, minWidth: "300px" }}>
-             <div style={{ backgroundColor: "var(--input-bg)", color: "var(--card-text)", opacity: 0.7, textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginBottom: "10px", borderRadius: "4px" }}>{t("Before Edit (Original)", language)}</div>
-             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
-               {renderPage5StyleLayout(originalForm, "")}
-             </div>
-          </div>
-          <div style={{ flex: 1, minWidth: "300px" }}>
-             <div style={{ backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#22c55e", textAlign: "center", fontWeight: "bold", fontSize: "16px", padding: "10px", marginBottom: "10px", borderRadius: "4px" }}>{t("After Edit (New)", language)}</div>
-             <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
-               {renderPage5StyleLayout(form, "")}
-             </div>
-          </div>
+      <div className="page5-comparison-container">
+        <div className="comparison-column-original">
+           <div className="comparison-header-original">{t("Before Edit (Original)", language)}</div>
+           <div className="comparison-charts-wrapper">
+             {renderPage5StyleLayout(originalForm, "")}
+           </div>
         </div>
+        <div className="comparison-column-new">
+           <div className="comparison-header-new">{t("After Edit (New)", language)}</div>
+           <div className="comparison-charts-wrapper">
+             {renderPage5StyleLayout(form, "")}
+           </div>
+        </div>
+      </div>
       </>
     );
   };
@@ -795,14 +757,12 @@ export default function EditStep8() {
           </div>
       )}
 
-      <h1 style={{ fontWeight: 'bold' }}>{t("Edit Details", language)}</h1>
-      <br/>
       <Navigation current={8} />
-      <h1>{t("Step 8 - Preview & Submit", language)}</h1>
+      <h1 className="edit-step-title">{t("Step 8 - Preview & Submit", language)}</h1>
       <br/>
       
       {/* Legend / Header for Comparison - Desktop Only */}
-      <div className="step-label-desktop" style={{ display: "flex", justifyContent: "space-between", maxWidth: "1000px", margin: "0 auto 20px auto", fontWeight: "bold", borderBottom: "2px solid var(--input-border)", paddingBottom: "10px" }}>
+      <div className="step-label-desktop-preview">
           <div style={{ flex: 1, textAlign: "center", color: "var(--card-text)", opacity: 0.7 }}>{t("Before Edit (Original)", language)}</div>
           <div style={{ flex: 1, textAlign: "center", color: "#22c55e" }}>{t("After Edit (New)", language)}</div>
       </div>
@@ -826,36 +786,36 @@ export default function EditStep8() {
               {t(step, language)}
             </h3>
             
-            <div style={{ display: "flex", flexDirection: "row", flexWrap: "wrap", width: "100%", alignItems: "stretch" }}>
+            <div className="preview-comparison-row">
               {/* Left Column: Before Edit */}
-              <div style={{ flex: "1 1 300px", borderRight: "1px dashed var(--input-border)", padding: "15px", backgroundColor: "rgba(0,0,0,0.02)", borderRadius: "8px 0 0 8px", boxSizing: "border-box" }}>
-                <div className="step-label-mobile" style={{ backgroundColor: "#e9ecef", color: "#495057", padding: "10px", textAlign: "center", fontWeight: "bold", borderRadius: "4px", marginBottom: "15px" }}>{t("Before Edit (Original)", language)}</div>
-                <div>
+              <div className="comparison-column-original preview-column">
+                <div className="step-label-mobile comparison-header-original">{t("Before Edit (Original)", language)}</div>
+                <div className="preview-fields-container">
                   {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => (
-                    <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)", minHeight: "50px", display: "flex", alignItems: "baseline", gap: "8px" }}>
-                      <strong style={{ fontSize: "16px", fontWeight: "700", color: "var(--card-text)", opacity: 1, width: "150px", flexShrink: 0, textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
-                      <div style={{ color: "var(--card-text)", flex: 1 }}>
-                        {renderFieldValue(originalForm, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
+                    <div key={k} className="preview-field-row">
+                      <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
+                      <div className="preview-field-value">
+                        {renderFieldValue(originalForm, k) || <span className="preview-empty-value">-</span>}
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
-
+    
               {/* Right Column: After Edit */}
-              <div style={{ flex: "1 1 300px", padding: "15px", backgroundColor: "rgba(34, 197, 94, 0.03)", borderRadius: "0 8px 8px 0", boxSizing: "border-box" }}>
-                <div className="step-label-mobile" style={{ backgroundColor: "#d4edda", color: "#155724", padding: "10px", textAlign: "center", fontWeight: "bold", borderRadius: "4px", marginBottom: "15px" }}>{t("After Edit (New)", language)}</div>
-                <div>
+              <div className="comparison-column-new preview-column">
+                <div className="step-label-mobile comparison-header-new">{t("After Edit (New)", language)}</div>
+                <div className="preview-fields-container">
                   {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => {
                     const originalVal = JSON.stringify(originalForm[k]);
                     const newVal = JSON.stringify(form[k]);
                     const isChanged = originalVal !== newVal;
                     
                     return (
-                      <div key={k} style={{ padding: "8px 0", borderBottom: "1px solid var(--input-border)", backgroundColor: isChanged ? "rgba(34, 197, 94, 0.08)" : "transparent", minHeight: "50px", display: "flex", alignItems: "baseline", gap: "8px" }}>
-                        <strong style={{ fontSize: "16px", fontWeight: "700", color: "var(--card-text)", opacity: 1, width: "150px", flexShrink: 0, textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
-                        <div style={{ color: "var(--card-text)", fontWeight: isChanged ? "bold" : "normal", flex: 1 }}>
-                          {renderFieldValue(form, k) || <span style={{ fontStyle: "italic", color: "var(--card-text)", opacity: 0.5 }}>-</span>}
+                      <div key={k} className={`preview-field-row ${isChanged ? 'field-changed' : ''}`}>
+                        <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
+                        <div className={`preview-field-value ${isChanged ? 'value-changed' : ''}`}>
+                          {renderFieldValue(form, k) || <span className="preview-empty-value">-</span>}
                         </div>
                       </div>
                     );
@@ -890,15 +850,9 @@ export default function EditStep8() {
             <label style={{ display: "block", marginBottom: 5 }}>{t("Email", language)}:</label>
             <div
               className="email-verification-row"
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                gap: "20px",
-              }}
             >
               <TamilInput
-                className="edit-field-input"
+                className="edit-field-input preview-email-input"
                 style={{ cursor: "pointer" }}
                 name="email"
                 value={form.email || ""}
@@ -910,8 +864,7 @@ export default function EditStep8() {
               />
               {!otpSent && (
                 <button
-                  className="edit-detail-button"
-                  style={{ width: '300px', margin: '10px 0' }}
+                  className="edit-detail-button edit-send-otp-button"
                   onClick={handleSendOtp}
                   disabled={!form.email || isSendingOtp}
                 >
@@ -942,13 +895,13 @@ export default function EditStep8() {
 
 
         {otpSent && !otpVerified && (
-            <div className="email-verification-row" style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "20px", marginBottom: 5 }}>
+            <div className="email-verification-row">
               <TamilInput
                 name="otp"
                 placeholder={t("Enter OTP", language)}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                className="edit-field-input"
+                className="edit-field-input preview-otp-input"
                 maxLength={4}
                 forcedLanguage={language === "ta" ? "ta" : "en"}
               />
