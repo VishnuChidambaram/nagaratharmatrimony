@@ -43,6 +43,8 @@ export default function EditStep7() {
   const validate = () => {
     if (!form.educationQualification1)
       return t("Education Qualification is required OR Enter NA for unknown fields", language);
+    if (form.educationQualification1 === "Others" && (!form.otherEducation1 || !form.otherEducation1.trim()))
+      return t("Other Education is required OR Enter NA for unknown fields", language);
     if (!form.educationDetails1 || !form.educationDetails1.trim())
       return t("Education Details is required OR Enter NA for unknown fields", language);
     if (!form.complexion1) return t("Complexion is required OR Enter NA for unknown fields", language);
@@ -136,6 +138,19 @@ export default function EditStep7() {
               <option value="Others">{t("Others", language)}</option>
             </select>
           </div>
+          {form.educationQualification1 === "Others" && (
+            <div className="edit-field-row">
+              <label className="edit-field-label">{t("Other Education (Partner)", language)}:</label>
+              <TamilInput
+                className="edit-field-input"
+                name="otherEducation1"
+                value={form.otherEducation1 ?? ""}
+                onChange={handle}
+                placeholder={t("Specify Other Education", language)}
+                forcedLanguage={language}
+              />
+            </div>
+          )}
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Education Details", language)}:</label>
             <TamilInput

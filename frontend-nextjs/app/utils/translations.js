@@ -730,6 +730,10 @@ export const translations = {
   "To Age": { ta: "வயது வரை" },
   "From Height": { ta: "உயரம் முதல்" },
   "To Height": { ta: "உயரம் வரை" },
+  "Occupation / Business (Partner)": { ta: "துணை தொழில் / வியாபாரம்" },
+  "Other Occupation (Partner)": { ta: "துணை பிற தொழில்" },
+  "Working Place (Partner)": { ta: "துணை வேலை செய்யும் இடம்" },
+  "Other Education (Partner)": { ta: "துணை பிற கல்வி" },
   "Select": { ta: "தேர்ந்தெடு" },
   "From": { ta: "முதல்" },
   "To": { ta: "வரை" },
@@ -747,6 +751,10 @@ export const translations = {
   "From Height is required": { ta: "தொடக்க உயரம் தேவை" },
   "To Height is required": { ta: "முடிவு உயரம் தேவை" },
   "From Height must be less than or equal to To Height": { ta: "தொடக்க உயரம் முடிவு உயரத்திற்கு குறைவாகவோ அல்லது சமமாகவோ இருக்க வேண்டும்" },
+  "Occupation / Business is required": { ta: "தொழில் / வியாபாரம் தேவை" },
+  "Other Occupation is required": { ta: "பிற தொழில் தேவை" },
+  "Working Place is required": { ta: "வேலை செய்யும் இடம் தேவை" },
+  "Other Education is required": { ta: "பிற கல்வி தேவை" },
 
   // Step 8
   "Step 8 - Preview & Submit": { ta: "படி 8 - முன்னோட்டம் மற்றும் சமர்ப்பித்தல்" },
@@ -1173,6 +1181,19 @@ export const translations = {
   "Request Rejected": { ta: "கோரிக்கை நிராகரிக்கப்பட்டது" },
   
   "The update request has been rejected.": { ta: "புதுப்பிப்பு கோரிக்கை நிராகரிக்கப்பட்டது." },
+  "educationQualification1": { ta: "கல்வித் தகுதி (துணை)" },
+  "educationDetails1": { ta: "கல்வி விவரங்கள் (துணை)" },
+  "occupationBusiness1": { ta: "தொழில் / வியாபாரம் (துணை)" },
+  "workingPlace1": { ta: "வேலை செய்யும் இடம் (துணை)" },
+  "otherEducation1": { ta: "பிற கல்வி (துணை)" },
+  "otherOccupation1": { ta: "பிற தொழில் (துணை)" },
+  "complexion1": { ta: "நிறம் (துணை)" },
+  "personalPreference1": { ta: "தனிப்பட்ட விருப்பம்" },
+  "willingnessToWork1": { ta: "திருமணத்திற்குப் பிறகு வேலை செய்ய விருப்பம்" },
+  "fromAge": { ta: "வயது முதல்" },
+  "toAge": { ta: "வயது வரை" },
+  "fromHeight": { ta: "உயரம் முதல்" },
+  "toHeight": { ta: "உயரம் வரை" },
 
 };
 export const t = (text, lang) => {

@@ -250,6 +250,7 @@ export default function Step8() {
     ],
     "Step 7 - Partner Preference": [
       "educationQualification1",
+      "otherEducation1",
       "educationDetails1",
       "complexion1",
       "personalPreference1",

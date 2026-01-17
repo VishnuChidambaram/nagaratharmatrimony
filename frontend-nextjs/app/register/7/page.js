@@ -39,6 +39,8 @@ export default function Step7() {
   const validate = () => {
     if (!form.educationQualification1)
       return "Education Qualification is required OR Enter NA for unknown fields";
+    if (form.educationQualification1 === "Others" && (!form.otherEducation1 || !form.otherEducation1.trim()))
+      return "Other Education is required OR Enter NA for unknown fields";
     if (!form.educationDetails1 || !form.educationDetails1.trim())
       return "Education Details is required OR Enter NA for unknown fields";
     if (!form.complexion1) return "Complexion is required OR Enter NA for unknown fields";
@@ -172,6 +174,18 @@ export default function Step7() {
             <option value="Below S.S.L.C">{t("Below S.S.L.C", language)}</option>
             <option value="Others">{t("Others", language)}</option>
           </select>
+          {form.educationQualification1 === "Others" && (
+            <div style={{ width: "90%", margin: "10px auto" }}>
+              <TamilInput
+                name="otherEducation1"
+                value={form.otherEducation1 || ""}
+                onChange={handle}
+                placeholder={t("Other Education (Partner)", language)}
+                forcedLanguage={language === "ta" ? "ta" : "en"}
+                style={{ ...styles.input, width: "100%", margin: 0 }}
+              />
+            </div>
+          )}
           <div style={{ width: "90%", margin: "10px auto" }}>
             <TamilInput
               isTextArea={true}
@@ -183,6 +197,8 @@ export default function Step7() {
               style={{ ...styles.input, width: "100%", margin: 0 }}
             />
           </div>
+
+
           <select
             name="complexion1"
             value={form.complexion1 || ""}
