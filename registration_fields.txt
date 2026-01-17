@@ -8,9 +8,9 @@ Create Password        *
 Confirm Password       *
 Marital Status         *
 Father Name            *
-Father Occupation   
+Father Occupation / Business
 Mother Name            *
-Mother Occupation 
+Mother Occupation / Business
 No. of Brothers 
 No. of Brothers Married 
 No. of Sisters
@@ -24,13 +24,15 @@ Present Residence
 Present Pincode 
 Profile Created By 
 Referred By 
-Reference Details 
-Referral 1 Name
-Referral 1 Phone 
-Referral 1 Address 
-Referral 2 Name 
-Referral 2 Phone 
-Referral 2 Address
+Reference – NMS Group/Branch No. 
+Referral Details 1:
+Referral Name
+Referral Phone 
+Referral Address 
+Referral Details 2:
+Referral Name 
+Referral Phone 
+Referral Address
 
 Step 2: Education & Occupation
 ------------------------------
@@ -60,9 +62,9 @@ Birth Star
 Dosham 
 Place of Birth 
 Date of Birth
-Time of Birth 
+Time of Birth (HH:MM:SS) 
 Dasa Type 
-Dasa Balance 
+Dasa Remain (YY, MM, DD) 
 
 Step 5: Horoscope Chart
 -----------------------
@@ -77,16 +79,20 @@ State
 District 
 Country 
 Postal Code 
-Phone Number
-Other Phone Number 
+Phone Number (+91...)
+Other Phone Number (+Code...) 
 WhatsApp No. 
 Email 
-Upload Photos 
+Upload Photos (Max 2)
 
 Step 7: Partner Preference
 --------------------------
 Education Qualification 
+Other Education 
 Education Details 
+Occupation / Business
+Other Occupation
+Working Place
 Complexion 
 Personal Preference 
 Work After Marriage 
