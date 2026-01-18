@@ -600,13 +600,13 @@ export default function EditStep1() {
             />
           </div>
           <div className="edit-field-row">
-            <label className="edit-field-label">{t("Referral Address", language)}:</label>
+            <label className="edit-field-label">{t("Referral Email", language)}:</label>
             <input
               className="edit-field-input"
               name="referralDetails1Email"
               value={form.referralDetails1Email ?? ""}
               onChange={handleChange}
-              placeholder={t("Referral Address", language)}
+              placeholder={t("Referral Email", language)}
             />
           </div>
           <h4 className="edit-referral-heading">{t("Referral Details 2", language)}</h4>
@@ -632,13 +632,13 @@ export default function EditStep1() {
             />
           </div>
           <div className="edit-field-row">
-            <label className="edit-field-label">{t("Referral Address", language)}:</label>
+            <label className="edit-field-label">{t("Referral Email", language)}:</label>
             <input
               className="edit-field-input"
               name="referralDetails2Email"
               value={form.referralDetails2Email ?? ""}
               onChange={handleChange}
-              placeholder={t("Referral Address", language)}
+              placeholder={t("Referral Email", language)}
             />
           </div>
         </div>

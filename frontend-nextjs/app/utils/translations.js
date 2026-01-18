@@ -152,7 +152,7 @@ export const translations = {
   "Referral Details 2": { ta: "பரிந்துரை விவரங்கள் 2" },
   "Referral Name": { ta: "பரிந்துரையாளர் பெயர்" },
   "Referral Phone": { ta: "பரிந்துரையாளர் தொலைபேசி" },
-  "Referral Address": { ta: "பரிந்துரையாளர் மின்னஞ்சல்" },
+  "Referral Email": { ta: "பரிந்துரையாளர் மின்னஞ்சல்" },
 
   // Native Places
   "A. Muthu Pattinam – 630101": { ta: "அ. முத்து பட்டினம் – 630101" },

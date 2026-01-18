@@ -649,7 +649,7 @@ export default function Step1() {
             name="referralDetails1Email"
             value={form.referralDetails1Email}
             onChange={handleChange}
-            placeholder={t("Referral Address", language)}
+            placeholder={t("Referral Email", language)}
           />
           <h4 style={styles.referralHeading2}>{t("Referral Details 2", language)}</h4>
           <TamilInput
@@ -672,7 +672,7 @@ export default function Step1() {
             name="referralDetails2Email"
             value={form.referralDetails2Email}
             onChange={handleChange}
-            placeholder={t("Referral Address", language)}
+            placeholder={t("Referral Email", language)}
           />
         </div>
       </div>
