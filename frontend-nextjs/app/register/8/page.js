@@ -745,7 +745,78 @@ export default function Step8() {
           }
         }
 
+        .preview-step-container {
+          margin-bottom: 25px;
+          background: var(--card-bg);
+          border-radius: 8px;
+          padding: 15px;
+          border: 1px solid var(--input-border, #eee);
+        }
+        .preview-step-title {
+          border-bottom: 2px solid var(--button-bg);
+          padding-bottom: 8px;
+          margin-bottom: 15px;
+          font-size: 1.25rem;
+          color: var(--card-text);
+          text-align: left;
+        }
+        .preview-grid {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 0;
+        }
+        .preview-column {
+          flex: 1 1 50%;
+          min-width: 300px;
+        }
+        .preview-field-row {
+          padding: 8px 12px;
+          display: flex;
+          align-items: flex-start;
+          gap: 15px;
+          border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .preview-field-label {
+          min-width: 180px;
+          flex-shrink: 0;
+          font-size: 15px;
+          font-weight: 700;
+          color: var(--card-text);
+          text-align: left;
+          opacity: 0.9;
+        }
+        .preview-field-value {
+          flex: 1;
+          font-size: 15px;
+          color: var(--card-text);
+          word-break: break-word;
+          text-align: left;
+        }
+
         @media (max-width: 767px) {
+          .preview-column {
+            flex: 1 1 100%;
+            min-width: 0;
+          }
+          .preview-field-row {
+            flex-direction: column;
+            gap: 4px;
+            padding: 10px 12px;
+          }
+          .preview-field-label {
+            min-width: 0;
+            width: 100%;
+            font-size: 14px;
+            color: var(--button-bg);
+          }
+          .preview-field-value {
+            font-size: 14px;
+            padding-left: 0;
+          }
+          .preview-step-title {
+            font-size: 1.1rem;
+          }
+          
           .button-container {
             flex-direction: column !important;
             gap: 10px !important;
@@ -802,60 +873,48 @@ export default function Step8() {
       )}
 
       <br/>
-      <div style={{ textAlign: "left", maxWidth: "794px", width: "100%", margin: "0 auto" }}>
+      <div style={{ textAlign: "left", maxWidth: "900px", width: "100%", margin: "0 auto", padding: "0 10px" }}>
         {Object.keys(stepGroups).map((step) => {
           const fields = stepGroups[step];
           if (fields === "chart") {
             return (
-              <div key={step} style={{ marginBottom: 20 }}>
-                <h2
-                  style={{ borderBottom: "1px solid #ccc", paddingBottom: 5 }}
-                >
-                  {step}
-                </h2>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "20px",
-                  }}
-                >
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
-                    <div>
-                      <h3 style={{ textAlign: "center", marginBottom: "10px" }}>{t("Rasi Chart", language)}</h3>
-                      <div className="rasi-grid">
-                        {renderBox(1)}
-                        {renderBox(2)}
-                        {renderBox(3)}
-                        {renderBox(4)}
-                        {renderBox(12)}
-                        <div className="center-box">ராசி</div>
-                        {renderBox(5)}
-                        {renderBox(11)}
-                        {renderBox(6)}
-                        {renderBox(10)}
-                        {renderBox(9)}
-                        {renderBox(8)}
-                        {renderBox(7)}
-                      </div>
+              <div key={step} className="preview-step-container">
+                <h2 className="preview-step-title">{t(step, language)}</h2>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+                  <div>
+                    <h3 style={{ textAlign: "center", marginBottom: "15px", fontSize: "16px" }}>{t("Rasi Chart", language)}</h3>
+                    <div className="rasi-grid">
+                      {renderBox(1)}
+                      {renderBox(2)}
+                      {renderBox(3)}
+                      {renderBox(4)}
+                      {renderBox(12)}
+                      <div className="center-box">ராசி</div>
+                      {renderBox(5)}
+                      {renderBox(11)}
+                      {renderBox(6)}
+                      {renderBox(10)}
+                      {renderBox(9)}
+                      {renderBox(8)}
+                      {renderBox(7)}
                     </div>
-                    <div>
-                      <h3 style={{ textAlign: "center", marginBottom: "10px" }}>{t("Amsam Chart", language)}</h3>
-                      <div className="rasi-grid">
-                        {renderAmsamBox(1)}
-                        {renderAmsamBox(2)}
-                        {renderAmsamBox(3)}
-                        {renderAmsamBox(4)}
-                        {renderAmsamBox(12)}
-                        <div className="center-box">அம்சம்</div>
-                        {renderAmsamBox(5)}
-                        {renderAmsamBox(11)}
-                        {renderAmsamBox(6)}
-                        {renderAmsamBox(10)}
-                        {renderAmsamBox(9)}
-                        {renderAmsamBox(8)}
-                        {renderAmsamBox(7)}
-                      </div>
+                  </div>
+                  <div>
+                    <h3 style={{ textAlign: "center", marginBottom: "15px", fontSize: "16px" }}>{t("Amsam Chart", language)}</h3>
+                    <div className="rasi-grid">
+                      {renderAmsamBox(1)}
+                      {renderAmsamBox(2)}
+                      {renderAmsamBox(3)}
+                      {renderAmsamBox(4)}
+                      {renderAmsamBox(12)}
+                      <div className="center-box">அம்சம்</div>
+                      {renderAmsamBox(5)}
+                      {renderAmsamBox(11)}
+                      {renderAmsamBox(6)}
+                      {renderAmsamBox(10)}
+                      {renderAmsamBox(9)}
+                      {renderAmsamBox(8)}
+                      {renderAmsamBox(7)}
                     </div>
                   </div>
                 </div>
@@ -873,17 +932,16 @@ export default function Step8() {
   const mid = Math.ceil(fields.length / 2);
   const leftFields = fields.slice(0, mid);
   const rightFields = fields.slice(mid);
+
   return (
-    <div key={step} style={{ marginBottom: 20 }}>
-      <h2 style={{ borderBottom: "1px solid #ccc", paddingBottom: 5 }}>
-        {t(step, language)}
-      </h2>
-      <div style={{ display: "flex", flexWrap: "wrap" }}>
-        <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
+    <div key={step} className="preview-step-container">
+      <h2 className="preview-step-title">{t(step, language)}</h2>
+      <div className="preview-grid">
+        <div className="preview-column">
           {leftFields.filter(k => shouldShowField(k, form)).map((k) => (
-            <div key={k} style={{ padding: 6, display: "flex", alignItems: "baseline", gap: "10px" }}>
-              <strong style={{ minWidth: "180px", flexShrink: 0, fontSize: "16px", fontWeight: "700", textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
-              <div style={{ flex: 1 }}>
+            <div key={k} className="preview-field-row">
+              <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
+              <div className="preview-field-value">
                 {k === "photos" && form[k] && Array.isArray(form[k]) ? (
                   <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
                     {form[k].map((photo, idx) => (
