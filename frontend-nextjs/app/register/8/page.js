@@ -698,52 +698,7 @@ export default function Step8() {
           min-height: 36px !important;
         }
         
-        /* Tablet specific refinement - inline (side by side) */
-        @media (min-width: 768px) and (max-width: 1024px) {
-          .email-verification-row {
-             flex-direction: row !important;
-             justify-content: center !important;
-             align-items: center !important;
-             gap: 15px !important;
-             width: 100% !important;
-             margin: 10px 0 !important;
-          }
-          .preview-email-input, .preview-otp-input {
-             width: 250px !important;
-             max-width: 250px !important;
-             padding: 6px 10px !important;
-             font-size: 13px !important;
-             margin: 0 !important;
-             box-sizing: border-box !important;
-             display: inline-block !important;
-             border: 1px solid var(--input-border, #ccc) !important;
-             background: var(--input-bg, #fff) !important;
-             border-radius: 6px !important;
-             min-height: 36px !important;
-          }
-          .edit-send-otp-button-register {
-             width: 250px !important;
-             max-width: 250px !important;
-             padding: 6px 10px !important;
-             font-size: 13px !important;
-             margin: 0 !important;
-             box-sizing: border-box !important;
-             display: inline-block !important;
-             border-radius: 6px !important;
-             min-height: 36px !important;
-             background: var(--button-bg, #000) !important;
-             color: var(--button-text, #fff) !important;
-             font-weight: bold !important;
-             cursor: pointer !important;
-             transition: all 0.3s ease !important;
-             border: none !important;
-          }
-          .edit-send-otp-button-register:hover {
-             opacity: 0.8 !important;
-             transform: translateY(-1px) !important;
-             box-shadow: 0 4px 6px rgba(0,0,0,0.1) !important;
-          }
-        }
+        /* Removed tablet-specific horizontal layout for email verification */
 
         .preview-step-container {
           margin-bottom: 25px;
@@ -772,16 +727,18 @@ export default function Step8() {
         .preview-field-row {
           padding: 8px 12px;
           display: flex;
+          flex-direction: row;
           align-items: flex-start;
           gap: 15px;
           border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .preview-field-label {
+          width: 180px;
           min-width: 180px;
           flex-shrink: 0;
           font-size: 15px;
           font-weight: 700;
-          color: var(--card-text);
+          color: var(--button-bg);
           text-align: left;
           opacity: 0.9;
         }
@@ -791,27 +748,40 @@ export default function Step8() {
           color: var(--card-text);
           word-break: break-word;
           text-align: left;
+          padding-left: 0;
         }
 
-        @media (max-width: 767px) {
-          .preview-column {
-            flex: 1 1 100%;
-            min-width: 0;
-          }
+        .preview-photos-container {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 5px;
+        }
+
+        /* Center-left alignment for Right Column in Comparison Mode */
+        .right-column {
+          padding-left: 60px;
+        }
+        .right-column .preview-field-row {
+          align-items: flex-start;
+        }
+        .right-column .preview-field-label,
+        .right-column .preview-field-value {
+          text-align: left;
+        }
+        .right-column .preview-photos-container {
+          justify-content: flex-start;
+        }
+
+        @media (max-width: 1199px) {
           .preview-field-row {
-            flex-direction: column;
-            gap: 4px;
             padding: 10px 12px;
           }
           .preview-field-label {
-            min-width: 0;
-            width: 100%;
             font-size: 14px;
-            color: var(--button-bg);
           }
           .preview-field-value {
             font-size: 14px;
-            padding-left: 0;
           }
           .preview-step-title {
             font-size: 1.1rem;
@@ -831,6 +801,26 @@ export default function Step8() {
             flex-direction: column !important;
             gap: 10px !important;
           }
+        }
+
+        @media (max-width: 850px) {
+          .preview-column {
+            flex: 1 1 100%;
+            min-width: 0;
+          }
+          .preview-field-row {
+            flex-direction: column;
+            gap: 4px;
+          }
+          .preview-field-label {
+            width: 100%;
+            min-width: 0;
+          }
+          /* Reset right column specific styles for single column mobile view */
+          .right-column {
+            padding-left: 0;
+          }
+        }
 
           .edit-send-otp-button-register, .preview-email-input, .preview-otp-input {
             width: 100% !important;
@@ -943,7 +933,7 @@ export default function Step8() {
               <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
               <div className="preview-field-value">
                 {k === "photos" && form[k] && Array.isArray(form[k]) ? (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
+                  <div className="preview-photos-container">
                     {form[k].map((photo, idx) => (
                       <Image
                         key={idx}
@@ -990,13 +980,13 @@ export default function Step8() {
             </div>
           ))}
         </div>
-        <div style={{ flex: "1 1 50%", minWidth: "250px" }}>
+        <div className="preview-column right-column">
           {rightFields.filter(k => shouldShowField(k, form)).map((k) => (
-            <div key={k} style={{ padding: 6, display: "flex", alignItems: "baseline", gap: "10px" }}>
-              <strong style={{ minWidth: "180px", flexShrink: 0, fontSize: "16px", fontWeight: "700", textAlign: "left" }}>{t(displayNames[k] || k, language)}:</strong>
-              <div style={{ flex: 1 }}>
+            <div key={k} className="preview-field-row">
+              <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
+              <div className="preview-field-value">
                 {k === "photos" && form[k] && Array.isArray(form[k]) ? (
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginTop: "5px" }}>
+                  <div className="preview-photos-container">
                     {form[k].map((photo, idx) => (
                       <Image
                         key={idx}
