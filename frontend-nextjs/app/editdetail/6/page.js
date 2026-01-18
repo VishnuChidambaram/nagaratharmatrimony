@@ -934,7 +934,8 @@ export default function Page() {
         }
       });
     };
-  }, [form, loading, imageUrls]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form, loading]);
 
   const handleStateChange = (e) => {
     setForm({ ...form, state: e.target.value, district: "" });
