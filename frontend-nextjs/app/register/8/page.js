@@ -167,6 +167,7 @@ export default function Step8() {
     name: "Name",
     gender: "Gender",
     password: "Password",
+    confirmPassword: "Confirm Password",
     maritalStatus: "Marital Status",
     fatherName: "Father Name",
     fatherOccupation: "Father Occupation",
@@ -354,25 +355,13 @@ export default function Step8() {
       "name",
       "gender",
       "password",
+      "confirmPassword",
       "maritalStatus",
       "fatherName",
-      "fatherOccupation",
-      "motherName",
-      "motherOccupation",
-      "brothers",
-      "brothersMarried",
-      "sisters",
-      "sistersMarried",
       "yourTemple",
-      "yourDivision",
-      "knownLanguages",
-      "reference",
-      "nativePlace",
-      "nativePlaceHouseName",
       "presentResidence",
       "pincode",
       "profileCreatedBy",
-      "referredBy",
     ],
     "Step 2 - Education & Occupation": [
       "educationQualification",
@@ -380,7 +369,6 @@ export default function Step8() {
       "workingPlace",
       "workDetails",
       "educationDetails",
-      "income",
     ],
     "Step 3 - Physical Attributes": [
       "height",
@@ -414,7 +402,6 @@ export default function Step8() {
       "country",
       "postalCode",
       "phone",
-      "otherPhone",
       "whatsAppNo",
       "email",
       "photos",
@@ -425,8 +412,6 @@ export default function Step8() {
       "complexion1",
       "personalPreference1",
       "willingnessToWork1",
-      "fromAge",
-      "toAge",
       "fromHeight",
       "toHeight",
     ],
@@ -536,7 +521,7 @@ export default function Step8() {
     if (Object.keys(missingFieldsByStep).length > 0) {
       let errorMessage = "Please complete the following pages:\n\n";
       Object.entries(missingFieldsByStep).forEach(([stepName, fields]) => {
-        errorMessage += `${stepName}:\n${fields.join(", ")}\n\n`;
+        errorMessage += `${stepName}:\n${fields.map(f => displayNames[f] || f).join(", ")}\n\n`;
       });
       errorMessage += "Please fill all fields or enter NA";
       setRegistrationError(errorMessage);
