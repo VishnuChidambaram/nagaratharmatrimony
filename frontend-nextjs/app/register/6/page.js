@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { styles, loadFormData, saveFormData, defaultFormData } from "../styles";
 import Navigation from "../components/Navigation";
 import TamilInput from "@/app/components/TamilInput";
@@ -910,7 +911,7 @@ export default function Step6() {
         }
       });
     };
-  }, [form, isLoaded]); // Removed 'imageUrls' to prevent infinite loop
+  }, [form, isLoaded, imageUrls]);
 
 
   const handle = (e) => {
@@ -1320,7 +1321,7 @@ export default function Step6() {
                       border: "1px solid var(--input-border)",
                     }}
                   >
-                    <img
+                    <Image
                       src={url}
                       alt={`Photo ${index + 1}`}
                       width={150}

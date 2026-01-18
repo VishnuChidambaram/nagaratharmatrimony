@@ -130,9 +130,10 @@ export default function Step5() {
   };
 
   const next = () => {
-    const v = validate();
-     // If stricter validation is needed later, uncomment below
-    /* if (v) {
+    // Currently no mandatory fields for Horizontal Chart in Step 5
+    // If stricter validation is needed later, uncomment below
+    /* const v = validate();
+    if (v) {
        // setError(v); // need to add error state if used
        return;
     } */
