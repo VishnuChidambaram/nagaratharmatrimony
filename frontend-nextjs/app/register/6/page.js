@@ -912,7 +912,7 @@ export default function Step6() {
         }
       });
     };
-  }, [form.photos, form.photo, isLoaded, imageUrls]);
+  }, [form, isLoaded, imageUrls]); // Included 'form' as requested by ESLint
 
 
   const handle = (e) => {
