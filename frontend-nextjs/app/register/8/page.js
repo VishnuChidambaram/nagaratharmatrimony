@@ -540,29 +540,51 @@ export default function Step8() {
     if (resendCooldown > 0) return;
     setIsSendingOtp(true);
 
+    // Call Backend Validation before sending OTP
     try {
-      const res = await fetch(`${API_URL}/send-email-otp`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email: form.email }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setOtpSent(true);
-        setResendCooldown(60);
-        setEmailVerificationError("");
-        setOtpMessage("OTP sended to email");
-        setTimeout(() => {
-          setOtpMessage("");
-        }, 2000);
-      } else {
-        setEmailVerificationError(data.message);
-      }
-    } catch {
-      setEmailVerificationError("Failed to send OTP");
+        const validationRes = await fetch(`${API_URL}/validate-registration`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(form), // Send current form data
+        });
+        const validationData = await validationRes.json();
+
+        if (!validationData.success) {
+            // Validation failed
+            if (validationData.errors && Array.isArray(validationData.errors) && validationData.errors.length > 0) {
+                setRegistrationError(validationData.errors.join("\n"));
+            } else {
+                setRegistrationError(validationData.message || "Registration validation failed");
+            }
+            setIsSendingOtp(false); // Stop here
+            return; 
+        }
+
+        // If validation success, proceed to send OTP
+        const res = await fetch(`${API_URL}/send-email-otp`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify({ email: form.email }),
+        });
+        const data = await res.json();
+        if (data.success) {
+            setOtpSent(true);
+            setResendCooldown(60);
+            setEmailVerificationError("");
+            setOtpMessage("OTP sended to email");
+            setTimeout(() => {
+            setOtpMessage("");
+            }, 2000);
+        } else {
+            setEmailVerificationError(data.message);
+        }
+    } catch (error) {
+        console.error(error);
+        setEmailVerificationError("Failed to validate or send OTP");
     } finally {
-      setIsSendingOtp(false);
+        setIsSendingOtp(false);
     }
   };
 

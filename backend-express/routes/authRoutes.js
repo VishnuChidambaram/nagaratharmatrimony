@@ -674,6 +674,59 @@ router.post("/check-user-exists", async (req, res) => {
   }
 });
 
+// Pre-registration validation endpoint
+router.post("/validate-registration", async (req, res) => {
+  const data = req.body;
+
+  try {
+    // 1. Basic Field Validation
+    // Note: We skip photo validation here as photos are uploaded later or handled separately in /register
+    const fieldValidation = validateRegistrationFields(data);
+    if (!fieldValidation.isValid) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: fieldValidation.errors
+      });
+    }
+
+    // 2. Password Strength Validation
+    const passwordValidation = validatePasswordStrength(data.password);
+    if (!passwordValidation.isValid) {
+      return res.json({
+        success: false,
+        message: "Password does not meet security requirements",
+        errors: passwordValidation.errors
+      });
+    }
+
+    // 3. User Existence Check
+    const existingUser = await db.UserDetail.findOne({
+      where: {
+        [db.sequelize.Sequelize.Op.or]: [
+          { email: data.email },
+          { phone: data.phone },
+        ],
+      },
+    });
+
+    if (existingUser) {
+        return res.status(400).json({
+          success: false,
+          message: "User with this email or phone already exists",
+          errors: ["User with this email or phone already exists"]
+        });
+    }
+
+    // If all checks pass
+    res.json({ success: true, message: "Validation successful" });
+
+  } catch (error) {
+    console.error("Validation error:", error);
+    res.status(500).json({ success: false, message: "Internal server error during validation" });
+  }
+});
+
 router.post("/register", registrationLimiter, (req, res, next) => {
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
