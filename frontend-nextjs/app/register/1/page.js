@@ -644,13 +644,12 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Referral Phone", language)}
           />
-          <TamilInput
+          <input
             style={styles.input}
-            name="referralDetails1Address"
-            value={form.referralDetails1Address}
+            name="referralDetails1Email"
+            value={form.referralDetails1Email}
             onChange={handleChange}
             placeholder={t("Referral Address", language)}
-            forcedLanguage={language}
           />
           <h4 style={styles.referralHeading2}>{t("Referral Details 2", language)}</h4>
           <TamilInput
@@ -668,13 +667,12 @@ export default function Step1() {
             onChange={handleChange}
             placeholder={t("Referral Phone", language)}
           />
-          <TamilInput
+          <input
             style={styles.input}
-            name="referralDetails2Address"
-            value={form.referralDetails2Address}
+            name="referralDetails2Email"
+            value={form.referralDetails2Email}
             onChange={handleChange}
             placeholder={t("Referral Address", language)}
-            forcedLanguage={language}
           />
         </div>
       </div>

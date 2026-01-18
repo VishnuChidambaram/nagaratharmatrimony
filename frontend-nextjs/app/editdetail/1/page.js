@@ -601,13 +601,12 @@ export default function EditStep1() {
           </div>
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Referral Address", language)}:</label>
-            <TamilInput
+            <input
               className="edit-field-input"
-              name="referralDetails1Address"
-              value={form.referralDetails1Address ?? ""}
+              name="referralDetails1Email"
+              value={form.referralDetails1Email ?? ""}
               onChange={handleChange}
               placeholder={t("Referral Address", language)}
-              forcedLanguage={language}
             />
           </div>
           <h4 className="edit-referral-heading">{t("Referral Details 2", language)}</h4>
@@ -634,13 +633,12 @@ export default function EditStep1() {
           </div>
           <div className="edit-field-row">
             <label className="edit-field-label">{t("Referral Address", language)}:</label>
-            <TamilInput
+            <input
               className="edit-field-input"
-              name="referralDetails2Address"
-              value={form.referralDetails2Address ?? ""}
+              name="referralDetails2Email"
+              value={form.referralDetails2Email ?? ""}
               onChange={handleChange}
               placeholder={t("Referral Address", language)}
-              forcedLanguage={language}
             />
           </div>
         </div>

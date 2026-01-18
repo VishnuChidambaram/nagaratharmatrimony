@@ -107,8 +107,8 @@ const UserDetail = sequelize.define(
       type: Sequelize.STRING(20),
       allowNull: true,
     },
-    referralDetails1Address: {
-      type: Sequelize.TEXT,
+    referralDetails1Email: {
+      type: Sequelize.STRING(255),
       allowNull: true,
     },
     referralDetails2Name: {
@@ -119,8 +119,8 @@ const UserDetail = sequelize.define(
       type: Sequelize.STRING(20),
       allowNull: true,
     },
-    referralDetails2Address: {
-      type: Sequelize.TEXT,
+    referralDetails2Email: {
+      type: Sequelize.STRING(255),
       allowNull: true,
     },
     // Step 2 - Education & Occupation (8 fields)

@@ -34,10 +34,10 @@ import Image from "next/image";
       { key: "referredBy", label: "Referred By" },
       { key: "referralDetails1Name", label: "Referral 1 Name" },
       { key: "referralDetails1Phone", label: "Referral 1 Phone" },
-      { key: "referralDetails1Address", label: "Referral 1 Address" },
+      { key: "referralDetails1Email", label: "Referral 1 Email" },
       { key: "referralDetails2Name", label: "Referral 2 Name" },
       { key: "referralDetails2Phone", label: "Referral 2 Phone" },
-      { key: "referralDetails2Address", label: "Referral 2 Address" },
+      { key: "referralDetails2Email", label: "Referral 2 Email" },
       { key: "created_at", label: "Registered On", readOnly: true },
     ],
     "Education & Occupation": [

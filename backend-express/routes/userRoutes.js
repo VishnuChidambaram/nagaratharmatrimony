@@ -486,16 +486,16 @@ router.put(
         updateData.referralDetails1Name = data.referralDetails1Name || null;
       if (data.referralDetails1Phone !== undefined)
         updateData.referralDetails1Phone = data.referralDetails1Phone || null;
-      if (data.referralDetails1Address !== undefined)
-        updateData.referralDetails1Address =
-          data.referralDetails1Address || null;
+      if (data.referralDetails1Email !== undefined)
+        updateData.referralDetails1Email =
+          data.referralDetails1Email || null;
       if (data.referralDetails2Name !== undefined)
         updateData.referralDetails2Name = data.referralDetails2Name || null;
       if (data.referralDetails2Phone !== undefined)
         updateData.referralDetails2Phone = data.referralDetails2Phone || null;
-      if (data.referralDetails2Address !== undefined)
-        updateData.referralDetails2Address =
-          data.referralDetails2Address || null;
+      if (data.referralDetails2Email !== undefined)
+        updateData.referralDetails2Email =
+          data.referralDetails2Email || null;
 
       // Education & Occupation
       if (data.educationQualification !== undefined)

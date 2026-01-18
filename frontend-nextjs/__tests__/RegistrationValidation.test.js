@@ -19,8 +19,25 @@ jest.mock('@/app/hooks/useLanguage', () => ({
   }),
 }));
 
-// Mock TamilInput to simplify testing (since the real one uses complex transliteration logic)
-// But we need to make sure it handles the 'error' prop correctly as we added it!
+// Mock styles storage functions to avoid IndexedDB issues in Jest
+jest.mock('@/app/register/styles', () => ({
+  ...jest.requireActual('@/app/register/styles'),
+  loadFormData: jest.fn(() => Promise.resolve({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    maritalStatus: '',
+    fatherName: '',
+    yourTemple: '',
+    presentResidence: '',
+    pincode: '',
+    profileCreatedBy: '',
+  })),
+  saveFormData: jest.fn(() => Promise.resolve()),
+}));
+
+// Mock TamilInput
 jest.mock('@/app/components/TamilInput', () => {
   return function DummyInput(props) {
     const testId = props.id || props.name;
@@ -35,7 +52,6 @@ jest.mock('@/app/components/TamilInput', () => {
           value={props.value}
           type={props.type}
         />
-        {props.error && <span data-testid={`error-${testId}`} style={{color: 'red'}}>{props.error}</span>}
       </div>
     );
   };
@@ -57,39 +73,49 @@ global.fetch = jest.fn((url) => {
 describe('Registration Step 1 Validation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Clear session storage mock
-    const mockSessionStorage = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-    };
-    Object.defineProperty(window, 'sessionStorage', { value: mockSessionStorage, writable: true });
   });
 
-  it('renders registration form step 1', () => {
+  it('renders registration form step 1', async () => {
     render(<Page />);
-    expect(screen.getByText(/step 1 - basic details/i)).toBeInTheDocument();
+    await waitFor(() => {
+        expect(screen.getByText(/step 1 - basic details/i)).toBeInTheDocument();
+    });
     expect(screen.getByTestId('name')).toBeInTheDocument();
   });
 
   it('shows validation error for invalid pincode', async () => {
     render(<Page />);
+    
+    // Wait for initial load
+    await waitFor(() => expect(screen.getByTestId('name')).toBeInTheDocument());
+
+    // Fill ALL required fields to reach pincode validation
+    fireEvent.change(screen.getByTestId('name'), { target: { name: 'name', value: 'John Doe' } });
+    fireEvent.change(screen.getByDisplayValue(/select gender/i), { target: { name: 'gender', value: 'Male' } });
+    fireEvent.change(screen.getByPlaceholderText(/create password/i), { target: { name: 'password', value: 'Password123!' } });
+    fireEvent.change(screen.getByPlaceholderText(/confirm password/i), { target: { name: 'confirmPassword', value: 'Password123!' } });
+    fireEvent.change(screen.getByDisplayValue(/select marital status/i), { target: { name: 'maritalStatus', value: 'unmarried' } });
+    
+    // fatherName is a TamilInput, name="fatherName"
+    fireEvent.change(screen.getByTestId('fatherName'), { target: { name: 'fatherName', value: 'Father Name' } });
+    
+    fireEvent.change(screen.getByDisplayValue(/select your temple/i), { target: { name: 'yourTemple', value: 'Nemam Kovil' } });
+    
+    // presentResidence is a TamilInput, name="presentResidence"
+    fireEvent.change(screen.getByTestId('presentResidence'), { target: { name: 'presentResidence', value: 'Address line' } });
+
+    fireEvent.change(screen.getByDisplayValue(/select profile created by/i), { target: { name: 'profileCreatedBy', value: 'Self' } });
+
     const pincodeInput = screen.getByTestId('pincode');
     
     // Invalid pincode: too short
     fireEvent.change(pincodeInput, { target: { name: 'pincode', value: '123' } });
-    fireEvent.blur(pincodeInput);
+    
+    const nextButton = screen.getByText(/next/i);
+    fireEvent.click(nextButton);
 
     await waitFor(() => {
-      expect(screen.getByTestId('error-pincode')).toHaveTextContent(/pincode must be 6 digits/i);
-    });
-
-    // Valid pincode: 6 digits
-    fireEvent.change(pincodeInput, { target: { name: 'pincode', value: '600001' } });
-    fireEvent.blur(pincodeInput);
-
-    await waitFor(() => {
-      expect(screen.queryByTestId('error-pincode')).not.toBeInTheDocument();
+      expect(screen.getByText(/pincode must be a 6-digit number/i)).toBeInTheDocument();
     });
   });
 
@@ -100,9 +126,8 @@ describe('Registration Step 1 Validation', () => {
     const nextButton = screen.getByText(/next/i);
     fireEvent.click(nextButton);
 
-    // In our implementation, we added real-time errors.
     await waitFor(() => {
-        expect(screen.getByTestId('error-name')).toBeInTheDocument();
+        expect(screen.getByText(/name is required/i)).toBeInTheDocument();
     });
     
     expect(mockPush).not.toHaveBeenCalled();

@@ -362,10 +362,10 @@ export default function EditStep8() {
     referredBy: "Referred By",
     referralDetails1Name: "Referral 1 Name",
     referralDetails1Phone: "Referral 1 Phone",
-    referralDetails1Address: "Referral 1 Address",
+    referralDetails1Email: "Referral 1 Email",
     referralDetails2Name: "Referral 2 Name",
     referralDetails2Phone: "Referral 2 Phone",
-    referralDetails2Address: "Referral 2 Address",
+    referralDetails2Email: "Referral 2 Email",
 
     // Step 2
     educationQualification: "Education Qualification",
@@ -668,10 +668,10 @@ export default function EditStep8() {
       "referredBy",
       "referralDetails1Name",
       "referralDetails1Phone",
-      "referralDetails1Address",
+      "referralDetails1Email",
       "referralDetails2Name",
       "referralDetails2Phone",
-      "referralDetails2Address",
+      "referralDetails2Email",
     ],
     "Step 2 - Education & Occupation": [
       "educationQualification",

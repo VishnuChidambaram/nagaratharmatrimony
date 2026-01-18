@@ -28,7 +28,8 @@ jest.mock('@/app/components/TamilInput', () => {
   return function DummyInput(props) {
     return (
       <input
-        data-testid={props.id}
+        data-testid={props.id || props.name}
+        name={props.name}
         onChange={props.onChange}
         value={props.value}
         type={props.type}
@@ -53,40 +54,59 @@ describe('Login Page', () => {
     };
     Object.defineProperty(window, 'sessionStorage', { value: mockSessionStorage, writable: true });
     
-    // Reset window.location mock if previously messed up (JSDOM usually resets, but good to be safe)
-    // We cannot delete window.location in new JSDOM, so we leave it alone as we use router.push now!
+    // Default mock for fetch (handles logout on mount)
+    fetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    });
   });
 
-  it('renders login form', () => {
+  it('renders login form', async () => {
     render(<Login />);
     expect(screen.getByRole('heading', { level: 3, name: /login/i })).toBeInTheDocument();
     expect(screen.getByTestId('email')).toBeInTheDocument();
   });
 
-  it('shows error on empty submission', () => {
+  it('shows error on empty submission', async () => {
     render(<Login />);
+    // Initial fetch for logout on mount
+    await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/logout'), expect.anything());
+    });
+    
     fireEvent.click(screen.getByText('Login'));
-    expect(fetch).not.toHaveBeenCalled();
+    // Should NOT call login API if empty
+    expect(fetch).toHaveBeenCalledTimes(1); 
   });
 
   it('calls login API and redirects on success', async () => {
     jest.useFakeTimers();
 
+    // Prepare for login call (the second call)
     fetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ success: true, sessionId: '123' }),
+      json: async () => ({ success: true }), // For logout
+    }).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true, sessionId: '123' }), // For login
     });
 
     render(<Login />);
+
+    // Wait for logout call
+    await waitFor(() => {
+        expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/logout'), expect.anything());
+    });
 
     fireEvent.change(screen.getByTestId('email'), { target: { value: 'test@example.com' } });
     fireEvent.change(screen.getByTestId('password'), { target: { value: 'password123' } });
 
     fireEvent.click(screen.getByText('Login'));
 
-    // 1. Verify API Call
+    // 1. Verify Login API Call
     await waitFor(() => {
-        expect(fetch).toHaveBeenCalledTimes(1);
+        expect(fetch).toHaveBeenCalledTimes(2);
+        expect(fetch).toHaveBeenLastCalledWith(expect.stringContaining('/login'), expect.anything());
     });
 
     // 2. Verify Session Storage (immediate side effect)
@@ -94,10 +114,11 @@ describe('Login Page', () => {
         expect(window.sessionStorage.setItem).toHaveBeenCalledWith('userEmail', 'test@example.com');
     });
 
-    // 3. Verify Redirect (delayed side effect)
-    // Advance timers by 2 seconds (setTimeout in Login.js)
+    // 3. Verify Redirect
     act(() => {
-        jest.advanceTimersByTime(2500);
+        // Advancing timers is not strictly necessary anymore as I removed the delay in a previous step 
+        // but Login.js might still have some state updates.
+        // Wait, Login.js line 116 says router.push("/dashboard") immediately.
     });
 
     expect(mockPush).toHaveBeenCalledWith('/dashboard');

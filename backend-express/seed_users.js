@@ -103,10 +103,10 @@ function createUserObj(name, gender, index, hashedPassword) {
       referredBy: "Friend",
       referralDetails1Name: "Raja",
       referralDetails1Phone: "9876543210",
-      referralDetails1Address: "1st St, Chennai",
+      referralDetails1Email: "raja@test.com",
       referralDetails2Name: "Rani",
       referralDetails2Phone: "9876543211",
-      referralDetails2Address: "2nd St, Madurai",
+      referralDetails2Email: "rani@test.com",
 
       // Step 2 - Education & Occupation
       educationQualification: "B.E. Computer Science",

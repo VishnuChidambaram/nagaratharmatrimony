@@ -152,7 +152,7 @@ export const translations = {
   "Referral Details 2": { ta: "பரிந்துரை விவரங்கள் 2" },
   "Referral Name": { ta: "பரிந்துரையாளர் பெயர்" },
   "Referral Phone": { ta: "பரிந்துரையாளர் தொலைபேசி" },
-  "Referral Address": { ta: "பரிந்துரையாளர் முகவரி" },
+  "Referral Address": { ta: "பரிந்துரையாளர் மின்னஞ்சல்" },
 
   // Native Places
   "A. Muthu Pattinam – 630101": { ta: "அ. முத்து பட்டினம் – 630101" },
@@ -648,10 +648,10 @@ export const translations = {
   "referredBy": { ta: "பரிந்துரைத்தவர்" },
   "referralDetails1Name": { ta: "பரிந்துரை 1 பெயர்" },
   "referralDetails1Phone": { ta: "பரிந்துரை 1 தொலைபேசி" },
-  "referralDetails1Address": { ta: "பரிந்துரை 1 முகவரி" },
+  "referralDetails1Email": { ta: "பரிந்துரை 1 மின்னஞ்சல்" },
   "referralDetails2Name": { ta: "பரிந்துரை 2 பெயர்" },
   "referralDetails2Phone": { ta: "பரிந்துரை 2 தொலைபேசி" },
-  "referralDetails2Address": { ta: "பரிந்துரை 2 முகவரி" },
+  "referralDetails2Email": { ta: "பரிந்துரை 2 மின்னஞ்சல்" },
   
   "educationQualification": { ta: "கல்வித் தகுதி" },
   "occupationBusiness": { ta: "தொழில் / வியாபாரம்" },

@@ -335,10 +335,10 @@ export default function ReviewRequest() {
       "referredBy",
       "referralDetails1Name",
       "referralDetails1Phone",
-      "referralDetails1Address",
+      "referralDetails1Email",
       "referralDetails2Name",
       "referralDetails2Phone",
-      "referralDetails2Address",
+      "referralDetails2Email",
     ],
     "Step 2 - Education & Occupation": [
       "educationQualification",

@@ -133,10 +133,10 @@ export default function RegisterStep({ params }) {
     referredBy: "",
     referralDetails1Name: "",
     referralDetails1Phone: "",
-    referralDetails1Address: "",
+    referralDetails1Email: "",
     referralDetails2Name: "",
     referralDetails2Phone: "",
-    referralDetails2Address: "",
+    referralDetails2Email: "",
     referralSource: "",
     referralCode: "",
     additionalInfo: "",
@@ -663,9 +663,9 @@ export default function RegisterStep({ params }) {
                 <input
                   style={styles.input}
                   type="text"
-                  name="referralDetails1Address"
-                  placeholder="Referral Address"
-                  value={formData.referralDetails1Address}
+                  name="referralDetails1Email"
+                  placeholder="Referral Email"
+                  value={formData.referralDetails1Email}
                   onChange={handleInputChange}
                 />
                 <h3
@@ -697,9 +697,9 @@ export default function RegisterStep({ params }) {
                 <input
                   style={styles.input}
                   type="text"
-                  name="referralDetails2Address"
-                  placeholder="Referral Address"
-                  value={formData.referralDetails2Address}
+                  name="referralDetails2Email"
+                  placeholder="Referral Email"
+                  value={formData.referralDetails2Email}
                   onChange={handleInputChange}
                 />
               </div>
