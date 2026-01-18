@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { app } from './server.js';
+import { app } from '../server.js';
 
 async function testValidation(name, payload, expectedSuccess, expectedErrorPart = null) {
   console.log(`\nTesting: ${name}`);
@@ -70,10 +70,21 @@ async function runTests() {
 
   // Test 5: Valid Data
   const randomEmail = `test_verification_${Date.now()}@example.com`;
-  await testValidation("Valid New User", { 
+  await testValidation("Valid New User (Standard Phone)", { 
       name: "New User", 
       email: randomEmail, 
       phone: "9876543210", 
+      password: "Password@123", 
+      gender: "Male",
+      dateOfBirth: "1995-01-01"
+  }, true);
+
+  // Test 6: Valid Data with +91 Phone
+  const randomEmail2 = `test_verification_91_${Date.now()}@example.com`;
+  await testValidation("Valid New User (+91 Phone)", { 
+      name: "New User 91", 
+      email: randomEmail2, 
+      phone: "+919876543210", 
       password: "Password@123", 
       gender: "Male",
       dateOfBirth: "1995-01-01"

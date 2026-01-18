@@ -123,9 +123,12 @@ function validateRegistrationFields(data) {
   if (!data.phone || data.phone.trim() === "") {
     errors.push("Phone number is required");
   } else {
-    const phoneRegex = /^[0-9]{10}$/;
-    if (!phoneRegex.test(data.phone.replace(/[\s-]/g, ""))) {
-      errors.push("Phone number must be 10 digits");
+    // Remove space, hyphen, plus
+    const cleanPhone = data.phone.replace(/[\s\-\+]/g, "");
+    
+    // Valid if 10 digits OR 12 digits starting with 91
+    if (!/^[0-9]{10}$/.test(cleanPhone) && !(/^91[0-9]{10}$/.test(cleanPhone))) {
+      errors.push("Phone number must be 10 digits (with or without +91)");
     }
   }
 
