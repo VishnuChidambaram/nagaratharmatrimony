@@ -727,14 +727,14 @@ export default function Step8() {
         .preview-field-row {
           padding: 8px 12px;
           display: flex;
-          flex-direction: row;
+          flex-direction: column;
           align-items: flex-start;
-          gap: 15px;
+          gap: 4px;
           border-bottom: 1px solid rgba(0,0,0,0.05);
         }
         .preview-field-label {
-          width: 180px;
-          min-width: 180px;
+          width: 100%;
+          min-width: 0;
           flex-shrink: 0;
           font-size: 15px;
           font-weight: 700;
@@ -803,7 +803,7 @@ export default function Step8() {
           }
         }
 
-        @media (max-width: 850px) {
+        @media (max-width: 600px) {
           .preview-column {
             flex: 1 1 100%;
             min-width: 0;
@@ -820,17 +820,18 @@ export default function Step8() {
           .right-column {
             padding-left: 0;
           }
-        }
-
+          /* Mobile specific adjustments inside the media query */
           .edit-send-otp-button-register, .preview-email-input, .preview-otp-input {
             width: 100% !important;
             max-width: 400px !important;
-            margin: 5px 0 !important;
+            margin: 5px auto !important;
+            display: block !important;
           }
           
           .rasi-grid {
             max-width: 90% !important;
             font-size: 10px !important;
+            margin: 20px auto !important; /* Centering with equal space */
           }
           .rasi-grid > div {
             min-height: 60px !important;
@@ -870,7 +871,7 @@ export default function Step8() {
             return (
               <div key={step} className="preview-step-container">
                 <h2 className="preview-step-title">{t(step, language)}</h2>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "20px", justifyContent: 'center' }}>
                   <div>
                     <h3 style={{ textAlign: "center", marginBottom: "15px", fontSize: "16px" }}>{t("Rasi Chart", language)}</h3>
                     <div className="rasi-grid">
