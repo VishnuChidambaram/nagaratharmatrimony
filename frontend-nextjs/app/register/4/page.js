@@ -406,7 +406,7 @@ export default function Step4() {
               name="dateOfBirth"
               value={form.dateOfBirth}
               onChange={handle}
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 20)).toISOString().split('T')[0]}
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString().split('T')[0]}
               onKeyDown={(e) => e.preventDefault()}
               onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />

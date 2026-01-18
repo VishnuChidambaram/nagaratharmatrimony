@@ -148,8 +148,8 @@ function validateRegistrationFields(data) {
     const dob = new Date(data.dateOfBirth);
     const today = new Date();
     const age = today.getFullYear() - dob.getFullYear();
-    if (age < 18) {
-      errors.push("You must be at least 18 years old to register");
+    if (age < 2) {
+      errors.push("You must be at least 2 years old to register");
     }
     if (age > 100) {
       errors.push("Invalid date of birth");
@@ -175,6 +175,10 @@ function validateRegistrationFields(data) {
   ];
   if (data.yourDivision && !validDivisions.includes(data.yourDivision)) {
     errors.push("Invalid division selection");
+  }
+
+  if (errors.length > 0) {
+    console.log("Validation failed with errors:", errors);
   }
 
   return {
