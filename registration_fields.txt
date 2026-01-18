@@ -105,3 +105,6 @@ To Height
 
 PASSWORD TiDB
 ZRz6uGbBFIxm0Fjw
+
+cd backend-express; npm start
+cd frontend-nextjs; npm run dev

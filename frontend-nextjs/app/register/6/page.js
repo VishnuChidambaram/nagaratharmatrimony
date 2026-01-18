@@ -10,7 +10,6 @@ import { t } from "@/app/utils/translations";
 import { useLanguage } from "../../hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
 import { getPhotoUrls } from "../../utils/photoUtils";
-import Image from "next/image";
 
 
 // List of Indian states
@@ -991,12 +990,13 @@ export default function Step6() {
     setForm((p) => ({ ...p, photos: updatedPhotos, photo: null }));
   };
   const validate = () => {
-    if (!form.fullStreetAddress.trim())
+    if (!form.fullStreetAddress || !form.fullStreetAddress.trim())
       return "Full Street Address is required OR Enter NA for unknown fields";
-    if (!form.city.trim()) return "City is required OR Enter NA for unknown fields";
-    if (!form.state.trim()) return "State is required OR Enter NA for unknown fields";
-    if (!form.district.trim()) return "District is required OR Enter NA for unknown fields";
-    if (!form.country.trim()) return "Country is required OR Enter NA for unknown fields";
+    if (!form.city || !form.city.trim()) return "City is required OR Enter NA for unknown fields";
+    if (!form.state || !form.state.trim()) return "State is required OR Enter NA for unknown fields";
+    if (!form.district || !form.district.trim()) return "District is required OR Enter NA for unknown fields";
+    if (!form.country || !form.country.trim()) return "Country is required OR Enter NA for unknown fields";
+    
     // Additional validation for state and district
     if (form.state && form.state !== "NA" && !indianStates.includes(form.state)) {
       return "Invalid state selected/select states in india";
@@ -1011,30 +1011,44 @@ export default function Step6() {
     ) {
       return "Invalid district selected for the chosen state";
     }
-    if (!form.postalCode.trim()) return "Postal Code is required OR Enter NA for unknown fields";
+
+    if (!form.postalCode || !form.postalCode.trim()) return "Postal Code is required OR Enter NA for unknown fields";
     if (form.postalCode.trim() !== "NA" && !/^\d{6}$/.test(form.postalCode.trim()))
       return "Postal Code must be exactly 6 digits";
-    if (!form.phone.trim()) return "Phone is required OR Enter 0 for unknown fields";
-    if (form.phone.trim() !== "0" && (!form.phone.startsWith("+91") || form.phone.length !== 13))
-      return "Phone must start with +91 and be followed by 10 digits";
+    
+    if (!form.phone || !form.phone.trim()) return "Phone is required OR Enter 0 for unknown fields";
+    // Allow either 10 digits OR +91 followed by 10 digits
+    const phoneClean = form.phone.trim();
+    if (phoneClean !== "0") {
+        if (/^\d{10}$/.test(phoneClean)) {
+            // Valid 10 digit
+        } else if (phoneClean.startsWith("+91") && phoneClean.length === 13 && /^\d{10}$/.test(phoneClean.slice(3))) {
+            // Valid +91
+        } else {
+            return "Phone must be 10 digits (e.g. 9876543210) or +91 format";
+        }
+    }
+
     if (form.otherPhone && form.otherPhone.trim() !== "0" && !form.otherPhone.trim().startsWith("+"))
        return "Other country phone must start with + (country code)";
-    if (!form.whatsAppNo.trim()) return "WhatsApp No. is required OR Enter 0 for unknown fields";
-    if (form.whatsAppNo.trim() !== "0" && !/^[6-9]\d{9}$/.test(form.whatsAppNo.trim()))
-      return "WhatsApp No. must be 10 digits starting with 6,7,8, or 9";
-    if (!form.email.trim()) return "E-mail is required OR Enter NA for unknown fields";
+       
+    if (!form.whatsAppNo || !form.whatsAppNo.trim()) return "WhatsApp No. is required OR Enter 0 for unknown fields";
+    if (form.whatsAppNo.trim() !== "0" && !/^\d{10}$/.test(form.whatsAppNo.trim()))
+      return "WhatsApp No. must be 10 digits";
+
+    if (!form.email || !form.email.trim()) return "E-mail is required OR Enter NA for unknown fields";
     else if (form.email.trim() !== "NA" && !/\S+@\S+\.\S+/.test(form.email)) return "E-mail is invalid";
-    else if (form.email.trim() !== "NA" && !form.email.trim().toLowerCase().endsWith("@gmail.com")) 
-      return "E-mail must end with @gmail.com";
-    if (!form.photos || form.photos.length === 0) return "At least one photo is required";
-    if (form.photos.length > 2) return "Maximum 2 photos allowed";
     
-    // Check total size
-    const totalSize = form.photos.reduce((acc, file) => acc + (file.size || 0), 0);
-    if (totalSize > 10 * 1024 * 1024) return "Total size exceeds 10MB";
+    // Check total size if photos exist
+    if (form.photos && form.photos.length > 0) {
+        if (form.photos.length > 2) return "Maximum 2 photos allowed";
+        const totalSize = form.photos.reduce((acc, file) => acc + (file.size || 0), 0);
+        if (totalSize > 10 * 1024 * 1024) return "Total size exceeds 10MB";
+    }
     
     return "";
   };
+
   const next = () => {
     const v = validate();
     if (v) {
@@ -1303,7 +1317,7 @@ export default function Step6() {
                       border: "1px solid var(--input-border)",
                     }}
                   >
-                    <Image
+                    <img
                       src={url}
                       alt={`Photo ${index + 1}`}
                       width={150}

@@ -1,9 +1,11 @@
 import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 
-// Configure Cloudinary with the CLOUDINARY_URL environment variable
-// (It automatically picks up CLOUDINARY_URL from process.env)
+// Configure Cloudinary explicitly with credentials
 cloudinary.config({
+  cloud_name: 'dhmgufbst',
+  api_key: '462847565411784',
+  api_secret: 'YTAtaB6PvBLcVfdd3km8Hjuerew',
   secure: true
 });
 

@@ -123,7 +123,19 @@ export default function Step5() {
     );
   };
 
+  const validate = () => {
+    // Currently no mandatory fields for Horizontal Chart in Step 5 as per instructions
+    // But we can add checks here if needed. 
+    return "";
+  };
+
   const next = () => {
+    const v = validate();
+     // If stricter validation is needed later, uncomment below
+    /* if (v) {
+       // setError(v); // need to add error state if used
+       return;
+    } */
     router.push("/register/6");
   };
 

@@ -208,12 +208,47 @@ export default function Step1() {
     if (form.password !== form.confirmPassword) return "Passwords must match";
     
     if (!form.maritalStatus) return "Marital Status is required OR Enter NA for unknown fields";
-    if (!form.fatherName.trim()) return "Father Name is required OR Enter NA for unknown fields";
+    if (!form.fatherOccupation.trim()) return "Father Occupation / Business is required OR Enter NA for unknown fields";
+    if (!form.motherName.trim()) return "Mother Name is required OR Enter NA for unknown fields";
+    if (!form.motherOccupation.trim()) return "Mother Occupation / Business is required OR Enter NA for unknown fields";
+    
+    if (form.brothers === "") return "Number of Brothers is required OR Enter 0 if none";
+    if (form.brothersMarried === "") return "Number of Brothers Married is required OR Enter 0 if none";
+    if (parseInt(form.brothersMarried) > parseInt(form.brothers)) return "Married brothers cannot exceed total brothers";
+    
+    if (form.sisters === "") return "Number of Sisters is required OR Enter 0 if none";
+    if (form.sistersMarried === "") return "Number of Sisters Married is required OR Enter 0 if none";
+    if (parseInt(form.sistersMarried) > parseInt(form.sisters)) return "Married sisters cannot exceed total sisters";
+
     if (!form.yourTemple) return "Your Temple is required OR Enter NA for unknown fields";
+    if (form.yourTemple !== "Other" && (!form.yourDivision || form.yourDivision === "")) return "Your Division is required";
+
+    if (!form.knownLanguages.trim()) return "Known Languages is required OR Enter NA for unknown fields";
+    if (!form.nativePlace) return "Native Place is required OR Enter NA for unknown fields";
+    if (!form.nativePlaceHouseName.trim()) return "Native Place House Name is required OR Enter NA for unknown fields";
+
     if (!form.presentResidence.trim()) return "Present Residence is required OR Enter NA for unknown fields";
     if (!form.pincode.trim()) return "Pincode is required OR Enter NA for unknown fields";
     if (form.pincode !== "NA" && !/^\d{6}$/.test(form.pincode)) return "Pincode must be a 6-digit number";
+    
     if (!form.profileCreatedBy) return "Profile Created By is required OR Enter NA for unknown fields";
+    
+    if (!form.referredBy) return "Referred By is required OR Enter NA for unknown fields";
+    if (form.referredBy === "Others" && (!form.reference || !form.reference.trim())) return "Reference details are required for 'Others'";
+
+    if (form.referralDetails1Phone && form.referralDetails1Phone.trim() !== "" && !/^\d{10}$/.test(form.referralDetails1Phone)) {
+        return "Referral 1 Phone number must be 10 digits";
+    }
+    if (form.referralDetails1Email && form.referralDetails1Email.trim() !== "" && !/\S+@\S+\.\S+/.test(form.referralDetails1Email)) {
+        return "Referral 1 Email is invalid";
+    }
+
+    if (form.referralDetails2Phone && form.referralDetails2Phone.trim() !== "" && !/^\d{10}$/.test(form.referralDetails2Phone)) {
+        return "Referral 2 Phone number must be 10 digits";
+    }
+    if (form.referralDetails2Email && form.referralDetails2Email.trim() !== "" && !/\S+@\S+\.\S+/.test(form.referralDetails2Email)) {
+        return "Referral 2 Email is invalid";
+    }
 
     return "";
   };

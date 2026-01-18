@@ -461,8 +461,10 @@ export default function Step8() {
         body: formData,
       });
       const data = await res.json();
+      console.log("Registration response:", data);
       if (data.success) {
         await clearFormData();
+        setForm(defaultFormData);
         window.dispatchEvent(new CustomEvent('show-notification', { 
           detail: { message: 'Registration Successful! Please Login.', type: 'success' } 
         }));
@@ -471,13 +473,15 @@ export default function Step8() {
           router.push("/login");
         }, 2000);
       } else {
-        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
-          setRegistrationError(data.errors.join("\n"));
-        } else {
-          setRegistrationError(data.message || "Registration failed");
-        }
+        console.error("Registration failed:", data);
+        const errorMsg = data.errors && Array.isArray(data.errors) && data.errors.length > 0
+          ? data.errors.join("\n")
+          : data.message || "Registration failed";
+        
+        setRegistrationError(errorMsg);
       }
-    } catch {
+    } catch (error) {
+      console.error("Registration exception:", error);
       setRegistrationError("Failed to submit registration");
     }
   };
@@ -626,7 +630,18 @@ export default function Step8() {
         credentials: "include",
         body: JSON.stringify({ email: form.email, phone: form.phone }),
       });
+      
+      if (!res.ok) {
+        console.error("Server returned error:", res.status, res.statusText);
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Error details:", errorData);
+        setUserExistsError(`Server error: ${errorData.message || res.statusText}. You may proceed with registration.`);
+        return false; // Allow registration to proceed despite server error
+      }
+      
       const data = await res.json();
+      console.log("User exists check response:", data);
+      
       if (data.exists) {
         setUserExistsError("User with this email or phone already exists");
         return true;
@@ -634,9 +649,10 @@ export default function Step8() {
         setUserExistsError("");
         return false;
       }
-    } catch {
-      setUserExistsError("Failed to check user availability");
-      return true; // Assume exists on error to prevent registration
+    } catch (error) {
+      console.error("Failed to check user availability:", error);
+      setUserExistsError(`Network error: ${error.message}. You may proceed with registration.`);
+      return false; // Allow registration to proceed despite network error
     }
   };
 

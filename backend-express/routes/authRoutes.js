@@ -45,9 +45,21 @@ async function sendEmailViaBridge(to, subject, text) {
   }
 }
 
-// Multer for file uploads using Cloudinary
+// Multer for file uploads - use local storage in development, Cloudinary in production
+const storage = process.env.CLOUDINARY_URL 
+  ? cloudinaryStorage // Use Cloudinary if configured
+  : multer.diskStorage({ // Use local storage for development
+      destination: function (req, file, cb) {
+        cb(null, 'uploads/');
+      },
+      filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+      }
+    });
+
 const upload = multer({ 
-  storage: cloudinaryStorage,
+  storage: storage,
   limits: { 
     fileSize: 10 * 1024 * 1024, // 10MB total limit
   },
@@ -647,6 +659,7 @@ router.get("/check-admin-auth", async (req, res) => {
 
 router.post("/check-user-exists", async (req, res) => {
   const { email, phone } = req.body;
+  console.log("Checking if user exists:", { email, phone });
 
   try {
     const existingUser = await db.UserDetail.findOne({
@@ -656,6 +669,7 @@ router.post("/check-user-exists", async (req, res) => {
     });
 
     if (existingUser) {
+      console.log("User exists:", existingUser.email);
       return res.json({
         success: false,
         message: "User already exists",
@@ -663,6 +677,7 @@ router.post("/check-user-exists", async (req, res) => {
       });
     }
 
+    console.log("User does not exist");
     res.json({
       success: true,
       message: "User does not exist",
@@ -672,7 +687,7 @@ router.post("/check-user-exists", async (req, res) => {
     console.error("Check user exists error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error: " + error.message,
     });
   }
 });
@@ -731,19 +746,26 @@ router.post("/validate-registration", async (req, res) => {
 });
 
 router.post("/register", registrationLimiter, (req, res, next) => {
+  console.log("========================================");
+  console.log("REGISTER ENDPOINT HIT");
+  console.log("========================================");
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
+      console.log("Multer error:", err);
       // A Multer error occurred when uploading.
       return res.status(400).json({ success: false, message: `Upload error: ${err.message}` });
     } else if (err) {
+      console.log("Upload error:", err);
       // An unknown error occurred when uploading.
       return res.status(400).json({ success: false, message: err.message });
     }
+    console.log("Upload successful, proceeding to validation...");
     // Everything went fine.
     next();
   });
 }, async (req, res) => {
   const data = req.body;
+  console.log("Received registration request for:", data.email, data.name);
 
   // Helper function to convert empty strings to null for integer fields
   const cleanIntegerField = (value) => {
@@ -760,21 +782,28 @@ router.post("/register", registrationLimiter, (req, res, next) => {
   };
 
   try {
+    console.log("=== REGISTRATION VALIDATION START ===");
+    console.log("Step 1: Field validation...");
     // Registration still needs some manual parts for complex logic but Zod handles the basics.
     const fieldValidation = validateRegistrationFields(data);
     if (!fieldValidation.isValid) {
+      console.log("Field validation FAILED:", fieldValidation.errors);
       return res.status(400).json({
         success: false,
         message: "Validation failed",
         errors: fieldValidation.errors
       });
     }
+    console.log("Field validation PASSED");
 
+    console.log("Step 2: Photo validation...");
     // Validate photo count and size
     // Access photos via req.files.photo
     const photos = req.files?.photo || [];
+    console.log("Photos received:", photos.length);
 
     if (photos.length > 2) {
+      console.log("Photo validation FAILED: Too many photos");
       return res.json({
         success: false,
         message: "Maximum 2 photos allowed",
@@ -783,12 +812,15 @@ router.post("/register", registrationLimiter, (req, res, next) => {
 
     const totalSize = photos.reduce((sum, file) => sum + file.size, 0) || 0;
     if (totalSize > 10 * 1024 * 1024) {
+      console.log("Photo validation FAILED: Size too large");
       return res.json({
         success: false,
         message: "Total file size exceeds 10MB limit",
       });
     }
+    console.log("Photo validation PASSED");
 
+    console.log("Step 3: Checking if user exists...");
     // Check if user already exists
     const existingUser = await db.UserDetail.findOne({
       where: {
@@ -800,21 +832,28 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     });
 
     if (existingUser) {
+      console.log("User existence check FAILED: User already exists");
       return res.status(400).json({
         success: false,
         message: "User already exists",
       });
     }
+    console.log("User existence check PASSED");
 
+    console.log("Step 4: Password strength validation...");
     // Validate password strength
     const passwordValidation = validatePasswordStrength(data.password);
     if (!passwordValidation.isValid) {
+      console.log("Password validation FAILED:", passwordValidation.errors);
       return res.json({
         success: false,
         message: "Password does not meet security requirements",
         errors: passwordValidation.errors
       });
     }
+    console.log("Password validation PASSED");
+
+    console.log("Step 5: Creating user in database...");
 
     // Create new user with cleaned data
     const hashedPassword = await bcrypt.hash(data.password, 10);
@@ -907,7 +946,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
       postalCode: data.postalCode || null,
       whatsAppNo: data.whatsAppNo || null,
       photo: photos.length > 0 
-        ? JSON.stringify(photos.map(f => f.path)) 
+        ? JSON.stringify(photos.map(f => f.path || f.filename)) // Support both Cloudinary (path) and local (filename)
         : null,
       educationQualification1: data.educationQualification1 || null,
       educationDetails1: data.educationDetails1 || null,
@@ -924,6 +963,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
       otherOccupation1: data.otherOccupation1 || null,
     });
 
+    console.log("User created successfully!");
     res.json({
       success: true,
       message: "Registration successful",
@@ -936,10 +976,24 @@ router.post("/register", registrationLimiter, (req, res, next) => {
             message: `User already exists (Duplicate fields: ${fields})`
         });
     }
+    if (error.name === 'SequelizeValidationError') {
+        const messages = error.errors.map(e => e.message);
+        return res.status(400).json({
+            success: false,
+            message: "Database Validation Failed",
+            errors: messages
+        });
+    }
+    if (error.name === 'SequelizeDatabaseError') {
+        return res.status(400).json({
+            success: false,
+            message: "Database Error: " + error.message, 
+        });
+    }
     console.error("Registration error:", error);
     res.status(500).json({
       success: false,
-      message: "Internal server error",
+      message: "Internal server error: " + error.message,
     });
   }
 });
