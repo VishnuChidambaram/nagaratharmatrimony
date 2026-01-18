@@ -393,7 +393,7 @@ export default function Step8() {
       "dasaRemainMonths",
       "dasaRemainDays",
     ],
-    "Step 5 - Full Horoscope Chart": "chart",
+    // "Step 5 - Full Horoscope Chart": "chart", // Optional
     "Step 6 - Contact Details": [
       "fullStreetAddress",
       "city",
@@ -404,7 +404,7 @@ export default function Step8() {
       "phone",
       "whatsAppNo",
       "email",
-      "photos",
+      // "photos", // Optional
     ],
     "Step 7 - Partner Preference": [
       "educationQualification1",
@@ -471,7 +471,11 @@ export default function Step8() {
           router.push("/login");
         }, 2000);
       } else {
-        setRegistrationError(data.message || "Registration failed");
+        if (data.errors && Array.isArray(data.errors) && data.errors.length > 0) {
+          setRegistrationError(data.errors.join("\n"));
+        } else {
+          setRegistrationError(data.message || "Registration failed");
+        }
       }
     } catch {
       setRegistrationError("Failed to submit registration");
