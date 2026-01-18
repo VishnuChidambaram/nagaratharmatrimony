@@ -1039,6 +1039,9 @@ export default function Step6() {
     if (!form.email || !form.email.trim()) return "E-mail is required OR Enter NA for unknown fields";
     else if (form.email.trim() !== "NA" && !/\S+@\S+\.\S+/.test(form.email)) return "E-mail is invalid";
     
+    // Photo upload requirement - at least 1 photo is mandatory
+    if (!photoFiles || photoFiles.length === 0) return "At least 1 photo is required (Max 2 photos allowed)";
+    
     // Check total size if photos exist
     if (form.photos && form.photos.length > 0) {
         if (form.photos.length > 2) return "Maximum 2 photos allowed";

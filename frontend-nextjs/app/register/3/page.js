@@ -49,8 +49,8 @@ export default function Step3() {
     if (!form.complexion) return "Complexion is required OR Enter NA for unknown fields";
     if (!form.weight) return "Weight is required OR Enter NA for unknown fields";
     if (!form.diet) return "Diet is required OR Enter NA for unknown fields";
-    if (!form.specialCases) return "Special Cases is required OR Enter NA for unknown fields";
-    if (!form.specialCasesDetails) return "Special Cases Details is required OR Enter NA for unknown fields";
+    // Special Cases is optional
+    // Special Cases Details is optional
     return "";
   };
 

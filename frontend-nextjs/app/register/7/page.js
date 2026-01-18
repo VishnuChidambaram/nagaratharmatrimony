@@ -43,6 +43,12 @@ export default function Step7() {
       return "Other Education is required OR Enter NA for unknown fields";
     if (!form.educationDetails1 || !form.educationDetails1.trim())
       return "Education Details is required OR Enter NA for unknown fields";
+    if (!form.occupationBusiness1)
+      return "Occupation / Business is required OR Enter NA for unknown fields";
+    if (form.occupationBusiness1 === "Other" && (!form.otherOccupation1 || !form.otherOccupation1.trim()))
+      return "Other Occupation is required OR Enter NA for unknown fields";
+    if (!form.workingPlace1 || !form.workingPlace1.trim())
+      return "Working Place is required OR Enter NA for unknown fields";
     if (!form.complexion1) return "Complexion is required OR Enter NA for unknown fields";
     if (!form.personalPreference1 || !form.personalPreference1.trim())
       return "Personal Preference is required OR Enter NA for unknown fields";
@@ -248,6 +254,49 @@ export default function Step7() {
             />
           </div>
 
+          <select
+            name="occupationBusiness1"
+            value={form.occupationBusiness1 || ""}
+            onChange={handle}
+            style={{ ...styles.select, display: "block", margin: "10px auto" }}
+          >
+            <option value="">{t("Select Occupation / Business (Partner)", language)}</option>
+            <option value="Teacher">{t("Teacher", language)}</option>
+            <option value="Doctor">{t("Doctor", language)}</option>
+            <option value="Engineer">{t("Engineer", language)}</option>
+            <option value="Lawyer">{t("Lawyer", language)}</option>
+            <option value="Nurse">{t("Nurse", language)}</option>
+            <option value="Software Developer">{t("Software Developer", language)}</option>
+            <option value="Businessman">{t("Businessman", language)}</option>
+            <option value="Accountant">{t("Accountant", language)}</option>
+            <option value="Government Employee">{t("Government Employee", language)}</option>
+            <option value="Private Employee">{t("Private Employee", language)}</option>
+            <option value="Self Employed">{t("Self Employed", language)}</option>
+            <option value="Farmer">{t("Farmer", language)}</option>
+            <option value="Other">{t("Other", language)}</option>
+          </select>
+          {form.occupationBusiness1 === "Other" && (
+            <div className="responsive-container" style={{ width: "450px", maxWidth: "450px", margin: "10px auto" }}>
+              <TamilInput
+                name="otherOccupation1"
+                value={form.otherOccupation1 || ""}
+                onChange={handle}
+                placeholder={t("Other Occupation (Partner)", language)}
+                forcedLanguage={language === "ta" ? "ta" : "en"}
+                style={{ ...styles.input, width: "100%", margin: 0 }}
+              />
+            </div>
+          )}
+          <div className="responsive-container" style={{ width: "450px", maxWidth: "450px", margin: "10px auto" }}>
+            <TamilInput
+              name="workingPlace1"
+              value={form.workingPlace1 || ""}
+              onChange={handle}
+              placeholder={t("Working Place (Partner)", language)}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
+              style={{ ...styles.input, width: "100%", margin: 0 }}
+            />
+          </div>
 
           <select
             name="complexion1"

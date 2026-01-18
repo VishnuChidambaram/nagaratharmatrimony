@@ -36,8 +36,7 @@ export default function Step4() {
     if (!form.zodiacSign) return "Zodiac Sign is required OR Enter NA for unknown fields.";
     if (!form.ascendant) return "Ascendant is required OR Enter NA for unknown fields.";
     if (!form.birthStar) return "Birth Star is required OR Enter NA for unknown fields.";
-    if (!form.dosham || (form.dosham.trim() === "" && form.dosham !== "NA"))
-      return "Dosham is required OR Enter NA for unknown fields.";
+    // Dosham is optional
     if (
       !form.placeOfBirth ||
       (form.placeOfBirth.trim() === "" && form.placeOfBirth !== "NA")
