@@ -911,7 +911,7 @@ export default function Step6() {
         }
       });
     };
-  }, [form, isLoaded, imageUrls]); // Included 'form' as requested by ESLint
+  }, [form, isLoaded]); // Removed 'imageUrls' to prevent infinite loop
 
 
   const handle = (e) => {
