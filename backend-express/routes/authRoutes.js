@@ -207,8 +207,18 @@ router.post("/send-otp", async (req, res) => {
       message: "OTP sent successfully (Check backend console)",
     });
   } catch (error) {
-    console.error("Send OTP error:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    if (error.name === 'SequelizeUniqueConstraintError') {
+        const fields = error.errors.map(e => e.path).join(", ");
+        return res.status(400).json({
+            success: false,
+            message: `User already exists (Duplicate fields: ${fields})`
+        });
+    }
+    console.error("Register error:", error);
+    res.status(500).json({
+       success: false, 
+       message: "Internal server error" 
+    });
   }
 });
 
@@ -859,6 +869,13 @@ router.post("/register", registrationLimiter, (req, res, next) => {
       message: "Registration successful",
     });
   } catch (error) {
+    if (error.name === 'SequelizeUniqueConstraintError') {
+        const fields = error.errors.map(e => e.path).join(", ");
+        return res.status(400).json({
+            success: false,
+            message: `User already exists (Duplicate fields: ${fields})`
+        });
+    }
     console.error("Registration error:", error);
     res.status(500).json({
       success: false,

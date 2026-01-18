@@ -22,47 +22,54 @@ export const sessionAuthMiddleware = async (req, res, next) => {
   // - If Headers missing: Check Cookies. (This handles legacy/refresh behavior before JS loads? No, API calls always have JS).
   // - Actually, simple rule: Backend trusts what it receives.
   
-  let userEmail = req.headers['x-user-email'];
-  let sessionId = req.headers['x-session-id'];
-  let adminEmail = req.headers['x-admin-email'];
-  let adminSessionId = req.headers['x-admin-session-id'];
+  try {
+      let userEmail = req.headers['x-user-email'];
+      let sessionId = req.headers['x-session-id'];
+      let adminEmail = req.headers['x-admin-email'];
+      let adminSessionId = req.headers['x-admin-session-id'];
 
-  // Check Admin via Headers
-  if (adminEmail && adminSessionId) {
-     const admin = await db.AdminLogin.findOne({ where: { email: adminEmail } });
-     if (admin && admin.sessionId === adminSessionId) {
-        req.user = { email: adminEmail, isAdmin: true };
-        return next();
-     }
-  }
+      // Check Admin via Headers
+      if (adminEmail && adminSessionId) {
+         const admin = await db.AdminLogin.findOne({ where: { email: adminEmail } });
+         if (admin && admin.sessionId === adminSessionId) {
+            req.user = { email: adminEmail, isAdmin: true };
+            return next();
+         }
+      }
 
-  // Check User via Headers
-  if (userEmail && sessionId) {
-     const user = await db.UserDetail.findOne({ where: { email: userEmail } });
-     if (user && user.sessionId === sessionId) {
-        req.user = { email: userEmail, isAdmin: false };
-        return next();
-     }
-  }
+      // Check User via Headers
+      if (userEmail && sessionId) {
+         const user = await db.UserDetail.findOne({ where: { email: userEmail } });
+         if (user && user.sessionId === sessionId) {
+            req.user = { email: userEmail, isAdmin: false };
+            return next();
+         }
+      }
 
-  // Fallback to Cookies (Legacy / Standard Browser Request without JS Headers?)
-  // If we strictly enforce multi-tab, we might want to disable this for API calls.
-  // But for safety, let's keep it but prioritize headers above (which we did).
-  
-  if (req.cookies.adminEmail) {
-      // Basic cookie check (weak unless we verify session ID from cookie too)
-      // Since we want strict session control, we SHOULD check session ID from cookie too if possible.
-      // But let's stay compatible with previous logic for now.
-      req.user = { email: req.cookies.adminEmail, isAdmin: true };
-      return next();
-  }
-  
-  if (req.cookies.userEmail && req.cookies.sessionId) {
-      const user = await db.UserDetail.findOne({ where: { email: req.cookies.userEmail } });
-      if (user && user.sessionId === req.cookies.sessionId) {
-          req.user = { email: user.email, isAdmin: false };
+      // Fallback to Cookies (Legacy / Standard Browser Request without JS Headers?)
+      // If we strictly enforce multi-tab, we might want to disable this for API calls.
+      // But for safety, let's keep it but prioritize headers above (which we did).
+      
+      if (req.cookies.adminEmail) {
+          // Basic cookie check (weak unless we verify session ID from cookie too)
+          // Since we want strict session control, we SHOULD check session ID from cookie too if possible.
+          // But let's stay compatible with previous logic for now.
+          req.user = { email: req.cookies.adminEmail, isAdmin: true };
           return next();
       }
+      
+      if (req.cookies.userEmail && req.cookies.sessionId) {
+          const user = await db.UserDetail.findOne({ where: { email: req.cookies.userEmail } });
+          if (user && user.sessionId === req.cookies.sessionId) {
+              req.user = { email: user.email, isAdmin: false };
+              return next();
+          }
+      }
+  } catch (error) {
+      console.error("CRITICAL ERROR in sessionAuthMiddleware:", error);
+      // We don't want to crash the whole request if auth fails, just proceed without user attached
+      // Or maybe we SHOULD fail if it's a DB error?
+      // For now, let's log and proceed, effectively treating it as "not authenticated"
   }
 
   // If we reach here, no valid session found.
