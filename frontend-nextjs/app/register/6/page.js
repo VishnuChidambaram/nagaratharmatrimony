@@ -842,8 +842,7 @@ export default function Step6() {
   const [isLoaded, setIsLoaded] = useState(false);
   const { language, toggleLanguage } = useLanguage();
   
-  // Load form data on client side only to prevent hydration errors
-  // Load form data on client side only to prevent hydration errors
+  // Load form data from local cache (IndexedDB) on client side only to prevent hydration errors
   useEffect(() => {
     loadFormData().then(data => {
       setForm(data);
