@@ -123,11 +123,11 @@ export default function Step5() {
     );
   };
 
-  const validate = () => {
+  /* const validate = () => {
     // Currently no mandatory fields for Horizontal Chart in Step 5 as per instructions
     // But we can add checks here if needed. 
     return "";
-  };
+  }; */
 
   const next = () => {
     // Currently no mandatory fields for Horizontal Chart in Step 5
