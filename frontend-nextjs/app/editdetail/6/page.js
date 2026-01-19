@@ -1296,11 +1296,11 @@ export default function Page() {
         <button
           className="edit-detail-button"
           onClick={async () => {
-            if (!form.photos || form.photos.length === 0) {
+            /* if (!form.photos || form.photos.length === 0) {
                 setPhotoError(t("At least one photo is required", language));
                 setTimeout(() => setPhotoError(""), 4000);
                 return;
-            }
+            } */
             await saveFormData(form); // Save before navigating
             router.push("/editdetail/7");
           }}

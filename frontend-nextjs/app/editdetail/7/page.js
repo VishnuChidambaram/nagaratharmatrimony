@@ -47,6 +47,14 @@ export default function EditStep7() {
       return t("Other Education is required OR Enter NA for unknown fields", language);
     if (!form.educationDetails1 || !form.educationDetails1.trim())
       return t("Education Details is required OR Enter NA for unknown fields", language);
+      
+    if (!form.occupationBusiness1)
+      return t("Occupation / Business is required OR Enter NA for unknown fields", language);
+    if (form.occupationBusiness1 === "Other" && (!form.otherOccupation1 || !form.otherOccupation1.trim()))
+      return t("Other Occupation is required OR Enter NA for unknown fields", language);
+      
+    if (!form.workingPlace1 || !form.workingPlace1.trim())
+      return t("Working Place is required OR Enter NA for unknown fields", language);
     if (!form.complexion1) return t("Complexion is required OR Enter NA for unknown fields", language);
     if (!form.personalPreference1 || !form.personalPreference1.trim())
       return t("Personal Preference is required OR Enter NA for unknown fields", language);
@@ -161,6 +169,56 @@ export default function EditStep7() {
               onChange={(e) => setForm((p) => ({ ...p, [e.target.name]: e.target.value }))}
               placeholder={t("Education Details", language)}
               forcedLanguage={language}
+            />
+          </div>
+
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Occupation / Business", language)}:</label>
+            <select
+              className="edit-field-input"
+              name="occupationBusiness1"
+              value={form.occupationBusiness1 || ""}
+              onChange={handle}
+            >
+              <option value="">{t("Select Occupation / Business (Partner)", language)}</option>
+              <option value="Teacher">{t("Teacher", language)}</option>
+              <option value="Doctor">{t("Doctor", language)}</option>
+              <option value="Engineer">{t("Engineer", language)}</option>
+              <option value="Lawyer">{t("Lawyer", language)}</option>
+              <option value="Nurse">{t("Nurse", language)}</option>
+              <option value="Software Developer">{t("Software Developer", language)}</option>
+              <option value="Businessman">{t("Businessman", language)}</option>
+              <option value="Accountant">{t("Accountant", language)}</option>
+              <option value="Government Employee">{t("Government Employee", language)}</option>
+              <option value="Private Employee">{t("Private Employee", language)}</option>
+              <option value="Self Employed">{t("Self Employed", language)}</option>
+              <option value="Farmer">{t("Farmer", language)}</option>
+              <option value="Other">{t("Other", language)}</option>
+            </select>
+          </div>
+          {form.occupationBusiness1 === "Other" && (
+            <div className="edit-field-row">
+            <label className="edit-field-label">{t("Other Occupation", language)}:</label>
+              <TamilInput
+                className="edit-field-input"
+                name="otherOccupation1"
+                value={form.otherOccupation1 || ""}
+                onChange={handle}
+                placeholder={t("Other Occupation (Partner)", language)}
+                forcedLanguage={language === "ta" ? "ta" : "en"}
+              />
+            </div>
+          )}
+
+          <div className="edit-field-row">
+            <label className="edit-field-label">{t("Working Place", language)}:</label>
+            <TamilInput
+              className="edit-field-input"
+              name="workingPlace1"
+              value={form.workingPlace1 || ""}
+              onChange={handle}
+              placeholder={t("Working Place (Partner)", language)}
+              forcedLanguage={language === "ta" ? "ta" : "en"}
             />
           </div>
           <div className="edit-field-row">

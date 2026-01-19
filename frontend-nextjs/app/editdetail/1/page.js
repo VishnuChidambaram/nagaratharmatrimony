@@ -251,7 +251,29 @@ export default function EditStep1() {
     if (!form.pincode.trim()) return t("Pincode is required OR Enter NA for unknown fields", language);
     if (form.pincode !== "NA" && !/^\d{6}$/.test(form.pincode))
       return t("Pincode must be a 6-digit number", language);
-    if (!form.profileCreatedBy) return t("Profile Created By is required OR Enter NA for unknown fields", language);
+    if (!form.referredBy) return t("Referred By is required OR Enter NA for unknown fields", language);
+    
+    // Referral Details Validation (Strict matching Register)
+    if (!form.referralDetails1Name || !form.referralDetails1Name.trim())
+        return t("Referral 1 Name is required OR Enter NA for unknown fields", language);
+    
+    if (!form.referralDetails1Phone || !form.referralDetails1Phone.trim())
+        return t("Referral 1 Phone is required OR Enter NA for unknown fields", language);
+    
+    if (form.referralDetails1Phone.trim() !== "NA" && !/^\d{10}$/.test(form.referralDetails1Phone)) {
+        return t("Referral 1 Phone number must be 10 digits", language);
+    }
+    
+    if (!form.referralDetails1Email || !form.referralDetails1Email.trim())
+        return t("Referral 1 Email/Address is required OR Enter NA for unknown fields", language);
+    
+    if (form.referralDetails1Email.trim() !== "NA" && !/\S+@\S+\.\S+/.test(form.referralDetails1Email)) {
+        return t("Referral 1 Email is invalid", language);
+    }
+
+    if (!form.reference || !form.reference.trim())
+       return t("Reference is required OR Enter NA for unknown fields", language);
+
     return "";
   };
   const next = async () => {

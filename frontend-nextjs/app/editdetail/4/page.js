@@ -45,8 +45,7 @@ export default function EditStep4() {
     if (!form.zodiacSign) return t("Zodiac Sign is required OR Enter NA for unknown fields.", language);
     if (!form.ascendant) return t("Ascendant is required OR Enter NA for unknown fields.", language);
     if (!form.birthStar) return t("Birth Star is required OR Enter NA for unknown fields.", language);
-    if (!form.dosham || (form.dosham.trim() === "" && form.dosham !== "NA"))
-      return t("Dosham is required OR Enter NA for unknown fields.", language);
+    // Dosham is optional
     if (
       !form.placeOfBirth ||
       (form.placeOfBirth.trim() === "" && form.placeOfBirth !== "NA")
