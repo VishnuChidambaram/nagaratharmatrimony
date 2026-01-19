@@ -1296,7 +1296,7 @@ export default function Page() {
         <button
           className="edit-detail-button"
           onClick={async () => {
-            // Photo upload is mandatory in Edit (aligned with Register & User Request)
+            // Photo upload is mandatory in Edit
             const currentPhotos = form.photos || (form.photo ? (Array.isArray(form.photo) ? form.photo : [form.photo]) : []);
             if (!currentPhotos || currentPhotos.length === 0) {
                 setPhotoError(t("At least one photo is required", language));
