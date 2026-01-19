@@ -667,10 +667,10 @@ export default function Dashboard() {
                   style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>👤</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
                     {t("Personal Card")}
                   </h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
                     {t("View your own profile detail")}
                   </p>
                 </div>
@@ -680,10 +680,10 @@ export default function Dashboard() {
                   style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>👥</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
                     {t("All Other Profiles")}
                   </h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
                     {t("Browse and find matching profiles")}
                   </p>
                 </div>
@@ -693,10 +693,10 @@ export default function Dashboard() {
                   style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>🔍</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
                     {t("Search Members")}
                   </h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
                     {t("Search by name, ID, or qualification")}
                   </p>
                 </div>

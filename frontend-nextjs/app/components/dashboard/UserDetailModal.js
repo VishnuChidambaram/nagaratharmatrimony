@@ -520,15 +520,15 @@ export default function UserDetailModal({
           gap: 8px;
         }
         .identity-name {
-          font-size: 36px;
-          font-weight: 500 !important;
+          font-size: 32px;
+          font-weight: 400 !important;
           margin: 0;
           color: #111827;
         }
         .identity-id {
           opacity: 0.6;
-          font-size: 18px;
-          font-weight: 500 !important;
+          font-size: 16px;
+          font-weight: 400 !important;
           margin: 0;
           color: #374151;
         }
@@ -553,8 +553,8 @@ export default function UserDetailModal({
           box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .preview-step-title {
-          font-size: 18px;
-          font-weight: 500;
+          font-size: 17px;
+          font-weight: 400;
           color: #059669;
           border-bottom: 2px solid #10b981;
           padding-bottom: 8px;
@@ -577,14 +577,14 @@ export default function UserDetailModal({
           padding-bottom: 8px;
         }
         .preview-label {
-          font-size: 13px;
+          font-size: 12px;
           color: #9ca3af;
           text-transform: uppercase;
           margin-bottom: 4px;
-          font-weight: 500;
+          font-weight: 400;
         }
         .preview-value {
-          font-size: 15px;
+          font-size: 14px;
           color: #1f2937;
           font-weight: 400;
         }

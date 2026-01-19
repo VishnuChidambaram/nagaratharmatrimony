@@ -228,7 +228,8 @@ export default function UserCard({
             style={{
               margin: "0 0 5px 0",
               color: "var(--card-text)",
-              fontSize: "18px",
+              fontSize: "17px",
+              fontWeight: "500",
             }}
           >
             {item.name}
@@ -238,7 +239,7 @@ export default function UserCard({
               margin: "0",
               color: "var(--card-text)",
               opacity: 0.7,
-              fontSize: "14px",
+              fontSize: "13px",
             }}
           >
             ID: {item.user_id}
@@ -288,31 +289,31 @@ export default function UserCard({
       </div>
 
       {/* Details Section */}
-      <div style={{ flex: 1, marginBottom: "15px" }}>
+      <div style={{ flex: 1, marginBottom: "15px", fontSize: "14px" }}>
         <div style={{ marginBottom: "8px" }}>
-          <strong style={{ color: "var(--card-text)", opacity: 0.7 }}>
+          <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Email")}:
-          </strong>{" "}
+          </span>{" "}
           <span style={{ color: "var(--card-text)" }}>{item.email}</span>
         </div>
         <div style={{ marginBottom: "8px" }}>
-          <strong style={{ color: "var(--card-text)", opacity: 0.7 }}>
+          <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Phone")}:
-          </strong>{" "}
+          </span>{" "}
           <span style={{ color: "var(--card-text)" }}>{item.phone}</span>
         </div>
         <div style={{ marginBottom: "8px" }}>
-          <strong style={{ color: "var(--card-text)", opacity: 0.7 }}>
+          <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Qualification")}:
-          </strong>{" "}
+          </span>{" "}
           <span style={{ color: "var(--card-text)" }}>
             {item.educationQualification || "N/A"}
           </span>
         </div>
         <div style={{ marginBottom: "8px" }}>
-          <strong style={{ color: "var(--card-text)", opacity: 0.7 }}>
+          <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Work Details")}:
-          </strong>{" "}
+          </span>{" "}
           <span
             style={{
               color: "var(--card-text)",
