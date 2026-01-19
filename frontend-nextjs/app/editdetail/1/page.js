@@ -236,14 +236,23 @@ export default function EditStep1() {
     if (!form.gender) return t("Gender is required OR Enter NA for unknown fields", language);
     if (!form.maritalStatus) return t("Marital Status is required OR Enter NA for unknown fields", language);
     if (!form.fatherName.trim()) return t("Father Name is required OR Enter NA for unknown fields", language);
-    if (!form.fatherOccupation.trim()) return t("Father Occupation is required OR Enter NA for unknown fields", language);
+    // Father Occupation is optional
     if (!form.motherName.trim()) return t("Mother Name is required OR Enter NA for unknown fields", language);
-    if (!form.motherOccupation.trim()) return t("Mother Occupation is required OR Enter NA for unknown fields", language);
+    // Mother Occupation is optional
+    
     if (form.brothers === "") return t("Number of Brothers is required OR Enter 0 for unknown fields", language);
+    if (form.brothersMarried !== "" && parseInt(form.brothersMarried) > parseInt(form.brothers)) {
+        return t("Married brothers cannot exceed total brothers", language);
+    }
+
     if (form.sisters === "") return t("Number of Sisters is required OR Enter 0 for unknown fields", language);
+    if (form.sistersMarried !== "" && parseInt(form.sistersMarried) > parseInt(form.sisters)) {
+        return t("Married sisters cannot exceed total sisters", language);
+    }
+
     if (!form.yourTemple) return t("Your Temple is required OR Enter NA for unknown fields", language);
     if (!form.yourDivision.trim()) return t("Your Division is required OR Enter NA for unknown fields", language);
-    if (!form.knownLanguages.trim()) return t("Known Languages is required OR Enter NA for unknown fields", language);
+    // Known Languages is optional
     if (!form.nativePlace.trim()) return t("Native Place is required OR Enter NA for unknown fields", language);
     if (!form.nativePlaceHouseName.trim())
       return t("Native Place House Name is required OR Enter NA for unknown fields", language);
@@ -269,6 +278,24 @@ export default function EditStep1() {
     
     if (form.referralDetails1Email.trim() !== "NA" && !/\S+@\S+\.\S+/.test(form.referralDetails1Email)) {
         return t("Referral 1 Email is invalid", language);
+    }
+
+    // Referral Details 2 Validation
+    if (!form.referralDetails2Name || !form.referralDetails2Name.trim())
+        return t("Referral 2 Name is required OR Enter NA for unknown fields", language);
+
+    if (!form.referralDetails2Phone || !form.referralDetails2Phone.trim())
+        return t("Referral 2 Phone is required OR Enter NA for unknown fields", language);
+
+    if (form.referralDetails2Phone.trim() !== "NA" && !/^\d{10}$/.test(form.referralDetails2Phone)) {
+        return t("Referral 2 Phone number must be 10 digits", language);
+    }
+
+    if (!form.referralDetails2Email || !form.referralDetails2Email.trim())
+        return t("Referral 2 Email/Address is required OR Enter NA for unknown fields", language);
+
+    if (form.referralDetails2Email.trim() !== "NA" && !/\S+@\S+\.\S+/.test(form.referralDetails2Email)) {
+        return t("Referral 2 Email is invalid", language);
     }
 
     if (!form.reference || !form.reference.trim())

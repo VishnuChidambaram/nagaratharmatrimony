@@ -79,8 +79,8 @@ export default function EditStep3() {
     if (!form.complexion) return t("Complexion is required OR Enter NA for unknown fields", language);
     if (!form.weight) return t("Weight is required OR Enter NA for unknown fields", language);
     if (!form.diet) return t("Diet is required OR Enter NA for unknown fields", language);
-    if (!form.specialCases) return t("Special Cases is required OR Enter NA for unknown fields", language);
-    if (!form.specialCasesDetails) return t("Special Cases Details is required OR Enter NA for unknown fields", language);
+    // Special Cases is optional
+    // Special Cases Details is optional
     return "";
   };
   return (
