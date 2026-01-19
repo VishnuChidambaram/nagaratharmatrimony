@@ -298,8 +298,7 @@ export default function EditStep1() {
         return t("Referral 2 Email is invalid", language);
     }
 
-    if (!form.reference || !form.reference.trim())
-       return t("Reference is required OR Enter NA for unknown fields", language);
+
 
     return "";
   };
@@ -612,7 +611,7 @@ export default function EditStep1() {
               <option value="Family Member">{t("Family Member", language)}</option>
               <option value="Friends">{t("Friends", language)}</option>
               <option value="Search Engine">{t("Search Engine", language)}</option>
-              <option value="Others">{t("Others", language)}</option>
+
             </select>
           </div>
           <div className="edit-field-row">

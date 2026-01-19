@@ -235,7 +235,7 @@ export default function Step1() {
     // Profile Created By is optional
     
     if (!form.referredBy) return "Referred By is required OR Enter NA for unknown fields";
-    if (form.referredBy === "Others" && (!form.reference || !form.reference.trim())) return "Reference details are required for 'Others'";
+
 
     // Referral Details 1 - All fields mandatory
     if (!form.referralDetails1Name || !form.referralDetails1Name.trim()) 
@@ -668,7 +668,7 @@ export default function Step1() {
             <option value="Family Member">{t("Family Member", language)}</option>
             <option value="Friends">{t("Friends", language)}</option>
             <option value="Search Engine">{t("Search Engine", language)}</option>
-            <option value="Others">{t("Others", language)}</option>
+
           </select>
           <TamilInput
             style={styles.input}
