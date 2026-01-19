@@ -1,15 +1,19 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 
-import { getPhotoUrl, getPhotoUrls } from "../utils/photoUtils";
-import { useRouter } from "next/navigation";
-
+// Components
+import DashboardHeader from "../components/dashboard/DashboardHeader";
+import NotificationBanner from "../components/dashboard/NotificationBanner";
+import UserGrid from "../components/dashboard/UserGrid";
+import UserDetailModal from "../components/dashboard/UserDetailModal";
+import ImageModal from "../components/dashboard/ImageModal";
+import CancelUpdateModal from "../components/dashboard/CancelUpdateModal";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -17,34 +21,38 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null); // New state for user detail modal
-  const [selectedImageOwner, setSelectedImageOwner] = useState(null); // Track owner of the selected image
-  const [imagePasswordInput, setImagePasswordInput] = useState("");
-  const [unlockedUsers, setUnlockedUsers] = useState([]); // Changed: Track list of unlocked emails
-  const [newPhotoPassword, setNewPhotoPassword] = useState("");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [selectedImageOwner, setSelectedImageOwner] = useState(null);
+  const [unlockedUsers, setUnlockedUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
-  const [notification, setNotification] = useState(null); // New: Notification state
+  const [notification, setNotification] = useState(null);
 
-  const [pendingUpdateStatus, setPendingUpdateStatus] = useState(false); // Track if user has pending update
+  const [pendingUpdateStatus, setPendingUpdateStatus] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingRequestId, setPendingRequestId] = useState(null);
-  const [isPrivacyMode, setIsPrivacyMode] = useState(false); // New: Track if modal is in privacy mode
-  const [showPrivacyConfirm, setShowPrivacyConfirm] = useState(false); // New: Confirm privacy toggle off
+  const [isPrivacyMode, setIsPrivacyMode] = useState(false);
   const [view, setView] = useState("dashboard"); // dashboard, personal, other, search
-  const [searchField, setSearchField] = useState(""); // selected field for search
+  const [searchField, setSearchField] = useState("");
 
   const { language } = useLanguage();
 
   // Translation helper function
-  const t = useCallback((key) => {
-    if (language === "ta" && translations[key] && translations[key].ta) {
-      return translations[key].ta;
-    }
-    return key;
-  }, [language]);
+  const t = useCallback(
+    (key) => {
+      if (
+        language === "ta" &&
+        translations[key] &&
+        translations[key].ta
+      ) {
+        return translations[key].ta;
+      }
+      return key;
+    },
+    [language]
+  );
 
-  // New: Poll for notifications
+  // Poll for notifications
   useEffect(() => {
     const fetchNotifications = async () => {
       const email = sessionStorage.getItem("userEmail");
@@ -52,7 +60,7 @@ export default function Dashboard() {
         try {
           const res = await fetch(`${API_URL}/api/notifications/${email}`, {
             credentials: "include",
-            headers: { ...getAuthHeaders() }
+            headers: { ...getAuthHeaders() },
           });
           const data = await res.json();
           if (data.success && data.notifications.length > 0) {
@@ -66,18 +74,21 @@ export default function Dashboard() {
       }
     };
 
-    fetchNotifications(); // Fetch on mount
-    const interval = setInterval(fetchNotifications, 10000); // Poll every 10 seconds
+    fetchNotifications();
+    const interval = setInterval(fetchNotifications, 10000);
     return () => clearInterval(interval);
-  }, [t]); // Added t as dependency
+  }, [t]);
 
   const handleDismissNotification = async () => {
     if (notification) {
       try {
-        await fetch(`${API_URL}/api/notifications/${notification.notification_id}/read`, {
-          method: "PUT",
-          credentials: "include"
-        });
+        await fetch(
+          `${API_URL}/api/notifications/${notification.notification_id}/read`,
+          {
+            method: "PUT",
+            credentials: "include",
+          }
+        );
         setNotification(null);
       } catch (error) {
         console.error("Error dismissing notification:", error);
@@ -93,30 +104,25 @@ export default function Dashboard() {
     return () => clearTimeout(timer);
   }, [searchTerm]);
 
-  // Auto-hide error messages after 2 seconds
+  // Auto-hide error
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => {
         setError(null);
       }, 2000);
-
-      // Cleanup function to clear timeout if component unmounts or error changes
       return () => clearTimeout(timer);
     }
   }, [error]);
 
   const fetchData = useCallback(async () => {
     try {
-      // Fetch all details from the database
       const response = await fetch(`${API_URL}/all-details`, {
         credentials: "include",
-        headers: { ...getAuthHeaders() }
+        headers: { ...getAuthHeaders() },
       });
       const result = await response.json();
       if (result.success) {
-        // Check for session expiry message
         if (result.message === "Authentication required to view all details") {
-          // Clear local storage and redirect
           sessionStorage.removeItem("userEmail");
           router.push("/login");
           return;
@@ -137,7 +143,7 @@ export default function Dashboard() {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/user/${email}`, {
         credentials: "include",
-        headers: { ...getAuthHeaders() }
+        headers: { ...getAuthHeaders() },
       });
       const data = await res.json();
       if (data.success && data.hasPending) {
@@ -153,7 +159,6 @@ export default function Dashboard() {
   }, []);
 
   useEffect(() => {
-    // Check if user is logged in
     const userEmail = sessionStorage.getItem("userEmail");
     if (!userEmail) {
       router.push("/login");
@@ -162,23 +167,28 @@ export default function Dashboard() {
 
     fetchData();
     checkPendingUpdate(userEmail);
-    
-    // Check pending status every 15 seconds
+
     const interval = setInterval(() => checkPendingUpdate(userEmail), 15000);
     return () => clearInterval(interval);
   }, [fetchData, checkPendingUpdate, router]);
 
-  const currentUserEmail = typeof window !== 'undefined' ? sessionStorage.getItem("userEmail")?.toLowerCase() : null;
+  const currentUserEmail =
+    typeof window !== "undefined"
+      ? sessionStorage.getItem("userEmail")?.toLowerCase()
+      : null;
 
   const filteredData = data.filter((item) => {
-    // Exclude own profile from search results
-    if (currentUserEmail && item.email && item.email.toLowerCase() === currentUserEmail) {
+    if (
+      currentUserEmail &&
+      item.email &&
+      item.email.toLowerCase() === currentUserEmail
+    ) {
       return false;
     }
 
     if (!debouncedSearchTerm) return true;
     const term = debouncedSearchTerm.toLowerCase();
-    
+
     if (searchField) {
       const value = item[searchField];
       return value && value.toString().toLowerCase().includes(term);
@@ -201,21 +211,25 @@ export default function Dashboard() {
     );
   });
 
-
-  
-  const personalData = data.filter(item => item.email?.toLowerCase() === currentUserEmail);
-  const otherData = data.filter(item => item.email?.toLowerCase() !== currentUserEmail);
-
+  const personalData = data.filter(
+    (item) => item.email?.toLowerCase() === currentUserEmail
+  );
+  const otherData = data.filter(
+    (item) => item.email?.toLowerCase() !== currentUserEmail
+  );
 
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
 
     try {
-      const res = await fetch(`${API_URL}/api/update-requests/${pendingRequestId}`, {
-        method: "DELETE",
-        credentials: "include",
-        headers: { ...getAuthHeaders() }
-      });
+      const res = await fetch(
+        `${API_URL}/api/update-requests/${pendingRequestId}`,
+        {
+          method: "DELETE",
+          credentials: "include",
+          headers: { ...getAuthHeaders() },
+        }
+      );
       const data = await res.json();
 
       if (data.success) {
@@ -225,9 +239,8 @@ export default function Dashboard() {
         setNotification({
           type: "success",
           message: t("Update request cancelled successfully."),
-          notification_id: Date.now() // temporary ID
+          notification_id: Date.now(),
         });
-        // Clear notification after 3 seconds
         setTimeout(() => setNotification(null), 3000);
       } else {
         alert(data.message || t("Failed to cancel request"));
@@ -238,53 +251,62 @@ export default function Dashboard() {
     }
   };
 
-  const handleSetPhotoPassword = async () => {
+  const handleSetPhotoPassword = async (newPhotoPassword) => {
     if (!selectedImageOwner || !newPhotoPassword) return;
 
     try {
       const formData = new FormData();
       formData.append("photoPassword", newPhotoPassword);
-      
-      const response = await fetch(`${API_URL}/upload-details/${selectedImageOwner.email}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: { ...getAuthHeaders() }, // Note: FormData sends its own Content-Type, so we don't set it manually, getAuthHeaders only sets custom x-headers
-        body: formData,
-      });
+
+      const response = await fetch(
+        `${API_URL}/upload-details/${selectedImageOwner.email}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { ...getAuthHeaders() },
+          body: formData,
+        }
+      );
 
       const result = await response.json();
       if (result.success) {
         setNotification({
-             type: "success",
-             message: t("Photo password set successfully!"),
-             notification_id: Date.now()
+          type: "success",
+          message: t("Photo password set successfully!"),
+          notification_id: Date.now(),
         });
         setTimeout(() => setNotification(null), 3000);
 
-        setNewPhotoPassword("");
-        setSelectedImageOwner({...selectedImageOwner, photoPassword: newPhotoPassword});
-         setData(prevData => prevData.map(u => u.email === selectedImageOwner.email ? {...u, photoPassword: newPhotoPassword} : u));
-         
-         // Close the modal
-          setSelectedImage(null);
-          setIsPrivacyMode(false);
-          setImagePasswordInput("");
+        setSelectedImageOwner({
+          ...selectedImageOwner,
+          photoPassword: newPhotoPassword,
+        });
+        setData((prevData) =>
+          prevData.map((u) =>
+            u.email === selectedImageOwner.email
+              ? { ...u, photoPassword: newPhotoPassword }
+              : u
+          )
+        );
+
+        setSelectedImage(null);
+        setIsPrivacyMode(false);
       } else {
         setNotification({
-             type: "error",
-             message: t("Failed to set password: ") + result.message,
-             notification_id: Date.now()
+          type: "error",
+          message: t("Failed to set password: ") + result.message,
+          notification_id: Date.now(),
         });
         setTimeout(() => setNotification(null), 3000);
       }
     } catch (error) {
-       console.error("Error setting password:", error);
-       setNotification({
-             type: "error",
-             message: t("Error setting password"),
-             notification_id: Date.now()
-        });
-        setTimeout(() => setNotification(null), 3000);
+      console.error("Error setting password:", error);
+      setNotification({
+        type: "error",
+        message: t("Error setting password"),
+        notification_id: Date.now(),
+      });
+      setTimeout(() => setNotification(null), 3000);
     }
   };
 
@@ -293,45 +315,56 @@ export default function Dashboard() {
 
     try {
       const formData = new FormData();
-      formData.append("photoPassword", ""); // Send empty password to clear it
-      
-      const response = await fetch(`${API_URL}/upload-details/${selectedImageOwner.email}`, {
-        method: "PUT",
-        credentials: "include",
-        headers: { ...getAuthHeaders() },
-        body: formData,
-      });
+      formData.append("photoPassword", "");
+
+      const response = await fetch(
+        `${API_URL}/upload-details/${selectedImageOwner.email}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { ...getAuthHeaders() },
+          body: formData,
+        }
+      );
 
       const result = await response.json();
       if (result.success) {
-        // Update local state to reflect removal
-        setSelectedImageOwner({...selectedImageOwner, photoPassword: ""});
-        setData(prevData => prevData.map(u => u.email === selectedImageOwner.email ? {...u, photoPassword: ""} : u));
-        setNewPhotoPassword(""); // Clear input
-        
+        setSelectedImageOwner({ ...selectedImageOwner, photoPassword: "" });
+        setData((prevData) =>
+          prevData.map((u) =>
+            u.email === selectedImageOwner.email
+              ? { ...u, photoPassword: "" }
+              : u
+          )
+        );
+
         setNotification({
-             type: "success",
-             message: t("Privacy turned off successfully"),
-             notification_id: Date.now()
+          type: "success",
+          message: t("Privacy turned off successfully"),
+          notification_id: Date.now(),
         });
         setTimeout(() => setNotification(null), 3000);
       } else {
         setNotification({
-             type: "error",
-             message: t("Failed to remove password: ") + result.message,
-             notification_id: Date.now()
+          type: "error",
+          message: t("Failed to remove password: ") + result.message,
+          notification_id: Date.now(),
         });
         setTimeout(() => setNotification(null), 3000);
       }
     } catch (error) {
-       console.error("Error removing password:", error);
-       setNotification({
-             type: "error",
-             message: t("Error removing password"),
-             notification_id: Date.now()
-        });
-        setTimeout(() => setNotification(null), 3000);
+      console.error("Error removing password:", error);
+      setNotification({
+        type: "error",
+        message: t("Error removing password"),
+        notification_id: Date.now(),
+      });
+      setTimeout(() => setNotification(null), 3000);
     }
+  };
+
+  const handleUnlock = (email) => {
+    setUnlockedUsers((prev) => [...prev, email]);
   };
 
   return (
@@ -351,594 +384,235 @@ export default function Dashboard() {
         fontFamily: '"Outfit", "Inter", sans-serif',
       }}
     >
-      {/* Language Toggle */}
-     {/* Cancel Update Modal */}
+      {/* Modals */}
       {showCancelModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            width: "100%",
-            height: "100%",
-            background: "rgba(0, 0, 0, 0.5)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 2200,
-          }}
-          onClick={() => setShowCancelModal(false)}
-        >
-          <div
-            style={{
-              background: "var(--card-bg)",
-              color: "var(--card-text)",
-              padding: "30px",
-              borderRadius: "12px",
-              textAlign: "center",
-              maxWidth: "400px",
-              width: "90%",
-              boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
-              position: "relative",
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2 style={{ marginTop: 0 }}>{t("Pending Request")}</h2>
-            <p>{t("You have an update request pending approval. What would you like to do?")}</p>
-            <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "20px" }}>
-              <button
-                onClick={() => setShowCancelModal(false)}
-                style={{
-                  padding: "10px 20px",
-                  background: "#6c757d",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                {t("Wait for Approval")}
-              </button>
-              <button
-                onClick={handleCancelUpdate}
-                style={{
-                  padding: "10px 20px",
-                  background: "#dc3545",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                {t("Cancel Update")}
-              </button>
-            </div>
-          </div>
-        </div>
+        <CancelUpdateModal
+          onCancel={handleCancelUpdate}
+          onKeep={() => setShowCancelModal(false)}
+          t={t}
+        />
       )}
-      {/* Notification Banner */}
-      {notification && (
-        <div style={{
-          position: "fixed",
-          top: "20px",
-          right: "20px",
-          backgroundColor: notification.type === 'success' ? "#4caf50" : "#f44336",
-          color: "white",
-          padding: "15px 20px",
-          borderRadius: "8px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.3)",
-          zIndex: 2000,
-          minWidth: "300px",
-          maxWidth: "500px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          animation: "slideIn 0.3s ease-out"
-        }}>
-          <span style={{ flex: 1 }}>{notification.message}</span>
-          <button
-            onClick={handleDismissNotification}
-            style={{
-              marginLeft: "15px",
-              background: "none",
-              border: "none",
-              color: "white",
-              fontSize: "24px",
-              cursor: "pointer",
-              padding: "0 5px",
-              lineHeight: "1"
-            }}
-            title={t("Dismiss")}
-          >
-            ×
-          </button>
-        </div>
+
+      {selectedUser && (
+        <UserDetailModal
+          selectedUser={selectedUser}
+          onClose={() => setSelectedUser(null)}
+          t={t}
+          setSelectedImage={setSelectedImage}
+          setSelectedImageOwner={setSelectedImageOwner}
+          setIsPrivacyMode={setIsPrivacyMode}
+          unlockedUsers={unlockedUsers}
+        />
       )}
-      <style jsx>{`
-        .scrollable-content {
-          flex: 1;
-          overflow: auto;
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* IE and Edge */
-          max-height: calc(100vh - 60px); /* Adjusted for 60px header */
-          padding-bottom: 5px;
-        }
-        
-        @media (min-width: 1025px) {
-          .no-scroll-desktop {
-            overflow: hidden !important;
-          }
-        }
-        .scrollable-content::-webkit-scrollbar {
-          display: none; /* Chrome, Safari, and Opera */
-        }
-        @keyframes pulse {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4), 0 0 20px rgba(40, 167, 69, 0.2);
-          }
-          50% {
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6), 0 0 30px rgba(40, 167, 69, 0.4);
-          }
-        }
-        @keyframes spinner {
-          to { transform: rotate(360deg); }
-        }
-        .loading-spinner {
-          width: 50px;
-          height: 50px;
-          border: 4px solid rgba(40, 167, 69, 0.1);
-          border-left-color: #28a745;
-          border-radius: 50%;
-          animation: spinner 0.8s linear infinite;
-          margin: 0 auto 20px;
-        }
-        .modal {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          background: rgba(0, 0, 0, 0.8);
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          z-index: 1000;
-          padding: 10px;
-        }
-        .modal-content {
-          max-width: 90%;
-          max-height: 90%;
-          position: relative;
-          background: var(--card-bg);
-          border-radius: 12px;
-          padding: 20px;
-          overflow-y: auto;
-        }
-        .modal-close {
-          position: absolute;
-          top: 10px;
-          right: 10px;
-          background: #ff4444;
-          color: white;
-          border: none;
-          padding: 8px 12px;
-          cursor: pointer;
-          border-radius: 4px;
-          font-size: 14px;
-          z-index: 10;
-        }
-        .detail-row {
-          margin-bottom: 10px;
-        }
-        .detail-label {
-          font-weight: bold;
-          color: var(--card-text);
-          opacity: 0.7;
-          margin-right: 8px;
-        }
-        .detail-value {
-          color: var(--card-text);
-        }
-        .detail-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-        }
 
+      <ImageModal
+        selectedImage={selectedImage}
+        selectedImageOwner={selectedImageOwner}
+        onClose={() => {
+          setSelectedImage(null);
+          setSelectedImageOwner(null);
+          setIsPrivacyMode(false);
+        }}
+        t={t}
+        isPrivacyMode={isPrivacyMode}
+        unlockedUsers={unlockedUsers}
+        onUnlock={handleUnlock}
+        onSetPassword={handleSetPhotoPassword}
+        onRemovePassword={handleRemovePhotoPassword}
+      />
 
-        /* Hover highlights for cards */
-        .dashboard-card, .user-card {
-          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-          backdrop-filter: blur(10px) !important;
-          -webkit-backdrop-filter: blur(10px) !important;
-          background: rgba(var(--card-bg-rgb), 0.7) !important;
-          border: 1px solid rgba(255, 255, 255, 0.1) !important;
-          animation: cardFadeIn 0.6s ease-out backwards;
-          min-height: 300px; /* Further increased height for desktop */
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: center;
-        }
+      <NotificationBanner
+        notification={notification}
+        onDismiss={handleDismissNotification}
+        t={t}
+      />
 
-        .dashboard-card:hover, .user-card:hover {
-          border-color: #28a745 !important;
-          box-shadow: 0 20px 40px rgba(40, 167, 69, 0.15), 0 0 20px rgba(40, 167, 69, 0.05) !important;
-          transform: translateY(-8px) scale(1.02) !important;
-          background-color: rgba(40, 167, 69, 0.05) !important;
-        }
+      {/* Main Content */}
+      <DashboardHeader
+        view={view}
+        setView={setView}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        searchField={searchField}
+        setSearchField={setSearchField}
+        t={t}
+      />
 
-        .dashboard-card:active, .user-card:active {
-          transform: translateY(-2px) scale(0.98) !important;
-          box-shadow: 0 5px 15px rgba(40, 167, 69, 0.1) !important;
-        }
-        
-        @keyframes cardFadeIn {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .dashboard-card:nth-child(1) { animation-delay: 0.1s; }
-        .dashboard-card:nth-child(2) { animation-delay: 0.2s; }
-        .dashboard-card:nth-child(3) { animation-delay: 0.3s; }
-        .dashboard-card:nth-child(4) { animation-delay: 0.4s; }
-
-        /* Default (Desktop) Main Grid */
-        .main-dashboard-grid {
-          display: grid !important;
-          grid-template-columns: repeat(3, 1fr) !important;
-          gap: 20px !important;
-          max-width: 1200px !important;
-          margin: 40px auto !important;
-        }
-
-        /* Tablet specific adjustments for Dashboard */
-        @media (min-width: 769px) and (max-width: 1024px) {
-          .main-dashboard-grid {
-             grid-template-columns: repeat(2, 1fr) !important;
-             gap: 20px !important;
-             max-width: 800px !important;
-             margin: 30px auto !important;
+      <div
+        className={`scrollable-content ${
+          view === "dashboard" ? "no-scroll-desktop" : ""
+        }`}
+      >
+        <style jsx>{`
+          .scrollable-content {
+            flex: 1;
+            overflow: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            max-height: calc(100vh - 60px);
+            padding-bottom: 5px;
           }
 
-          .dashboard-grid {
-             grid-template-columns: repeat(2, 1fr) !important;
-             gap: 20px !important;
-             padding: 20px !important;
+          @media (min-width: 1025px) {
+            .no-scroll-desktop {
+              overflow: hidden !important;
+            }
+          }
+          .scrollable-content::-webkit-scrollbar {
+            display: none;
+          }
+          @keyframes pulse {
+            0%,
+            100% {
+              transform: scale(1);
+              box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4),
+                0 0 20px rgba(40, 167, 69, 0.2);
+            }
+            50% {
+              transform: scale(1.05);
+              box-shadow: 0 6px 20px rgba(40, 167, 69, 0.6),
+                0 0 30px rgba(40, 167, 69, 0.4);
+            }
+          }
+           @keyframes spinner {
+            to { transform: rotate(360deg); }
+          }
+          .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(40, 167, 69, 0.1);
+            border-left-color: #28a745;
+            border-radius: 50%;
+            animation: spinner 0.8s linear infinite;
+            margin: 0 auto 20px;
+          }
+          /* Card Hover Effects */
+          .dashboard-card,
+          .user-card {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+            backdrop-filter: blur(10px) !important;
+            -webkit-backdrop-filter: blur(10px) !important;
+            background: rgba(var(--card-bg-rgb), 0.7) !important;
+            border: 1px solid #d1d5db !important;
+            animation: cardFadeIn 0.6s ease-out backwards;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
           }
 
-          .modal-content {
-             max-width: 80% !important;
-             max-height: 85% !important;
-          }
-          
-          .dashboard-header input[type="text"] {
-            width: 300px !important;
-          }
-        }
-
-        /* Mobile responsive styles */
-        @media (max-width: 768px) {
-          .modal {
-            padding: 5px !important;
-            align-items: flex-start !important;
-            overflow-y: auto !important;
-          }
-          .modal-content {
-            max-width: 100% !important;
-            max-height: none !important;
-            min-height: 100% !important;
-            width: 100% !important;
-            padding: 15px !important;
-            padding-top: 50px !important;
-            margin: 10px !important;
-            margin-top: 100px !important;
-            border-radius: 8px !important;
-          }
-          .modal-close {
-            position: fixed !important;
-            top: 65px !important;
-            right: 15px !important;
-            margin-top: 50px !important;
-            padding: 10px 15px !important;
-            font-size: 16px !important;
-            z-index: 1001 !important;
+          .dashboard-card:hover,
+          .user-card:hover {
+            border-color: #28a745 !important;
+            box-shadow: 0 20px 40px rgba(40, 167, 69, 0.15),
+              0 0 20px rgba(40, 167, 69, 0.05) !important;
+            transform: translateY(-8px) scale(1.02) !important;
+            background-color: rgba(40, 167, 69, 0.05) !important;
           }
 
-          /* Force all grid containers to single column */
-          .modal-content div[style*="grid"] {
-            grid-template-columns: 1fr !important;
+          .dashboard-card:active,
+          .user-card:active {
+            transform: translateY(-2px) scale(0.98) !important;
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.1) !important;
           }
 
-          .detail-row {
-            margin-bottom: 8px !important;
-            font-size: 14px !important;
-          }
-          .detail-label {
-            display: block !important;
-            margin-bottom: 2px !important;
-            font-size: 13px !important;
-          }
-          .detail-value {
-            display: block !important;
-            font-size: 14px !important;
-            word-break: break-word !important;
-          }
-          .detail-grid {
-            grid-template-columns: 1fr !important;
-            gap: 8px !important;
+          @keyframes cardFadeIn {
+            from {
+              opacity: 0;
+              transform: translateY(20px);
+            }
+            to {
+              opacity: 1;
+              transform: translateY(0);
+            }
           }
 
-          /* Horoscope charts responsive */
-          .rasi-grid {
-            max-width: 100% !important;
-            font-size: 10px !important;
+          .dashboard-card:nth-child(1) {
+            animation-delay: 0.1s;
           }
-          .rasi-grid > div {
-            min-height: 60px !important;
-            font-size: 10px !important;
-            padding: 3px !important;
+          .dashboard-card:nth-child(2) {
+            animation-delay: 0.2s;
           }
-          .center-box {
-            font-size: 14px !important;
+          .dashboard-card:nth-child(3) {
+            animation-delay: 0.3s;
           }
-
-          /* Typography adjustments */
-          .modal-content h2 {
-            font-size: 20px !important;
-            margin-top: 5px !important;
-          }
-          .modal-content h3 {
-            font-size: 16px !important;
-          }
-          .modal-content h4 {
-            font-size: 14px !important;
+          .dashboard-card:nth-child(4) {
+            animation-delay: 0.4s;
           }
 
-          /* Image size for mobile */
-          .modal-content img:not(.profile-photo) {
-            max-width: 100% !important;
-            height: auto !important;
-          }
-
-          /* Profile photo stays circular */
-          .modal-content .profile-photo {
-            width: 100px !important;
-            height: 100px !important;
-            border-radius: 50% !important;
-            object-fit: cover !important;
-          }
-
-          /* Dashboard Header Mobile Styles */
-          .dashboard-header {
-            flex-direction: row !important;
-            flex-wrap: wrap !important; /* Allow wrapping to new line */
-            align-items: center !important;
-            justify-content: space-between !important;
-            height: auto !important;
-            min-height: 50px !important;
-            padding: 8px 12px !important; 
-            gap: 8px !important;
-            position: sticky !important;
-            top: 0 !important;
-            z-index: 200 !important;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
-          }
-
-          .dashboard-header h1 {
-            font-size: 16px !important;
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
-          }
-
-          .dashboard-header input[type="text"] {
-            width: 150px !important;
-            font-size: 13px !important;
-            padding: 5px 8px 5px 30px !important;
-          }
-
-          /* Search controls mobile layout */
-          .search-controls {
-            flex-direction: row !important; /* Keep dropdown and search bar on same line */
-            width: 100% !important; /* Force to new line */
-            gap: 8px !important;
-            order: 10 !important; /* Push to end, forcing new line */
-          }
-
-          .search-controls select {
-            flex: 0 0 auto !important; /* Don't grow, natural width */
-            min-width: 140px !important;
-          }
-
-          .search-controls input[type="text"] {
-            flex: 1 !important; /* Take remaining space */
-            min-width: 0 !important; /* Allow shrinking */
-          }
-
-          /* Card Grid Mobile Adjustments */
-          .dashboard-grid {
-            display: block !important;
-            padding: 5px 8px !important;
-            width: 100% !important;
-          }
-
+          /* Default (Desktop) Main Grid */
           .main-dashboard-grid {
             display: grid !important;
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-            margin: 15px auto !important;
-            max-width: 100% !important;
-            width: 100% !important;
-          }
-          
-          .dashboard-card {
-            width: auto !important; 
-            padding: 15px !important;
-            gap: 8px !important;
-            min-height: auto !important;
-            margin: 15px 45px !important;
-          }
-          
-          .dashboard-card div[style*="fontSize: 50px"] {
-            font-size: 30px !important;
-          }
-          
-          .dashboard-card h2 {
-            font-size: 16px !important;
-          }
-          
-          .dashboard-card p {
-            font-size: 12px !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            gap: 20px !important;
+            max-width: 1200px !important;
+            margin: 40px auto !important;
           }
 
-          /* Sub-view Card Adjustments */
-          .user-card {
-            padding: 12px !important;
-            margin: 15px !important;
+          /* Tablet */
+          /* Tablet */
+          @media (min-width: 769px) and (max-width: 1024px) {
+            .main-dashboard-grid {
+              grid-template-columns: repeat(2, 1fr) !important;
+              gap: 20px !important;
+              max-width: 800px !important;
+              margin: 30px auto !important;
+            }
           }
 
-          .personal-view-grid {
-            margin: 5px auto !important;
+          /* Mobile */
+          @media (max-width: 768px) {
+            .main-dashboard-grid {
+              display: grid !important;
+              grid-template-columns: 1fr !important;
+              gap: 12px !important;
+              margin: 15px auto !important;
+              width: 100% !important;
+              padding: 0 15px !important;
+            }
+            .dashboard-card {
+              width: 100% !important;
+              padding: 15px !important;
+              gap: 8px !important;
+              min-height: auto !important;
+              margin: 0 !important;
+            }
+            .dashboard-card div[style*="fontSize: 50px"] {
+                font-size: 30px !important;
+            }
+            .dashboard-card h2 {
+                font-size: 16px !important;
+            }
+            .dashboard-card p {
+                font-size: 12px !important;
+            }
           }
-        }
-      `}</style>
-
-      {/* Fixed Header */}
-      <div
-        className="dashboard-header"
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "5px 20px",
-          background: "rgba(var(--card-bg-rgb), 0.8)",
-          backdropFilter: "blur(15px)",
-          WebkitBackdropFilter: "blur(15px)",
-          borderBottom: "1px solid rgba(147, 144, 144, 0.35)",
-          height: "60px",
-          position: "sticky",
-          top: 0,
-          zIndex: 100,
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          {view !== "dashboard" && (
-            <button
-              onClick={() => {
-                setView("dashboard");
-                setSearchTerm("");
-                setSearchField("");
-              }}
-              style={{
-                padding: "8px 12px",
-                background: "var(--card-bg)",
-                border: "1px solid var(--input-border)",
-                color: "var(--page-text)",
-                borderRadius: "6px",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "5px",
-                fontSize: "14px",
-              }}
-            >
-              ← {t("Back")}
-            </button>
-          )}
-          <h1
+        `}</style>
+        {loading ? (
+          <div
             style={{
-              margin: 0,
-              fontSize: "20px",
-              color: "var(--page-text)",
-              fontWeight: "bold",
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: "40px",
             }}
           >
-            {view === "dashboard" ? t("Dashboard") : 
-             view === "personal" ? t("Personal Card") : 
-             view === "other" ? t("All Other Profiles") : t("Search Members")}
-          </h1>
-        </div>
-        {view === "search" && (
-           <div className="search-controls" style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-             <select
-               value={searchField}
-               onChange={(e) => setSearchField(e.target.value)}
-               style={{
-                 padding: "8px",
-                 borderRadius: "6px",
-                 border: "1px solid var(--input-border)",
-                 backgroundColor: "var(--card-bg)",
-                 color: "var(--page-text)",
-                 outline: "none",
-               }}
-             >
-               <option value="">{t("Select Search Field")}</option>
-               <option value="name">{t("Name")}</option>
-               <option value="user_id">{t("User ID")}</option>
-               <option value="phone">{t("Phone")}</option>
-               <option value="yourTemple">{t("Temple")}</option>
-               <option value="yourDivision">{t("Division")}</option>
-               <option value="nativePlace">{t("Native Place")}</option>
-               <option value="educationQualification">{t("Education Details")}</option>
-               <option value="workDetails">{t("Work Details")}</option>
-             </select>
-             <input
-               type="text"
-               placeholder={t("Search")}
-               disabled={!searchField}
-               value={searchTerm}
-               onChange={(e) => {
-                 const value = e.target.value;
-                 setSearchTerm(value);
-               }}
-               style={{
-                 padding: "8px 12px 8px 40px",
-                 borderRadius: "6px",
-                 border: "1px solid var(--input-border)",
-                 backgroundColor: "var(--card-bg)",
-                 backgroundImage:
-                   "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'%3E%3C/circle%3E%3Cpath d='m21 21-4.35-4.35'%3E%3C/path%3E%3C/svg%3E\")",
-                 backgroundRepeat: "no-repeat",
-                 backgroundPosition: "10px center",
-                 color: "var(--page-text)",
-                 fontSize: "16px",
-                 width: "250px",
-                 outline: "none",
-                 opacity: searchField ? 1 : 0.5,
-               }}
-             />
-           </div>
-        )}
-      </div>
-
-      {/* Scrollable Content Area */}
-      <div className={`scrollable-content ${view === "dashboard" ? "no-scroll-desktop" : ""}`}>
-        {/* Loading/Error States */}
-        {loading ? (
-          <div 
-            data-testid="loading-state"
-            style={{ 
-            flex: 1, 
-            display: "flex", 
-            flexDirection: "column", 
-            justifyContent: "center", 
-            alignItems: "center", 
-            padding: "40px" 
-          }}>
             <div className="loading-spinner"></div>
-            <p style={{ fontSize: "18px", color: "var(--page-text)", opacity: 0.8 }}>{t("Loading data...")}</p>
+            <p
+              style={{
+                fontSize: "18px",
+                color: "var(--page-text)",
+                opacity: 0.8,
+              }}
+            >
+              {t("Loading data...")}
+            </p>
           </div>
         ) : error ? (
           <div
-            data-testid="error-state"
             style={{
               flex: 1,
               display: "flex",
@@ -947,34 +621,37 @@ export default function Dashboard() {
               padding: "40px",
             }}
           >
-            <div style={{
-              background: "rgba(255, 68, 68, 0.1)",
-              padding: "30px",
-              borderRadius: "16px",
-              border: "1px solid rgba(255, 68, 68, 0.2)",
-              textAlign: "center",
-              maxWidth: "400px"
-            }}>
-               <div style={{ fontSize: "40px", marginBottom: "15px" }}>⚠️</div>
-               <p style={{ fontSize: "18px", color: "#ff4444", margin: 0 }}>{error}</p>
-               <button 
-                  onClick={() => fetchData()} 
-                  style={{
-                    marginTop: "20px",
-                    padding: "10px 20px",
-                    background: "#ff4444",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer"
-                  }}
-               >
-                 {t("Retry")}
-               </button>
+            <div
+              style={{
+                background: "rgba(255, 68, 68, 0.1)",
+                padding: "30px",
+                borderRadius: "16px",
+                border: "1px solid rgba(255, 68, 68, 0.2)",
+                textAlign: "center",
+                maxWidth: "400px",
+              }}
+            >
+              <div style={{ fontSize: "40px", marginBottom: "15px" }}>⚠️</div>
+              <p style={{ fontSize: "18px", color: "#ff4444", margin: 0 }}>
+                {error}
+              </p>
+              <button
+                onClick={() => fetchData()}
+                style={{
+                  marginTop: "20px",
+                  padding: "10px 20px",
+                  background: "#ff4444",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                {t("Retry")}
+              </button>
             </div>
           </div>
         ) : (
-          /* Grid Container */
           <div
             className="dashboard-grid"
             style={{
@@ -983,1642 +660,78 @@ export default function Dashboard() {
             }}
           >
             {view === "dashboard" ? (
-              /* Main Dashboard 4 Cards View */
               <div className="main-dashboard-grid">
-                {/* Card 1: Personal Detail */}
                 <div
                   onClick={() => setView("personal")}
                   className="dashboard-card"
-                  style={{
-                    backgroundColor: "var(--card-bg)",
-                    border: "1px solid var(--input-border)",
-                    borderRadius: "16px",
-                    padding: "30px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "15px"
-                  }}
+                  style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>👤</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Personal Card")}</h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("View your own profile detail")}</p>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                    {t("Personal Card")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                    {t("View your own profile detail")}
+                  </p>
                 </div>
-
-                {/* Card 2: Other Profiles */}
                 <div
                   onClick={() => setView("other")}
                   className="dashboard-card"
-                  style={{
-                    backgroundColor: "var(--card-bg)",
-                    border: "1px solid var(--input-border)",
-                    borderRadius: "16px",
-                    padding: "30px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "15px"
-                  }}
+                  style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>👥</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("All Other Profiles")}</h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Browse and find matching profiles")}</p>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                    {t("All Other Profiles")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                    {t("Browse and find matching profiles")}
+                  </p>
                 </div>
-
-                {/* Card 3: Search */}
                 <div
                   onClick={() => setView("search")}
                   className="dashboard-card"
-                  style={{
-                    backgroundColor: "var(--card-bg)",
-                    border: "1px solid var(--input-border)",
-                    borderRadius: "16px",
-                    padding: "30px",
-                    textAlign: "center",
-                    cursor: "pointer",
-                    transition: "all 0.3s ease",
-                    boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    gap: "15px"
-                  }}
+                  style={{ cursor: "pointer" }}
                 >
                   <div style={{ fontSize: "50px" }}>🔍</div>
-                  <h2 style={{ margin: 0, color: "var(--page-text)" }}>{t("Search Members")}</h2>
-                  <p style={{ opacity: 0.7, fontSize: "14px" }}>{t("Search by name, ID, or qualification")}</p>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal" }}>
+                    {t("Search Members")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "14px" }}>
+                    {t("Search by name, ID, or qualification")}
+                  </p>
                 </div>
-
-                {/* Card 4 removed and moved inside Personal Detail card */}
               </div>
             ) : (
-              /* Sub-view Grid */
-              <div
-                className={view === "personal" ? "personal-view-grid" : ""}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: view === "personal" ? "1fr" : "repeat(auto-fit, minmax(350px, 1fr))",
-                  gap: "20px",
-                  width: "100%",
-                  maxWidth: view === "personal" ? "600px" : "100%",
-                  margin: view === "personal" ? "40px auto" : "0",
+              <UserGrid
+                data={
+                  view === "personal"
+                    ? personalData
+                    : view === "other"
+                    ? otherData
+                    : filteredData
+                }
+                view={view}
+                t={t}
+                onViewDetail={setSelectedUser}
+                onPrivacy={() => setIsPrivacyMode(true)}
+                onEdit={() => {
+                  if (pendingUpdateStatus) {
+                    setShowCancelModal(true);
+                  } else {
+                    window.location.href = "/editdetail";
+                  }
                 }}
-              >
-                {(view === "personal" ? personalData : view === "other" ? otherData : filteredData).length === 0 ? (
-                  <div
-                    style={{
-                      gridColumn: "1 / -1",
-                      textAlign: "center",
-                      padding: "40px",
-                      backgroundColor: "var(--card-bg)",
-                      borderRadius: "8px",
-                      color: "#999",
-                    }}
-                  >
-                    {data.length === 0
-                      ? t("No details uploaded yet.")
-                      : t("No matching results.")}
-                  </div>
-                ) : (
-                  (view === "personal" ? personalData : view === "other" ? otherData : filteredData).map((item) => (
-                    <div
-                      key={item.user_id}
-                      className="user-card"
-                      style={{
-                        border: view === "personal" ? "2px solid #28a745" : "1px solid var(--input-border)",
-                        borderRadius: "12px",
-                        padding: view === "personal" ? "30px" : "20px",
-                        backgroundColor: "var(--card-bg)",
-                        boxShadow: view === "personal" ? "0 10px 25px rgba(40,167,69,0.15)" : "0 4px 8px rgba(0,0,0,0.1)",
-                        display: "flex",
-                        flexDirection: "column",
-                        transition: "transform 0.2s, box-shadow 0.2s",
-                        cursor: "pointer",
-                        margin: "15px",
-                      }}
-                    >
-                      {/* Header with Image and Basic Info */}
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          marginBottom: "15px",
-                        }}
-                      >
-                        {(() => {
-                            const userEmail = sessionStorage.getItem("userEmail");
-                            const isOwnCard = userEmail && item.email && userEmail.toLowerCase() === item.email.toLowerCase();
-
-                            const allPhotos = getPhotoUrls(item);
-                            const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
-
-                            const handlePhotoSelect = async (selectedPhotoUrl) => {
-                                if (!isOwnCard) return;
-
-                                // Reorder photos: move selected to front
-                                const newPhotos = [selectedPhotoUrl, ...allPhotos.filter(p => p !== selectedPhotoUrl)];
-                                
-                                // Convert back to relative paths for saving if needed, but our backend handles full URLs gracefully 
-                                // or distinct relative paths? Actually backend expects "uploads/..." usually.
-                                // But we are sending back what we got. 
-                                // Let's check what we receive. We receive full localhost URLs here.
-                                // We should strip the domain to be safe and clean, or just send relative paths.
-                                // But wait, the backend just saves the string text.
-                                // Better convert back to relative paths to match backend storage format.
-                                const toRelative = (url) => {
-                                    if (url.startsWith(`${API_URL}/`)) {
-                                        return url.replace(`${API_URL}/`, "");
-
-                                    }
-                                    return url;
-                                };
-
-                                const photoPathsToSave = newPhotos.map(toRelative);
-
-                                // Optimistic update (optional, but good)
-                                // We can't easily update 'data' state deeply here without a re-fetch or complex reducer.
-                                // So let's just trigger the API value and then re-fetch.
-                                
-                                try {
-                                    const response = await fetch(`${API_URL}/upload-details/${item.email}`, {
-                                        method: "PUT",
-                                        headers: {
-                                            "Content-Type": "application/json"
-                                        },
-                                        credentials: "include",
-                                        body: JSON.stringify({
-                                            photo: JSON.stringify(photoPathsToSave)
-                                        })
-                                    });
-                                    const result = await response.json();
-                                    if (result.success) {
-                                        // Refresh data to show change
-                                         const fetchData = async () => {
-                                            try {
-                                                const res = await fetch(`${API_URL}/all-details`, {
-                                                    credentials: "include"
-                                                });
-                                                const data = await res.json();
-                                                if (data.success) {
-                                                    setData(data.data);
-                                                }
-                                            } catch (e) { console.error(e); }
-                                        };
-                                        fetchData();
-                                    } else {
-                                        alert("Failed to update photo: " + result.message);
-                                    }
-                                } catch (e) {
-                                    console.error("Error updating photo", e);
-                                    alert("Error updating photo");
-                                }
-                            };
-
-                            return (
-                                <div style={{ display: 'flex', flexDirection: 'column', marginRight: "15px" }}>
-                                    <Image
-                                      src={mainPhoto}
-                                      alt={item.name}
-                                      width={80}
-                                      height={80}
-                                      style={{
-                                        borderRadius: "50%",
-                                        objectFit: "cover",
-                                        cursor: "pointer",
-                                        border: isOwnCard ? "2px solid #28a745" : "none",
-                                        filter: (item.photoPassword && item.photoPassword.length > 0 && !isOwnCard && !unlockedUsers.includes(item.email)) ? "blur(8px)" : "none"
-                                      }}
-                                        onClick={(e) => {
-                                        e.stopPropagation();
-                                         setSelectedImage(mainPhoto);
-                                         setSelectedImageOwner(item);
-                                         setIsPrivacyMode(false);
-                                      }}
-                                    />
-                                    {isOwnCard && allPhotos.length > 1 && (
-                                        <div style={{ display: 'flex', gap: '5px', marginTop: '5px', flexWrap: 'wrap', maxWidth: '100px' }}>
-                                            {allPhotos.slice(1).map((photo, idx) => (
-                                                <Image 
-                                                    key={idx}
-                                                    src={photo}
-                                                    alt="thumb"
-                                                    width={30}
-                                                    height={30}
-                                                    style={{
-                                                        borderRadius: "50%",
-                                                        objectFit: "cover",
-                                                        cursor: "pointer",
-                                                        opacity: 0.7,
-                                                        filter: "none"
-                                                    }}
-                                                    onClick={(e) => {
-                                                        e.stopPropagation();
-                                                         setSelectedImage(photo);
-                                                         setSelectedImageOwner(item);
-                                                         handlePhotoSelect(photo);
-                                                         setIsPrivacyMode(false);
-                                                    }}
-                                                    onMouseEnter={(e) => e.target.style.opacity = 1}
-                                                    onMouseLeave={(e) => e.target.style.opacity = 0.7}
-                                                />
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            );
-                        })()}
-                        <div style={{ flex: 1 }}>
-                        {sessionStorage.getItem("userEmail") === item.email && (
-                          <>
-                            <div style={{
-                              display: "inline-block",
-                              background: "linear-gradient(135deg, #28a745 0%, #20c997 100%)",
-                              color: "white",
-                              fontSize: "14px",
-                              fontWeight: "bold",
-                              padding: "8px 16px",
-                              borderRadius: "25px",
-                              marginBottom: "8px",
-                              boxShadow: "0 4px 15px rgba(40, 167, 69, 0.4), 0 0 20px rgba(40, 167, 69, 0.2)",
-                              textTransform: "uppercase",
-                              letterSpacing: "1px",
-                              border: "2px solid rgba(255, 255, 255, 0.3)",
-                              animation: "pulse 2s ease-in-out infinite",
-                            }}>
-                              {t("✨ It's You ✨")}
-                            </div>
-                            {pendingUpdateStatus && (
-                              <div 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setShowCancelModal(true);
-                                }}
-                                style={{
-                                  display: "inline-block",
-                                  marginLeft: "10px",
-                                  background: "linear-gradient(135deg, #ff9800 0%, #ff5722 100%)",
-                                  color: "white",
-                                  fontSize: "12px",
-                                  fontWeight: "bold",
-                                  padding: "6px 12px",
-                                  borderRadius: "20px",
-                                  marginBottom: "8px",
-                                  boxShadow: "0 2px 8px rgba(255, 152, 0, 0.4)",
-                                  textTransform: "uppercase",
-                                  letterSpacing: "0.5px",
-                                  border: "2px solid rgba(255, 255, 255, 0.3)",
-                                  cursor: "pointer",
-                                }}
-                                title={t("Click to manage request")}
-                              >
-                                🕒 {t("Update Pending")}
-                              </div>
-                            )}
-                          </>
-                        )}
-                          <h3
-                            style={{
-                              margin: "0 0 5px 0",
-                              color: "var(--card-text)",
-                              fontSize: "18px",
-                            }}
-                          >
-                            {item.name}
-                          </h3>
-                          <p
-                            style={{
-                              margin: "0",
-                              color: "var(--card-text)",
-                              opacity: 0.7,
-                              fontSize: "14px",
-                            }}
-                          >
-                            ID: {item.user_id}
-                          </p>
-
-                          {/* Heritage Badges */}
-                          <div style={{ display: "flex", gap: "8px", marginTop: "10px", flexWrap: "wrap" }}>
-                            {item.yourTemple && (
-                              <span className="heritage-badge" style={{ 
-                                  background: "linear-gradient(45deg, #FF6B6B, #EE5D5D)", 
-                                  color: "white", 
-                                  padding: "4px 10px", 
-                                  borderRadius: "12px", 
-                                  fontSize: "11px", 
-                                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
-                              }}>
-                                🏛️ {item.yourTemple}
-                              </span>
-                            )}
-                            {item.yourDivision && (
-                              <span className="heritage-badge" style={{ 
-                                  background: "linear-gradient(45deg, #4ECDC4, #556270)", 
-                                  color: "white", 
-                                  padding: "4px 10px", 
-                                  borderRadius: "12px", 
-                                  fontSize: "11px", 
-                                  boxShadow: "0 2px 5px rgba(0,0,0,0.2)"
-                              }}>
-                                 🌿 {item.yourDivision}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Details Section */}
-                      <div style={{ flex: 1, marginBottom: "15px" }}>
-                        <div style={{ marginBottom: "8px" }}>
-                            <strong
-                                style={{ color: "var(--card-text)", opacity: 0.7 }}
-                              >
-                                {t("Email")}:
-                              </strong>{" "}
-                          <span style={{ color: "var(--card-text)" }}>
-                            {item.email}
-                          </span>
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                            <strong
-                                style={{ color: "var(--card-text)", opacity: 0.7 }}
-                              >
-                                {t("Phone")}:
-                              </strong>{" "}
-                          <span style={{ color: "var(--card-text)" }}>
-                            {item.phone}
-                          </span>
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                            <strong
-                                style={{ color: "var(--card-text)", opacity: 0.7 }}
-                              >
-                                {t("Qualification")}:
-                              </strong>{" "}
-                          <span style={{ color: "var(--card-text)" }}>
-                            {item.educationQualification || "N/A"}
-                          </span>
-                        </div>
-                        <div style={{ marginBottom: "8px" }}>
-                            <strong
-                                style={{ color: "var(--card-text)", opacity: 0.7 }}
-                              >
-                                {t("Work Details")}:
-                              </strong>{" "}
-                          <span
-                            style={{
-                              color: "var(--card-text)",
-                              color: "var(--card-text)",
-                              display: "inline",
-                              marginLeft: "5px",
-                              lineHeight: "1.4",
-                            }}
-                            title={item.workDetails || ""}
-                          >
-                            {item.workDetails && item.workDetails.length > 100
-                              ? `${item.workDetails.substring(0, 100)}...`
-                              : item.workDetails || "N/A"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Actions Section */}
-                      <div
-                        style={{
-                          borderTop: "1px solid var(--input-border)",
-                          paddingTop: "15px",
-                          display: "flex",
-                          gap: "10px",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedUser(item);
-                          }}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            padding: "6px 12px",
-                            backgroundColor: "#28a745",
-                            color: "white",
-                            border: "none",
-                            borderRadius: "4px",
-                            fontSize: "12px",
-                            fontWeight: "500",
-                            cursor: "pointer",
-                            transition: "background-color 0.2s",
-                          }}
-
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = "#28a745";
-                          }}
-                        >
-                          {t("More Detail")}
-                        </button>
-                        {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                const photos = getPhotoUrls(item);
-                                const mainPhoto = photos.length > 0 ? photos[0] : "https://via.placeholder.com/80";
-                                setSelectedImage(mainPhoto);
-                                setSelectedImageOwner(item);
-                                setIsPrivacyMode(true);
-                              }}
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                padding: "6px 12px",
-                                backgroundColor: "#007bff",
-                                color: "white",
-                                border: "none",
-                                borderRadius: "4px",
-                                fontSize: "12px",
-                                fontWeight: "500",
-                                cursor: "pointer",
-                                transition: "background-color 0.2s",
-                              }}
-                            >
-                               {t("Privacy")}
-                            </button>
-                        )}
-                        {(sessionStorage.getItem("userEmail")?.toLowerCase() === item.email?.toLowerCase()) && (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                if (pendingUpdateStatus) {
-                                  setShowCancelModal(true);
-                                } else {
-                                  window.location.href = "/editdetail";
-                                }
-                              }}
-                              style={{
-                                display: "inline-flex",
-                                alignItems: "center",
-                                padding: "6px 12px",
-                                backgroundColor: pendingUpdateStatus ? "#6c757d" : "#ffc107",
-                                color: pendingUpdateStatus ? "white" : "#000",
-                                border: "none",
-                                borderRadius: "4px",
-                                fontSize: "12px",
-                                fontWeight: "500",
-                                cursor: "pointer",
-                                transition: "background-color 0.2s",
-                              }}
-                              title={pendingUpdateStatus ? t("Pending Approval") : t("Edit Profile")}
-                            >
-                               {t("Edit Profile")}
-                            </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
+                onRefresh={fetchData}
+                pendingUpdateStatus={pendingUpdateStatus}
+                unlockedUsers={unlockedUsers}
+                setSelectedImage={setSelectedImage}
+                setSelectedImageOwner={setSelectedImageOwner}
+                setIsPrivacyMode={setIsPrivacyMode}
+              />
             )}
           </div>
         )}
-
-
-
-        {/* User Detail Modal */}
-        {selectedUser && (
-          <div className="modal" onClick={() => setSelectedUser(null)} style={{ zIndex: 1000 }}>
-            <div
-              className="modal-content"
-              onClick={(e) => {
-                // Check if the click was on an anchor tag or its children
-                let targetElement = e.target;
-                while (targetElement && targetElement !== e.currentTarget) {
-                  if (targetElement.tagName === "A") {
-                    // Stop propagation for anchor tags to prevent modal close
-                    e.stopPropagation();
-                    return;
-                  }
-                  targetElement = targetElement.parentElement;
-                }
-                // Stop propagation for all other clicks to prevent modal close
-                e.stopPropagation();
-              }}
-              style={{
-                marginTop: "90px",
-                width: "800px",
-                maxWidth: "95%",
-                maxHeight: "80vh",
-                overflowY: "auto",
-                marginBottom:"auto"
-              }}
-            >
-              <button
-                className="modal-close"
-                onClick={() => setSelectedUser(null)}
-              >
-                ✕ {t("Close")}
-              </button>
-
-              <h2
-                style={{
-                  marginTop: "10px",
-                  color: "var(--card-text)",
-                  fontWeight: "bold",
-                  textAlign: "center",
-                  marginBottom: "20px",
-                }}
-              >
-                {t("Details")}
-              </h2>
-
-              {/* Image */}
-              {(() => {
-                  const imageUrl = getPhotoUrl(selectedUser);
-
-                  if (imageUrl) {
-                      return (
-                        <div style={{ textAlign: "center", marginBottom: "20px" }}>
-                          <Image
-                            className="profile-photo"
-                            src={imageUrl}
-                            alt={selectedUser.name}
-                            width={120}
-                            height={120}
-                            style={{
-                              borderRadius: "50%",
-                              objectFit: "cover",
-                              border: "2px solid var(--input-border)",
-                              cursor: "pointer",
-                               filter: (selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email?.toLowerCase() !== sessionStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email)) ? "blur(10px)" : "none"
-                            }}
-                            onClick={() => {
-                                 setSelectedImage(imageUrl);
-                                 setSelectedImageOwner(selectedUser);
-                                 setIsPrivacyMode(false);
-                            }}
-                          />
-                        </div>
-                      );
-                  }
-                  return null;
-              })()}
-
-              <div style={{ display: "grid", gap: "20px" }}>
-                {/* Step 1: Basic Details */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Basic Details")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Name")}:</span>{" "}
-                      <span className="detail-value">{selectedUser.name}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Gender")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.gender}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Marital Status")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.maritalStatus}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Languages")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.knownLanguages}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Father Name")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.fatherName}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Father Occupation")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.fatherOccupation}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Mother Name")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.motherName}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Mother Occupation")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.motherOccupation}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Brothers")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.brothers}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Sisters")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.sisters}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Temple")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.yourTemple}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Division")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.yourDivision}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Native Place")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.nativePlace}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Native House Name")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.nativePlaceHouseName}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Present Residence")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.presentResidence}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Profile Created By")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.profileCreatedBy}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Referred By")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.referredBy}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Reference")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.reference}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 2: Education & Occupation */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Education & Occupation")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Qualification")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.educationQualification}
-                      </span>
-                    </div>
-                    {selectedUser.otherEducation && (
-                      <div className="detail-row">
-                        <span className="detail-label">{t("Other Education")}:</span>{" "}
-                        <span className="detail-value">
-                          {selectedUser.otherEducation}
-                        </span>
-                      </div>
-                    )}
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Occupation")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.occupationBusiness}
-                      </span>
-                    </div>
-                    {selectedUser.otherOccupation && (
-                      <div className="detail-row">
-                        <span className="detail-label">{t("Other Occupation")}:</span>{" "}
-                        <span className="detail-value">
-                          {selectedUser.otherOccupation}
-                        </span>
-                      </div>
-                    )}
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Working Place")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.workingPlace}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Income")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.income} LPA
-                      </span>
-                    </div>
-                    <div
-                      className="detail-row"
-                      style={{ gridColumn: "1 / -1" }}
-                    >
-                      <span className="detail-label">{t("Work Details")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.workDetails}
-                      </span>
-                    </div>
-                    <div
-                      className="detail-row"
-                      style={{ gridColumn: "1 / -1" }}
-                    >
-                      <span className="detail-label">{t("Education Details")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.educationDetails}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 3: Physical Attributes */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Physical Attributes")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Height")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.height}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Weight")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.weight}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Complexion")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.complexion}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Diet")}:</span>{" "}
-                      <span className="detail-value">{selectedUser.diet}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Special Cases")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.specialCases}
-                      </span>
-                    </div>
-                    {selectedUser.specialCases === "Yes" && (
-                      <div className="detail-row">
-                        <span className="detail-label">{t("Details")}:</span>{" "}
-                        <span className="detail-value">
-                          {selectedUser.specialCasesDetails}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Step 4: Astrology Basic Details */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Astrology Details")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Zodiac Sign")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.zodiacSign}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Ascendant")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.ascendant}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Birth Star")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.birthStar}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Dosham")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.dosham}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Place of Birth")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.placeOfBirth}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Date of Birth")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.dateOfBirth}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Time of Birth")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.timeOfBirthHours}:
-                        {selectedUser.timeOfBirthMinutes}:
-                        {selectedUser.timeOfBirthSeconds}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Dasa Type")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.DasaType}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Dasa Balance")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.dasaRemainYears}Y{" "}
-                        {selectedUser.dasaRemainMonths}M{" "}
-                        {selectedUser.dasaRemainDays}D
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 5: Horoscope Chart (Visual Grid) */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Horoscope Positions")}
-                  </h3>
-
-                  {/* Styles for the chart grid */}
-                  <style>
-                    {`
-                      .rasi-grid {
-                        display: grid;
-                        grid-template-columns: repeat(4, 1fr);
-                        gap: 2px;
-                        width: 100%;
-                        max-width: 400px;
-                        aspect-ratio: 1;
-                        margin: 20px auto;
-                        border: 1px solid var(--input-border);
-                      }
-                      .rasi-grid > div {
-                        border: 1px solid var(--input-border);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        background: var(--card-bg);
-                        color: var(--card-text);
-                        text-align: center;
-                        padding: 5px;
-                        font-size: 12px;
-                        min-height: 80px;
-                        position: relative;
-                      }
-                      .center-box {
-                        grid-column: 2 / span 2;
-                        grid-row: 2 / span 2;
-                        font-weight: bold;
-                        font-size: 18px;
-                        background: var(--container-bg) !important;
-                        color: var(--card-text);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                      }
-                    `}
-                  </style>
-
-                  {(() => {
-                    const leftPlanets = [
-                      { key: "sooriyan", label: "சூரியன்-Sooriyan" },
-                      { key: "chandiran", label: "சந்திரன்-Chandiran" },
-                      { key: "sevai", label: "செவ்வாய்-Sevvai" },
-                      { key: "budhan", label: "புதன்-Budhan" },
-                      { key: "viyazhan", label: "வியாழன்-Viyazhan" },
-                      { key: "sukkiran", label: "சுக்கிரன்-Sukkiran" },
-                    ];
-
-                    const rightPlanets = [
-                      { key: "sani", label: "சனி-Sani" },
-                      { key: "rahu", label: "ராகு-Rahu" },
-                      { key: "maanthi", label: "மாந்தி-Maanthi" },
-                      { key: "kethu", label: "கேது-Kethu" },
-                      { key: "lagnam", label: "லக்னம்-Lagnam" },
-                    ];
-
-                    const allPlanets = [...leftPlanets, ...rightPlanets];
-
-                    // Prepare Rasi Data
-                    const chartData = {};
-                    allPlanets.forEach((planet) => {
-                      const pos = selectedUser[planet.key];
-                      if (pos && pos >= 1 && pos <= 12) {
-                        if (!chartData[pos]) chartData[pos] = [];
-                        const tamilLabel = planet.label.split("-")[0];
-                        chartData[pos].push(tamilLabel);
-                      }
-                    });
-
-                    // Prepare Amsam Data
-                    const amsamChartData = {};
-                    allPlanets.forEach((planet) => {
-                      const pos = selectedUser["amsam_" + planet.key];
-                      if (pos && pos >= 1 && pos <= 12) {
-                        if (!amsamChartData[pos]) amsamChartData[pos] = [];
-                        const tamilLabel = planet.label.split("-")[0];
-                        amsamChartData[pos].push(tamilLabel);
-                      }
-                    });
-
-                    const renderBox = (pos, data, title) => {
-                      if (pos === "center")
-                        return <div className="center-box">{title}</div>;
-                      const planets = data[pos] || [];
-                      return (
-                        <div>
-                          <span
-                            style={{
-                              position: "absolute",
-                              fontSize: "10px",
-                              color: "var(--card-text)",
-                              opacity: 0.5,
-                              top: "2px",
-                              left: "2px",
-                            }}
-                          >
-                            {pos}
-                          </span>
-                          {planets.length > 0 ? planets.join(", ") : ""}
-                        </div>
-                      );
-                    };
-
-                    // Helper to render a full grid
-                    const renderGrid = (data, title) => (
-                      <div className="rasi-grid">
-                        {renderBox(1, data)}
-                        {renderBox(2, data)}
-                        {renderBox(3, data)}
-                        {renderBox(4, data)}
-
-                        {renderBox(12, data)}
-                        {renderBox("center", data, title)}
-                        {renderBox(5, data)}
-
-                        {renderBox(11, data)}
-                        {renderBox(6, data)}
-
-                        {renderBox(10, data)}
-                        {renderBox(9, data)}
-                        {renderBox(8, data)}
-                        {renderBox(7, data)}
-                      </div>
-                    );
-
-                    return (
-                      <div
-                        style={{
-                          display: "grid",
-                          gridTemplateColumns: "1fr 1fr",
-                          gap: "20px",
-                        }}
-                      >
-                        <div>
-                          <h4
-                            style={{
-                              textAlign: "center",
-                              marginBottom: "10px",
-                            }}
-                          >
-                            {t("Rasi Chart")}
-                          </h4>
-                          {renderGrid(chartData, "ராசி")}
-                        </div>
-                        <div>
-                          <h4
-                            style={{
-                              textAlign: "center",
-                              marginBottom: "10px",
-                            }}
-                          >
-                            {t("Amsam Chart")}
-                          </h4>
-                          {renderGrid(amsamChartData, "அம்சம்")}
-                        </div>
-                      </div>
-                    );
-                  })()}
-                </div>
-
-                {/* Step 6: Contact Details */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Contact Details")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div
-                      className="detail-row"
-                      style={{ gridColumn: "1 / -1" }}
-                    >
-                      <span className="detail-label">{t("Address")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.fullStreetAddress}, {selectedUser.city},{" "}
-                        {selectedUser.district}, {selectedUser.state},{" "}
-                        {selectedUser.country} - {selectedUser.postalCode}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Phone")}:</span>{" "}
-                      <span className="detail-value">{selectedUser.phone}</span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("WhatsApp")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.whatsAppNo}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Email")}:</span>{" "}
-                      <span className="detail-value">{selectedUser.email}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Step 7: Partner Preference */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("Partner Preference")}
-                  </h3>
-                  <div
-                    style={{
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gap: "10px",
-                    }}
-                  >
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Qualification")}:</span>{" "}
-                      <span className="detail-value">
-                        {t(selectedUser.educationQualification1)}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Complexion")}:</span>{" "}
-                      <span className="detail-value">
-                        {t(selectedUser.complexion1)}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Work After Marriage")}:</span>{" "}
-                      <span className="detail-value">
-                        {t(selectedUser.willingnessToWork1)}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                       <span className="detail-label">{t("Age Range")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.fromAge} - {selectedUser.toAge}
-                      </span>
-                    </div>
-                    <div className="detail-row">
-                      <span className="detail-label">{t("Height Range")}:</span>{" "}
-                      <span className="detail-value">
-                        {selectedUser.fromHeight} - {selectedUser.toHeight}
-                      </span>
-                    </div>
-                    <div
-                      className="detail-row"
-                      style={{ gridColumn: "1 / -1" }}
-                    >
-                      <span className="detail-label">{t("Education Details")}:</span>{" "}
-                      <span className="detail-value">
-                        {t(selectedUser.educationDetails1)}
-                      </span>
-                    </div>
-                    <div
-                      className="detail-row"
-                      style={{ gridColumn: "1 / -1" }}
-                    >
-                      <span className="detail-label">{t("Personal Preference")}:</span>{" "}
-                      <span className="detail-value">
-                        {t(selectedUser.personalPreference1)}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Links */}
-                {/* All Photos Section */}
-                <div>
-                  <h3
-                    style={{
-                      borderBottom: "1px solid #eee",
-                      paddingBottom: "5px",
-                      marginBottom: "10px",
-                      color: "#28a745",
-                    }}
-                  >
-                    {t("All Photos")}
-                  </h3>
-                   {(() => {
-                    const allPhotos = getPhotoUrls(selectedUser);
-
-                        if (allPhotos.length > 0) {
-                            const userEmail = sessionStorage.getItem("userEmail");
-                            // Case insensitive check for ownership
-                            const isOwn = userEmail && selectedUser.email && userEmail.toLowerCase() === selectedUser.email.toLowerCase();
-                            const isProtected = selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && !isOwn && !unlockedUsers.includes(selectedUser.email);
-                            return (
-                                <div style={{ 
-                                  display: "flex", 
-                                  flexWrap: "wrap",
-                                  gap: "15px",
-                                  marginTop: "10px"
-                                }}>
-                                  {allPhotos.map((photoUrl, index) => (
-                                    <Image 
-                                      key={index}
-                                      src={photoUrl}
-                                      alt={`User Photo ${index + 1}`}
-                                      width={230}
-                                      height={230}
-                                      style={{ 
-                                        borderRadius: "8px",
-                                        objectFit: "cover",
-                                        border: "1px solid var(--input-border)",
-                                        boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                                        cursor: "pointer",
-                                        filter: isProtected ? "blur(10px)" : "none"
-                                      }}
-                                       onClick={() => {
-                                         setSelectedImage(photoUrl);
-                                         setSelectedImageOwner(selectedUser);
-                                         setIsPrivacyMode(false);
-                                      }}
-                                    />
-                                  ))}
-                                </div>
-                            );
-                        } else {
-                            return <p style={{ color: "#999", fontStyle: "italic" }}>No photos available.</p>;
-                        }
-                   })()}
-                </div>
-                {selectedUser.pdfPath && (
-                  <div className="detail-row">
-                    <span className="detail-label">PDF:</span>
-                    <a
-                      href={`${API_URL}/${selectedUser.pdfPath.replace(
-                        /\\/g,
-                        "/"
-                      )}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{ color: "#007bff", textDecoration: "none" }}
-                    >
-                      View PDF
-                    </a>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
       </div>
-
-
-      
-        {/* Image Modal - Rendered last to be on top */}
-        {selectedImage && (() => {
-            const userEmail = sessionStorage.getItem("userEmail");
-            const isOwner = selectedImageOwner && userEmail && 
-                           (selectedImageOwner.email.toLowerCase() === userEmail.toLowerCase());
-            const hasPassword = selectedImageOwner && selectedImageOwner.photoPassword;
-            // Blur if password exists AND user is NOT owner AND image is NOT unlocked
-            const isBlur = hasPassword && !isOwner && !unlockedUsers.includes(selectedImageOwner.email);
-
-            return (
-          <div 
-            className="modal" 
-            onClick={() => {
-                setSelectedImage(null);
-                setImagePasswordInput("");
-                // setIsImageUnlocked(false);
-                setNewPhotoPassword("");
-                setSelectedImageOwner(null); // Clear owner on close
-                setIsPrivacyMode(false);
-            }} 
-            style={{ 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                zIndex: 2200 
-            }}
-          >
-            <div
-              style={{
-                position: 'relative',
-                width: 'auto',
-                maxWidth: '90%',
-                maxHeight: '90vh',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                zIndex: 2201,
-                background: "transparent",
-                overflowY: "auto", // Allow scrolling if content is tall
-                padding: "20px"
-              }}
-              onClick={(e) => e.stopPropagation()}
-            >
-
-              
-              <div style={{ position: 'relative', marginBottom: isOwner ? "20px" : "0" }}>
-                  {!isPrivacyMode && (
-                    <>
-                      <Image
-                        src={selectedImage}
-                        alt="Full size"
-                        width={800} // Large enough for high quality, layout will respect max-width
-                        height={600}
-                        style={{
-                          maxWidth: "100%",
-                          maxHeight: "70vh", // Reduced to make room for inputs
-                          borderRadius: "8px",
-                          boxShadow: "0 4px 12px rgba(0,0,0,0.5)",
-                          backgroundColor: "white",
-                          display: "block",
-                          filter: isBlur ? "blur(20px)" : "none",
-                          transition: "filter 0.3s ease",
-                          width: 'auto',
-                          height: 'auto'
-                        }}
-                      />
-                  
-                  {isBlur && (
-                      <div style={{
-                          position: 'absolute',
-                          top: '50%',
-                          left: '50%',
-                          transform: 'translate(-50%, -50%)',
-                          background: 'rgba(0,0,0,0.6)',
-                          padding: '20px',
-                          borderRadius: '8px',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          gap: '10px',
-                          alignItems: 'center',
-                          width: '80%'
-                      }}>
-                          <h3 style={{ color: 'white', margin: 0, textAlign: "center" }}>{t("Password Protected")}</h3>
-                          <input 
-                            type="password"
-                            placeholder="Enter Password"
-                            value={imagePasswordInput}
-                            onChange={(e) => setImagePasswordInput(e.target.value)}
-                            style={{ padding: '8px', borderRadius: '4px', border: 'none', width: '100%' }}
-                          />
-                          <button 
-                            onClick={() => {
-                                if (imagePasswordInput === selectedImageOwner.photoPassword) {
-                                    setUnlockedUsers(prev => [...prev, selectedImageOwner.email]);
-                                } else {
-                                    alert(t("Incorrect Password"));
-                                }
-                            }}
-                            style={{
-                                padding: '8px 16px',
-                                background: '#28a745',
-                                color: 'white',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                width: '100%'
-                            }}
-                          >
-                            {t("Unlock")}
-                          </button>
-                      </div>
-                  )}
-                    </>
-                  )}
-              </div>
-
-              {isOwner && isPrivacyMode && (
-                  <div style={{
-                      background: 'var(--card-bg)',
-                      padding: '25px',
-                      borderRadius: '12px',
-                      display: 'flex',
-                      flexDirection: "column",
-                      gap: '15px',
-                      alignItems: 'center',
-                      boxShadow: '0 8px 16px rgba(0,0,0,0.15), 0 2px 4px rgba(0,0,0,0.1)',
-                      border: '1px solid var(--input-border)',
-                      width: "100%",
-                      maxWidth: "400px",
-                      backdropFilter: 'blur(10px)'
-                  }}>
-                      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: '10px', paddingBottom: '15px', borderBottom: '2px solid var(--input-border)'}}>
-                          <span style={{fontWeight: 'bold', color: 'var(--card-text)', fontSize: '18px'}}>{t("Privacy Protection")}</span>
-                          <label className="switch" style={{position: 'relative', display: 'inline-block', width: '50px', height: '26px'}}>
-                              <input 
-                                  type="checkbox" 
-                                  checked={!!(selectedImageOwner.photoPassword && selectedImageOwner.photoPassword.length > 0)}
-                                  onChange={(e) => {
-                                      if (!e.target.checked) {
-                                          setShowPrivacyConfirm(true);
-                                      } else {
-                                          // Turning on: ensure input is focused or just let them type
-                                          document.getElementById('new-password-input')?.focus();
-                                      }
-                                  }}
-                                  style={{opacity: 0, width: 0, height: 0}}
-                              />
-                               <span className="slider round" style={{
-                                  position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0, 
-                                  backgroundColor: (selectedImageOwner.photoPassword && selectedImageOwner.photoPassword.length > 0) ? '#28a745' : '#ccc', 
-                                  transition: '.4s', borderRadius: '34px'
-                              }}>
-                                  <span style={{
-                                      position: 'absolute', content: '""', height: '18px', width: '18px', left: '4px', bottom: '4px', 
-                                      backgroundColor: 'white', transition: '.4s', borderRadius: '50%',
-                                      transform: (selectedImageOwner.photoPassword && selectedImageOwner.photoPassword.length > 0) ? 'translateX(24px)' : 'translateX(0)'
-                                  }}></span>
-                              </span>
-                          </label>
-                      </div>
-
-                      <div style={{
-                          width: '100%',
-                          background: 'linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(0, 123, 255, 0.05) 100%)',
-                          padding: '20px',
-                          borderRadius: '8px',
-                          border: '1px solid var(--input-border)',
-                          boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.05)'
-                      }}>
-                          <span style={{ 
-                              color: 'var(--card-text)', 
-                              fontWeight: "bold", 
-                              fontSize: '14px',
-                              display: 'block',
-                              marginBottom: '12px',
-                              textAlign: 'center',
-                              letterSpacing: '0.5px'
-                          }}>{t("Set/Update Photo Password")}</span>
-                          <input 
-                            id="new-password-input"
-                            type="text" 
-                            placeholder={t("New Password")}
-                            value={newPhotoPassword}
-                            onChange={(e) => setNewPhotoPassword(e.target.value)}
-                            style={{ 
-                                padding: '14px 16px', 
-                                borderRadius: '8px', 
-                                border: '2px solid var(--input-border)', 
-                                width: "100%",
-                                fontSize: '15px',
-                                background: 'var(--card-bg)',
-                                color: 'var(--card-text)',
-                                transition: 'all 0.3s ease',
-                                boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-                                outline: 'none',
-                                marginBottom: '12px'
-                            }}
-                            onFocus={(e) => e.target.style.borderColor = '#007bff'}
-                            onBlur={(e) => e.target.style.borderColor = 'var(--input-border)'}
-                          />
-                          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%' }}>
-                              <button 
-                                onClick={handleSetPhotoPassword}
-                                style={{
-                                    padding: '6px 24px',
-                                    background: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)',
-                                    color: 'white',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    cursor: 'pointer',
-                                    fontSize: '12px',
-                                    fontWeight: '600',
-                                    boxShadow: '0 4px 8px rgba(0, 123, 255, 0.3), 0 2px 4px rgba(0, 123, 255, 0.2)',
-                                    transition: 'all 0.3s ease',
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.5px',
-                                    width: '100%'
-                                }}
-                                onMouseEnter={(e) => {
-                                    e.target.style.transform = 'translateY(-2px)';
-                                    e.target.style.boxShadow = '0 6px 12px rgba(0, 123, 255, 0.4), 0 3px 6px rgba(0, 123, 255, 0.3)';
-                                }}
-                                onMouseLeave={(e) => {
-                                    e.target.style.transform = 'translateY(0)';
-                                    e.target.style.boxShadow = '0 4px 8px rgba(0, 123, 255, 0.3), 0 2px 4px rgba(0, 123, 255, 0.2)';
-                                }}
-                              >
-                                {t("Set Password")}
-                              </button>
-                              <button
-                                  onClick={() => {
-                                      setSelectedImage(null);
-                                      setImagePasswordInput("");
-                                      setNewPhotoPassword("");
-                                      setSelectedImageOwner(null);
-                                      setIsPrivacyMode(false);
-                                  }}
-                                  style={{
-                                      padding: '6px 24px',
-                                      background: '#6c757d',
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '8px',
-                                      cursor: 'pointer',
-                                      fontSize: '12px',
-                                      fontWeight: '600',
-                                      boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-                                      transition: 'all 0.3s ease',
-                                      textTransform: 'uppercase',
-                                      letterSpacing: '0.5px',
-                                      width: '100%'
-                                  }}
-                                  onMouseEnter={(e) => {
-                                      e.target.style.background = '#5a6268';
-                                      e.target.style.boxShadow = '0 3px 6px rgba(0,0,0,0.15)';
-                                      e.target.style.transform = 'translateY(-2px)';
-                                  }}
-                                  onMouseLeave={(e) => {
-                                      e.target.style.background = '#6c757d';
-                                      e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
-                                      e.target.style.transform = 'translateY(0)';
-                                  }}
-                              >
-                                  {t("Cancel")}
-                              </button>
-                          </div>
-                      </div>
-                  </div>
-              )}
-{showPrivacyConfirm && (
-        <div style={{
-          position: 'fixed',
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.5)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 2300
-        }} onClick={(e) => e.stopPropagation()}>
-            <div style={{
-                background: 'var(--card-bg)',
-                color: 'var(--card-text)',
-                padding: '20px',
-                borderRadius: '8px',
-                width: '300px',
-                textAlign: 'center',
-                boxShadow: '0 4px 12px rgba(0,0,0,0.3)'
-            }}>
-                <h3 style={{marginTop: 0}}>{t("Turn off privacy?")}</h3>
-                <p>{t("This will remove your password and make your photo visible to everyone.")}</p>
-                <div style={{display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px'}}>
-                    <button 
-                        onClick={() => setShowPrivacyConfirm(false)}
-                        style={{
-                            padding: '8px 16px',
-                            background: '#6c757d',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: 'pointer'
-                        }}
-                    >
-                        {t("Cancel")}
-                    </button>
-                    <button 
-                         onClick={() => {
-                             setShowPrivacyConfirm(false);
-                             handleRemovePhotoPassword();
-                         }}
-                         style={{
-                             padding: '8px 16px',
-                             background: '#dc3545',
-                             color: 'white',
-                             border: 'none',
-                             borderRadius: '4px',
-                             cursor: 'pointer'
-                         }}
-                    >
-                        {t("Yes, Remove")}
-                    </button>
-                </div>
-            </div>
-        </div>
-      )}
-
-            </div>
-          </div>
-        );
-      })()}
-
     </div>
   );
 }
