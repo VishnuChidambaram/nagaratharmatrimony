@@ -18,6 +18,8 @@ export default function UserCard({
   setSelectedImage,
   setSelectedImageOwner,
   setIsPrivacyMode,
+  onToggleShortlist,
+  isShortlisted,
 }) {
   const [currentUserEmail] = useState(() =>
     typeof window !== "undefined" ? sessionStorage.getItem("userEmail") : null
@@ -98,8 +100,39 @@ export default function UserCard({
           display: "flex",
           alignItems: "center",
           marginBottom: "15px",
+          position: "relative",
         }}
       >
+        {!isOwnCard && onToggleShortlist && (
+          <div
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleShortlist(item.user_id);
+            }}
+            style={{
+              position: "absolute",
+              top: "-5px",
+              right: "-5px",
+              background: "white",
+              borderRadius: "50%",
+              width: "32px",
+              height: "32px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "18px",
+              boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+              cursor: "pointer",
+              transition: "transform 0.2s",
+              zIndex: 10,
+              color: isShortlisted ? "#ff4757" : "#ced4da",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.2)")}
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+          >
+            {isShortlisted ? "❤️" : "🤍"}
+          </div>
+        )}
         <div
           style={{
             display: "flex",
@@ -287,6 +320,33 @@ export default function UserCard({
           </div>
         </div>
       </div>
+
+      {item.matchScore > 0 && (
+        <div
+          style={{
+            padding: "5px 12px",
+            background: "linear-gradient(135deg, #ffd700 0%, #ffa500 100%)",
+            color: "#333",
+            borderRadius: "20px",
+            fontSize: "12px",
+            fontWeight: "900",
+            boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            whiteSpace: "nowrap",
+            width: "fit-content",
+            marginBottom: "15px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            border: "1px solid rgba(255, 255, 255, 0.5)",
+            animation: "pulse 2s ease-in-out infinite",
+          }}
+        >
+          <span style={{ fontSize: "14px" }}>🔥</span> {item.matchScore}% {t("Match")}
+        </div>
+      )}
 
       {/* Details Section */}
       <div style={{ flex: 1, marginBottom: "15px", fontSize: "14px" }}>

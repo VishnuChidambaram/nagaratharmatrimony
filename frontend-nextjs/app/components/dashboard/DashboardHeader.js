@@ -52,6 +52,10 @@ export default function DashboardHeader({
               ? t("Personal Card")
               : view === "other"
               ? t("All Other Profiles")
+              : view === "shortlist"
+              ? t("Shortlisted Profiles")
+              : view === "matches"
+              ? t("Best Matches")
               : t("Search Members")}
           </h1>
         </div>

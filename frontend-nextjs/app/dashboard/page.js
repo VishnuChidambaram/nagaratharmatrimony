@@ -27,12 +27,14 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [notification, setNotification] = useState(null);
+  const [shortlistedIds, setShortlistedIds] = useState([]);
+  const [suggestedMatches, setSuggestedMatches] = useState([]);
 
   const [pendingUpdateStatus, setPendingUpdateStatus] = useState(false);
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingRequestId, setPendingRequestId] = useState(null);
   const [isPrivacyMode, setIsPrivacyMode] = useState(false);
-  const [view, setView] = useState("dashboard"); // dashboard, personal, other, search
+  const [view, setView] = useState("dashboard"); // dashboard, personal, other, search, shortlist, matches
   const [searchField, setSearchField] = useState("");
 
   const { language } = useLanguage();
@@ -139,6 +141,36 @@ export default function Dashboard() {
     }
   }, [t, router]);
 
+  const fetchShortlist = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/shortlist/ids`, {
+        credentials: "include",
+        headers: { ...getAuthHeaders() },
+      });
+      const result = await response.json();
+      if (result.success) {
+        setShortlistedIds(result.ids || []);
+      }
+    } catch (err) {
+      console.error("Error fetching shortlist:", err);
+    }
+  }, []);
+
+  const fetchMatches = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/matches/suggested`, {
+        credentials: "include",
+        headers: { ...getAuthHeaders() },
+      });
+      const result = await response.json();
+      if (result.success) {
+        setSuggestedMatches(result.data || []);
+      }
+    } catch (err) {
+      console.error("Error fetching matches:", err);
+    }
+  }, []);
+
   const checkPendingUpdate = useCallback(async (email) => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/user/${email}`, {
@@ -167,10 +199,12 @@ export default function Dashboard() {
 
     fetchData();
     checkPendingUpdate(userEmail);
+    fetchShortlist();
+    fetchMatches();
 
     const interval = setInterval(() => checkPendingUpdate(userEmail), 15000);
     return () => clearInterval(interval);
-  }, [fetchData, checkPendingUpdate, router]);
+  }, [fetchData, checkPendingUpdate, fetchMatches, fetchShortlist, router, view]);
 
   const currentUserEmail =
     typeof window !== "undefined"
@@ -217,6 +251,10 @@ export default function Dashboard() {
   const otherData = data.filter(
     (item) => item.email?.toLowerCase() !== currentUserEmail
   );
+  const shortlistedData = data.filter(
+    (item) => shortlistedIds.includes(item.user_id)
+  );
+  // suggestedMatches state already contains the ranked data with scores
 
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
@@ -248,6 +286,40 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error cancelling request:", error);
       alert(t("Error cancelling request"));
+    }
+  };
+
+  const handleToggleShortlist = async (userId) => {
+    try {
+      const response = await fetch(`${API_URL}/api/shortlist/toggle`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...getAuthHeaders(),
+        },
+        credentials: "include",
+        body: JSON.stringify({ shortlisted_user_id: userId }),
+      });
+      const result = await response.json();
+      if (result.success) {
+        setShortlistedIds((prev) =>
+          result.action === "added"
+            ? [...prev, userId]
+            : prev.filter((id) => id !== userId)
+        );
+
+        setNotification({
+          type: "success",
+          message:
+            result.action === "added"
+              ? t("Added to Shortlist")
+              : t("Removed from Shortlist"),
+          notification_id: Date.now(),
+        });
+        setTimeout(() => setNotification(null), 2000);
+      }
+    } catch (error) {
+      console.error("Error toggling shortlist:", error);
     }
   };
 
@@ -455,7 +527,8 @@ export default function Dashboard() {
 
           @media (min-width: 1025px) {
             .no-scroll-desktop {
-              overflow: hidden !important;
+              /* Remove overflow hidden to allow seeing the second row of cards */
+              overflow: auto !important;
             }
           }
           .scrollable-content::-webkit-scrollbar {
@@ -539,6 +612,9 @@ export default function Dashboard() {
           }
           .dashboard-card:nth-child(4) {
             animation-delay: 0.4s;
+          }
+          .dashboard-card:nth-child(5) {
+            animation-delay: 0.5s;
           }
 
           /* Default (Desktop) Main Grid */
@@ -702,6 +778,32 @@ export default function Dashboard() {
                     {t("Search by name, ID, or qualification")}
                   </p>
                 </div>
+                <div
+                  onClick={() => setView("shortlist")}
+                  className="dashboard-card"
+                  style={{ cursor: "pointer" }}
+                >
+                  <div style={{ fontSize: "50px" }}>❤️</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
+                    {t("My Shortlist")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
+                    {t("View profiles you have saved")}
+                  </p>
+                </div>
+                <div
+                  onClick={() => setView("matches")}
+                  className="dashboard-card"
+                  style={{ cursor: "pointer" }}
+                >
+                  <div style={{ fontSize: "50px" }}>🤖</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
+                    {t("Best Matches")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
+                    {t("Suggested match based on your preference")}
+                  </p>
+                </div>
               </div>
             ) : (
               <UserGrid
@@ -710,11 +812,17 @@ export default function Dashboard() {
                     ? personalData
                     : view === "other"
                     ? otherData
+                    : view === "shortlist"
+                    ? shortlistedData
+                    : view === "matches"
+                    ? suggestedMatches
                     : filteredData
                 }
                 view={view}
                 t={t}
                 onViewDetail={setSelectedUser}
+                onToggleShortlist={handleToggleShortlist}
+                shortlistedIds={shortlistedIds}
                 onPrivacy={() => setIsPrivacyMode(true)}
                 onEdit={() => {
                   if (pendingUpdateStatus) {

@@ -16,6 +16,8 @@ export default function UserGrid({
   setSelectedImage,
   setSelectedImageOwner,
   setIsPrivacyMode,
+  onToggleShortlist,
+  shortlistedIds = [],
 }) {
   if (data.length === 0) {
     return (
@@ -52,6 +54,8 @@ export default function UserGrid({
             setSelectedImage={setSelectedImage}
             setSelectedImageOwner={setSelectedImageOwner}
             setIsPrivacyMode={setIsPrivacyMode}
+            onToggleShortlist={onToggleShortlist}
+            isShortlisted={shortlistedIds.includes(item.user_id)}
           />
         ))}
       </div>

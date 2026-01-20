@@ -16,6 +16,8 @@ import userRoutes from "./routes/userRoutes.js";
 import updateRequestRoutes from "./routes/updateRequestRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import shortlistRoutes from "./routes/shortlistRoutes.js";
+import matchRoutes from "./routes/matchRoutes.js";
 import morgan from "morgan";
 import logger from "./utils/logger.js";
 import errorHandler from "./middleware/errorHandler.js";
@@ -121,6 +123,8 @@ app.use("/", userRoutes);
 app.use("/", updateRequestRoutes);
 app.use("/", notificationRoutes);
 app.use("/", uploadRoutes);
+app.use("/", shortlistRoutes);
+app.use("/", matchRoutes);
 
 // Error handling middleware (must be after all routes)
 app.use(errorHandler);
