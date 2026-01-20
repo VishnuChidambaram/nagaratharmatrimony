@@ -735,9 +735,6 @@ router.post("/validate-registration", validate(registerSchema), async (req, res)
 });
 
 router.post("/register", registrationLimiter, (req, res, next) => {
-  console.log("========================================");
-  console.log("REGISTER ENDPOINT HIT");
-  console.log("========================================");
   upload(req, res, function (err) {
     if (err instanceof multer.MulterError) {
       console.log("Multer error:", err);
@@ -748,8 +745,6 @@ router.post("/register", registrationLimiter, (req, res, next) => {
       // An unknown error occurred when uploading.
       return res.status(400).json({ success: false, message: err.message });
     }
-    console.log("Upload successful, proceeding to validation...");
-    // Everything went fine.
     next();
   });
 }, validate(registerSchema), async (req, res) => {

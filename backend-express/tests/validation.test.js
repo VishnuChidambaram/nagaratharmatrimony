@@ -13,6 +13,10 @@ jest.unstable_mockModule('../models/index.js', () => ({
       create: jest.fn(),
       update: jest.fn(),
     },
+    AdminLogin: {
+      findOne: jest.fn(),
+      update: jest.fn(),
+    },
     Otp: {
       create: jest.fn(),
       findOne: jest.fn(),
@@ -40,8 +44,8 @@ describe('Registration Validation API', () => {
       .post('/register')
       .send({}); // Missing everything
 
-    if (res.body.errors && !res.body.errors.includes('Name is required')) {
-      console.log('FAIL Missing fields. Body:', JSON.stringify(res.body, null, 2));
+    if (!res.body.errors) {
+      console.log('FAIL Status:', res.statusCode, 'Body:', JSON.stringify(res.body, null, 2));
     }
     expect(res.body.errors).toContain('Name is required');
     expect(res.body.errors).toContain('Email is required');
@@ -64,8 +68,8 @@ describe('Registration Validation API', () => {
       });
 
 
-    if (res.body.errors && !res.body.errors.includes('Invalid email format')) {
-      console.log('FAIL Invalid email. Body:', JSON.stringify(res.body, null, 2));
+    if (!res.body.errors) {
+      console.log('FAIL Status:', res.statusCode, 'Body:', JSON.stringify(res.body, null, 2));
     }
     expect(res.body.errors).toContain('Invalid email format');
   });

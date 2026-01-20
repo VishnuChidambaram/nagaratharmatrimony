@@ -30,26 +30,30 @@ const requiredString = (msg) => z.preprocess((val) => (val === undefined || val 
 
 export const registerSchema = z.object({
   body: z.object({
-    name: z.string().trim().min(1, "Name is required"),
-    email: z.string().trim().min(1, "Email is required").email("Invalid email format"),
-    phone: z.string().trim().min(1, "Phone number is required").regex(/^\+?91?\d{10}$|^\d{10}$/, "Phone number must be 10 digits (with or without +91)"),
+    name: requiredString("Name is required"),
+    email: z.preprocess((val) => (val === undefined || val === null ? "" : val), z.string().trim().min(1, "Email is required").email("Invalid email format")),
+    phone: z.preprocess((val) => (val === undefined || val === null ? "" : val), z.string().trim().min(1, "Phone number is required").regex(/^\+?91?\d{10}$|^\d{10}$/, "Phone number must be 10 digits (with or without +91)")),
     otherPhone: optionalTrimmedString,
-    password: z.string().min(1, "Password is required").min(8, "Password must be at least 8 characters long"),
-    gender: z.enum(['Male', 'Female', 'Other', 'ஆண்', 'பெண்', 'மற்றவை'], { 
-      errorMap: (issue, ctx) => {
-        if (issue.code === 'invalid_enum_value' || issue.code === 'invalid_type') {
-          return { message: 'Gender is required' };
-        }
-        return { message: ctx.defaultError };
-      }
-    }),
+    password: z.preprocess((val) => (val === undefined || val === null ? "" : val), z.string()
+      .min(1, "Password is required")
+      .min(8, "Password must be at least 8 characters long")
+      .refine(val => /[A-Z]/.test(val), "Password must contain at least one uppercase letter")
+      .refine(val => /[a-z]/.test(val), "Password must contain at least one lowercase letter")
+      .refine(val => /\d/.test(val), "Password must contain at least one number")
+      .refine(val => /[!@#$%^&*(),.?":{}|<> ]/.test(val), "Password must contain at least one special character")),
+    gender: z.preprocess((val) => (val === undefined || val === null ? "" : val), z.string().min(1, "Gender is required").refine(val => {
+      const validGenders = ['Male', 'Female', 'Other', 'ஆண்', 'பெண்', 'மற்றவை'];
+      if (!val) return true; // Handled by min(1)
+      return validGenders.includes(val);
+    }, { message: "Gender is required" })),
     maritalStatus: optionalTrimmedString,
-    dateOfBirth: z.string().min(1, "Date of birth is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").refine(val => {
+    dateOfBirth: z.preprocess((val) => (val === undefined || val === null ? "" : val), z.string().min(1, "Date of birth is required").regex(/^\d{4}-\d{2}-\d{2}$/, "Invalid date format (YYYY-MM-DD)").refine(val => {
+      if (!val) return true; // Handled by min(1)
       const dob = new Date(val);
       const today = new Date();
       const age = today.getFullYear() - dob.getFullYear();
       return age >= 22;
-    }, { message: "You must be at least 22 years old to register" }),
+    }, { message: "You must be at least 22 years old to register" })),
     yourTemple: z.string().optional().nullable().refine(val => {
       if (!val || val === "") return true;
       return validTemples.includes(val);
