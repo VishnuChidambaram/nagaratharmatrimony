@@ -27,7 +27,7 @@ export default function ImageModal({
     userEmail &&
     selectedImageOwner.email.toLowerCase() === userEmail.toLowerCase();
   
-  const hasPassword = selectedImageOwner && selectedImageOwner.photoPassword;
+  const hasPassword = selectedImageOwner && selectedImageOwner.hasPhotoPassword;
   const isBlur =
     hasPassword &&
     !isOwner &&
@@ -121,11 +121,25 @@ export default function ImageModal({
                     }}
                   />
                   <button
-                    onClick={() => {
-                      if (imagePasswordInput === selectedImageOwner.photoPassword) {
-                        onUnlock(selectedImageOwner.email);
-                      } else {
-                        alert(t("Incorrect Password"));
+                    onClick={async () => {
+                      try {
+                        const res = await fetch(`${API_URL}/api/verify-photo-password`, {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            email: selectedImageOwner.email,
+                            password: imagePasswordInput,
+                          }),
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                          onUnlock(selectedImageOwner.email);
+                        } else {
+                          alert(t(data.message || "Incorrect Password"));
+                        }
+                      } catch (error) {
+                        console.error("Unlock error:", error);
+                        alert(t("Error verifying password"));
                       }
                     }}
                     style={{

@@ -91,6 +91,51 @@ export default function Step4() {
   return (
     <>
       <style jsx>{`
+        .astrology-row {
+          width: 450px;
+          max-width: 450px;
+          margin: 10px auto;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 15px;
+          box-sizing: border-box;
+        }
+
+        .astrology-label {
+          width: 120px;
+          min-width: 120px;
+          font-weight: bold;
+          text-align: left;
+          margin: 0;
+          flex-shrink: 0;
+        }
+
+        .astrology-date-input {
+          width: 250px;
+          max-width: 250px;
+          margin: 0;
+          box-sizing: border-box;
+        }
+
+        .astrology-input-group {
+          display: flex;
+          flex-direction: row;
+          gap: 10px;
+          width: 250px;
+          justify-content: flex-start;
+        }
+
+        .astrology-small-input {
+          width: 60px;
+          min-width: 60px;
+          margin: 0;
+          box-sizing: border-box;
+          padding: 8px 5px;
+          text-align: center;
+        }
+
         @media (max-width: 1024px) {
           .form-container {
             flex-direction: column !important;
@@ -112,7 +157,7 @@ export default function Step4() {
 
           /* Tablet Standardized Widths */
           select, 
-          input:not([type="checkbox"]):not([type="radio"]):not(.small-input):not(.date-input), 
+          input:not([type="checkbox"]):not([type="radio"]):not(.astrology-small-input):not(.astrology-date-input), 
           :global(.tamil-input-container input),
           :global(.tamil-input-container textarea) {
             width: 450px !important;
@@ -125,137 +170,71 @@ export default function Step4() {
             max-width: 450px !important;
             margin: 10px auto !important;
           }
-          
-          .small-input {
-            width: 60px !important; /* Slightly larger for easier tap */
-            min-width: 60px !important;
-            margin: 5px !important;
-          }
 
-          .date-input {
-            width: 250px !important;
-            max-width: 250px !important;
-            margin: 10px 0 !important;
-            margin-left: 0px !important;
-          }
-
-          .responsive-container {
+          .astrology-row {
             width: 450px !important;
             max-width: 450px !important;
-            gap: 10px !important;
             margin: 10px auto !important;
+            gap: 10px !important;
           }
 
-          .responsive-container label {
-            margin: 10px 10px 0 0 !important;
+          .astrology-label {
             width: 120px !important;
-            margin-left: 0px !important;
+            min-width: 120px !important;
           }
         }
         
         @media (max-width: 480px) {
-          select, 
-          input:not([type="checkbox"]):not([type="radio"]):not(.small-input), 
-          :global(.tamil-input-container input),
-          :global(.tamil-input-container textarea) {
-            width: 300px !important;
-            max-width: 300px !important;
-            margin: 10px auto !important;
-            display: block !important;
-            box-sizing: border-box !important;
+          .astrology-row {
+            width: 250px !important;
+            max-width: 250px !important;
+            gap: 5px !important;
+          }
+
+          .astrology-label {
+            width: 90px !important;
+            min-width: 90px !important;
+            font-size: 13px !important;
+          }
+
+          .astrology-date-input {
+            width: 155px !important;
+            max-width: 155px !important;
+          }
+
+          .astrology-input-group {
+            width: 155px !important;
+            gap: 5px !important;
+          }
+
+          .astrology-small-input {
+            width: 48px !important;
+            min-width: 48px !important;
+            padding: 8px 3px !important;
+            font-size: 13px !important;
+          }
+
+          select.astrology-select {
+            width: 250px !important;
+            max-width: 250px !important;
           }
 
           .button-container button {
-            width: 300px !important;
-            max-width: 300px !important;
-            margin: 10px auto !important;
-            box-sizing: border-box !important;
-          }
-
-          .date-input {
-            width: 200px !important;
-            max-width: 200px !important;
-            margin: 10px 0 !important;
-            margin-left: 0px !important;
-            box-sizing: border-box !important;
-          }
-
-          .responsive-container {
-            width: 300px !important;
-            max-width: 300px !important;
-            gap: 5px !important;
-            margin: 10px auto !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            box-sizing: border-box !important;
-          }
-
-          .date-birth-container {
-            width: 300px !important;
-            max-width: 300px !important;
-            gap: 0px !important;
-            margin: 10px auto !important;
-            display: flex !important;
-            flex-direction: row !important;
-            align-items: center !important;
-            justify-content: flex-start !important;
-            box-sizing: border-box !important;
-          }
-
-          .responsive-container label, .date-birth-label {
-            margin: 10px 0px 0 0 !important;
-            width: 100px !important;
-            min-width: 100px !important;
-            font-size: 14px !important;
-            text-align: left !important;
-            flex-shrink: 0 !important;
-          }
-
-          .small-input {
-            margin: 10px 0 0 0px !important;
-            width: 45px !important;
-            min-width: 45px !important;
-            box-sizing: border-box !important;
-            padding: 8px 5px !important;
-            text-align: center !important;
+            width: 250px !important;
+            max-width: 250px !important;
           }
 
           h1 {
             font-size: 22px !important;
           }
-        }
-        
-        .date-label {
-            margin: 10px 20px 0px 10px;
-        } 
-        .date-input {
-            width: 250px;
-            margin-left: 15px;
-        }
 
-        .date-birth-label {
-            margin: 10px 0px 0px 0px;
-            font-weight: bold;
-        }
-
-        .date-birth-container {
-            gap: 15px;
-        }
-
-        @media (max-width: 1024px) {
-            .date-birth-container {
-                gap: 10px !important;
-                width: 450px !important;
-                max-width: 450px !important;
-                margin: 10px auto !important;
-            }
-            .date-birth-label {
-                margin-right: 10px !important;
-                margin-left: 0px !important;
-                width: 120px !important;
-            }
+          select:not(.astrology-select), 
+          input:not([type="checkbox"]):not([type="radio"]):not(.astrology-small-input):not(.astrology-date-input), 
+          :global(.tamil-input-container input),
+          :global(.tamil-input-container textarea) {
+            width: 250px !important;
+            max-width: 250px !important;
+          }
         }
 
 
@@ -383,79 +362,60 @@ export default function Step4() {
             forcedLanguage={language}
             style={styles.input}
           />
-          <div
-            className="date-birth-container"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginTop: 8,
-              width: "450px", 
-              maxWidth: "450px",
-            }}
-          >
-            <label
-              className="date-birth-label"
-            >
+          <div className="astrology-row">
+            <label className="astrology-label">
               {t("Date of Birth", language)}:
             </label>
             <input
               style={styles.input1}
-              className="date-input"
+              className="astrology-date-input"
               type="date"
               name="dateOfBirth"
               value={form.dateOfBirth}
               onChange={handle}
-              max={new Date(new Date().setFullYear(new Date().getFullYear() - 2)).toISOString().split('T')[0]}
+              max={new Date(new Date().setFullYear(new Date().getFullYear() - 22)).toISOString().split('T')[0]}
               onKeyDown={(e) => e.preventDefault()}
               onClick={(e) => e.target.showPicker && e.target.showPicker()}
             />
           </div>
 
-
-          <div
-            className="responsive-container"
-            style={{
-              display: "flex",
-              gap: 15,
-              alignItems: "center",
-              marginTop: 8,
-              width: "450px",
-              maxWidth: "450px",
-            }}
-          >
-            <label style={{ margin: "10px 0px 0px 0px", fontWeight: "bold" }}>
+          <div className="astrology-row">
+            <label className="astrology-label">
               {t("Time of Birth", language)}: 
             </label>
-            <input
-              style={styles.smallInput11}
-              className="small-input"
-              name="timeOfBirthHours"
-              value={form.timeOfBirthHours}
-              onChange={handle}
-              placeholder="HH"
-              maxLength={2}
-            />
-            <input
-              style={styles.smallInput1}
-              className="small-input"
-              name="timeOfBirthMinutes"
-              value={form.timeOfBirthMinutes}
-              onChange={handle}
-              placeholder="MM"
-              maxLength={2}
-            />
-            <input
-              style={styles.smallInput1}
-              className="small-input"
-              name="timeOfBirthSeconds"
-              value={form.timeOfBirthSeconds}
-              onChange={handle}
-              placeholder="SS"
-              maxLength={2}
-            />
+            <div className="astrology-input-group">
+              <input
+                style={styles.smallInput11}
+                className="astrology-small-input"
+                name="timeOfBirthHours"
+                value={form.timeOfBirthHours}
+                onChange={handle}
+                placeholder="HH"
+                maxLength={2}
+              />
+              <input
+                style={styles.smallInput1}
+                className="astrology-small-input"
+                name="timeOfBirthMinutes"
+                value={form.timeOfBirthMinutes}
+                onChange={handle}
+                placeholder="MM"
+                maxLength={2}
+              />
+              <input
+                style={styles.smallInput1}
+                className="astrology-small-input"
+                name="timeOfBirthSeconds"
+                value={form.timeOfBirthSeconds}
+                onChange={handle}
+                placeholder="SS"
+                maxLength={2}
+              />
+            </div>
           </div>
           <select
             style={styles.input}
+            className="astrology-select"
             name="DasaType"
             value={form.DasaType}
             onChange={handle}
@@ -490,47 +450,39 @@ export default function Step4() {
             </option>
           </select>
 
-          <div
-            className="responsive-container"
-            style={{
-              display: "flex",
-              gap: 15,
-              alignItems: "center",
-              marginTop: 8,
-              width: "450px",
-              maxWidth: "450px",
-            }}
-          >
-            <label style={{ margin: "10px 0px 0px 0px", fontWeight: "bold" }}>
+          <div className="astrology-row">
+            <label className="astrology-label">
               {t("Dasa Remain", language)}:
             </label>
-            <input
-              style={styles.smallInput11}
-              className="small-input"
-              name="dasaRemainYears"
-              value={form.dasaRemainYears}
-              onChange={handle}
-              placeholder="YY"
-              maxLength={2}
-            />
-            <input
-              style={styles.smallInput1}
-              className="small-input"
-              name="dasaRemainMonths"
-              value={form.dasaRemainMonths}
-              onChange={handle}
-              placeholder="MM"
-              maxLength={2}
-            />
-            <input
-              style={styles.smallInput1}
-              className="small-input"
-              name="dasaRemainDays"
-              value={form.dasaRemainDays}
-              onChange={handle}
-              placeholder="DD"
-              maxLength={2}
-            />
+            <div className="astrology-input-group">
+              <input
+                style={styles.smallInput11}
+                className="astrology-small-input"
+                name="dasaRemainYears"
+                value={form.dasaRemainYears}
+                onChange={handle}
+                placeholder="YY"
+                maxLength={2}
+              />
+              <input
+                style={styles.smallInput1}
+                className="astrology-small-input"
+                name="dasaRemainMonths"
+                value={form.dasaRemainMonths}
+                onChange={handle}
+                placeholder="MM"
+                maxLength={2}
+              />
+              <input
+                style={styles.smallInput1}
+                className="astrology-small-input"
+                name="dasaRemainDays"
+                value={form.dasaRemainDays}
+                onChange={handle}
+                placeholder="DD"
+                maxLength={2}
+              />
+            </div>
           </div>
 
         </div>

@@ -163,8 +163,8 @@ function validateRegistrationFields(data) {
     const dob = new Date(data.dateOfBirth);
     const today = new Date();
     const age = today.getFullYear() - dob.getFullYear();
-    if (age < 2) {
-      errors.push("You must be at least 2 years old to register");
+    if (age < 22) {
+      errors.push("You must be at least 22 years old to register");
     }
     if (age > 100) {
       errors.push("Invalid date of birth");
@@ -347,7 +347,7 @@ router.post("/verify-otp", async (req, res) => {
 });
 
 
-router.post("/admin/login", authLimiter, async (req, res) => {
+router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -693,22 +693,11 @@ router.post("/check-user-exists", async (req, res) => {
 });
 
 // Pre-registration validation endpoint
-router.post("/validate-registration", async (req, res) => {
+router.post("/validate-registration", validate(registerSchema), async (req, res) => {
   const data = req.body;
 
   try {
-    // 1. Basic Field Validation
-    // Note: We skip photo validation here as photos are uploaded later or handled separately in /register
-    const fieldValidation = validateRegistrationFields(data);
-    if (!fieldValidation.isValid) {
-      return res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errors: fieldValidation.errors
-      });
-    }
-
-    // 2. Password Strength Validation
+    // 1. Password Strength Validation (Manual check for additional rules beyond schema)
     const passwordValidation = validatePasswordStrength(data.password);
     if (!passwordValidation.isValid) {
       return res.json({
@@ -718,7 +707,7 @@ router.post("/validate-registration", async (req, res) => {
       });
     }
 
-    // 3. User Existence Check
+    // 2. User Existence Check
     const existingUser = await db.UserDetail.findOne({
       where: {
         [db.sequelize.Sequelize.Op.or]: [
@@ -763,7 +752,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     // Everything went fine.
     next();
   });
-}, async (req, res) => {
+}, validate(registerSchema), async (req, res) => {
   const data = req.body;
   console.log("Received registration request for:", data.email, data.name);
 
@@ -783,20 +772,8 @@ router.post("/register", registrationLimiter, (req, res, next) => {
 
   try {
     console.log("=== REGISTRATION VALIDATION START ===");
-    console.log("Step 1: Field validation...");
-    // Registration still needs some manual parts for complex logic but Zod handles the basics.
-    const fieldValidation = validateRegistrationFields(data);
-    if (!fieldValidation.isValid) {
-      console.log("Field validation FAILED:", fieldValidation.errors);
-      return res.status(400).json({
-        success: false,
-        message: "Validation failed",
-        errors: fieldValidation.errors
-      });
-    }
-    console.log("Field validation PASSED");
-
-    console.log("Step 2: Photo validation...");
+    
+    console.log("Step 1: Photo validation...");
     // Validate photo count and size
     // Access photos via req.files.photo
     const photos = req.files?.photo || [];
@@ -820,7 +797,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     }
     console.log("Photo validation PASSED");
 
-    console.log("Step 3: Checking if user exists...");
+    console.log("Step 2: Checking if user exists...");
     // Check if user already exists
     const existingUser = await db.UserDetail.findOne({
       where: {
@@ -840,7 +817,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     }
     console.log("User existence check PASSED");
 
-    console.log("Step 4: Password strength validation...");
+    console.log("Step 3: Password strength validation...");
     // Validate password strength
     const passwordValidation = validatePasswordStrength(data.password);
     if (!passwordValidation.isValid) {

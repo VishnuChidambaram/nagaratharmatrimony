@@ -5,6 +5,8 @@ import bcrypt from "bcrypt";
 import db from "../models/index.js";
 import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 import { sessionAuthMiddleware } from "../middleware/authMiddleware.js";
+import validate from "../middleware/validation.js";
+import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
 
 const router = express.Router();
 
@@ -52,13 +54,22 @@ router.get("/upload-details", sessionAuthMiddleware, async (req, res) => {
         message: "Email is required",
       });
     }
-    // Find all details for the user
+    // Find all details for the user and redact photoPassword
     const uploadDetails = await db.UserDetail.findAll({
       where: { email },
+      attributes: { exclude: ['photoPassword'] }
     });
+    
+    // Add hasPhotoPassword boolean for frontend
+    const results = uploadDetails.map(u => {
+      const plain = u.toJSON();
+      plain.hasPhotoPassword = !!u.photoPassword;
+      return plain;
+    });
+
     res.json({
       success: true,
-      data: uploadDetails,
+      data: results,
     });
   } catch (error) {
     console.error("Fetch upload details error:", error);
@@ -120,11 +131,20 @@ router.get("/all-details", async (req, res) => {
     const allDetails = await db.UserDetail.findAll({
       where: { is_deleted: false }, // Only fetch non-deleted users
       order: [["created_at", "DESC"]], // Order by newest first
+      attributes: { exclude: ['photoPassword'] }
     });
+
+    // Add hasPhotoPassword boolean for frontend
+    const results = allDetails.map(u => {
+      const plain = u.toJSON();
+      plain.hasPhotoPassword = !!u.photoPassword;
+      return plain;
+    });
+
     res.json({
       success: true,
-      data: allDetails,
-      count: allDetails.length,
+      data: results,
+      count: results.length,
     });
   } catch (error) {
     console.error("Fetch all details error:", error);
@@ -149,6 +169,10 @@ router.get("/userdetails/:email", async (req, res) => {
     // Convert userDetail to plain object so we can modify it
     const userData = userDetail.toJSON();
     
+    // Add hasPhotoPassword check before redacting
+    userData.hasPhotoPassword = !!userData.photoPassword;
+    delete userData.photoPassword;
+
     // Parse photo field (which is stored as JSON string) into photos array
     if (userData.photo) {
       try {
@@ -193,9 +217,14 @@ router.get("/upload-details/:id", async (req, res) => {
         message: "Access denied: You do not own this detail",
       });
     }
+    // Redact photoPassword
+    const plain = uploadDetail.toJSON();
+    plain.hasPhotoPassword = !!plain.photoPassword;
+    delete plain.photoPassword;
+
     res.json({
       success: true,
-      data: uploadDetail,
+      data: plain,
     });
   } catch (error) {
     console.error("Fetch single upload detail error:", error);
@@ -296,6 +325,7 @@ router.put(
       next();
     });
   },
+  validate(updateProfileSchema),
   async (req, res) => {
     const { email } = req.params;
 
@@ -441,7 +471,11 @@ router.put(
         updateData.password = data.password;
       }
       if (data.photoPassword !== undefined) {
-        updateData.photoPassword = data.photoPassword;
+        if (data.photoPassword === "" || data.photoPassword === null) {
+          updateData.photoPassword = null;
+        } else {
+          updateData.photoPassword = await bcrypt.hash(data.photoPassword, 10);
+        }
       }
 
       if (data.gender !== undefined) updateData.gender = data.gender || null;
@@ -765,6 +799,31 @@ router.put("/restore-user/:id", async (req, res) => {
       success: false,
       message: "Internal server error",
     });
+  }
+});
+
+
+router.post("/verify-photo-password", validate(verifyPhotoPasswordSchema), async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({ success: false, message: "Email and password are required" });
+    }
+
+    const user = await db.UserDetail.findOne({ where: { email } });
+    if (!user || !user.photoPassword) {
+      return res.json({ success: false, message: "No photo password set for this user" });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.photoPassword);
+    if (isMatch) {
+      return res.json({ success: true, message: "Password verified" });
+    } else {
+      return res.json({ success: false, message: "Incorrect password" });
+    }
+  } catch (error) {
+    console.error("Verify photo password error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
 

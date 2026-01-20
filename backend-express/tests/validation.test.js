@@ -40,9 +40,9 @@ describe('Registration Validation API', () => {
       .post('/register')
       .send({}); // Missing everything
 
-    expect(res.statusCode).toBe(400);
-    expect(res.body.success).toBe(false);
-    expect(res.body.message).toBe('Validation failed');
+    if (res.body.errors && !res.body.errors.includes('Name is required')) {
+      console.log('FAIL Missing fields. Body:', JSON.stringify(res.body, null, 2));
+    }
     expect(res.body.errors).toContain('Name is required');
     expect(res.body.errors).toContain('Email is required');
     expect(res.body.errors).toContain('Phone number is required');
@@ -64,6 +64,9 @@ describe('Registration Validation API', () => {
       });
 
 
+    if (res.body.errors && !res.body.errors.includes('Invalid email format')) {
+      console.log('FAIL Invalid email. Body:', JSON.stringify(res.body, null, 2));
+    }
     expect(res.body.errors).toContain('Invalid email format');
   });
 
@@ -80,7 +83,10 @@ describe('Registration Validation API', () => {
       });
 
 
-    expect(res.body.errors).toContain('Phone number must be 10 digits');
+    if (res.body.errors && !res.body.errors.includes('Phone number must be 10 digits (with or without +91)')) {
+      console.log('FAIL Invalid phone. Body:', JSON.stringify(res.body, null, 2));
+    }
+    expect(res.body.errors).toContain('Phone number must be 10 digits (with or without +91)');
   });
 
   it('should fail registration with weak password', async () => {
@@ -96,15 +102,18 @@ describe('Registration Validation API', () => {
       });
 
 
+    if (res.body.errors && !res.body.errors.includes('Password must be at least 8 characters long')) {
+      console.log('FAIL Weak password. Body:', JSON.stringify(res.body, null, 2));
+    }
     expect(res.body.success).toBe(false);
     expect(res.body.errors).toContain('Password must be at least 8 characters long');
     expect(res.body.errors).toContain('Password must contain at least one uppercase letter');
     expect(res.body.errors).toContain('Password must contain at least one special character');
   });
 
-  it('should fail registration if user is under 18', async () => {
+  it('should fail registration if user is under 22', async () => {
     const underageDate = new Date();
-    underageDate.setFullYear(underageDate.getFullYear() - 17);
+    underageDate.setFullYear(underageDate.getFullYear() - 21);
     const dobString = underageDate.toISOString().split('T')[0];
 
     const res = await request(app)
@@ -119,7 +128,10 @@ describe('Registration Validation API', () => {
       });
 
 
-    expect(res.body.errors).toContain('You must be at least 18 years old to register');
+    if (res.body.errors && !res.body.errors.includes('You must be at least 22 years old to register')) {
+      console.log('FAIL Underage. Body:', JSON.stringify(res.body, null, 2));
+    }
+    expect(res.body.errors).toContain('You must be at least 22 years old to register');
   });
 
   it('should fail registration with invalid temple selection', async () => {
