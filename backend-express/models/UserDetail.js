@@ -110,7 +110,6 @@ const UserDetail = sequelize.define(
     referralDetails1Email: {
       type: Sequelize.STRING(255),
       allowNull: true,
-      field: "referralDetails1Address",
     },
     referralDetails1Address: {
       type: Sequelize.TEXT,
@@ -127,7 +126,6 @@ const UserDetail = sequelize.define(
     referralDetails2Email: {
       type: Sequelize.STRING(255),
       allowNull: true,
-      field: "referralDetails2Address",
     },
     referralDetails2Address: {
       type: Sequelize.TEXT,
