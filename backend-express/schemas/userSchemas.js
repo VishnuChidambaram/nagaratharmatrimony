@@ -156,6 +156,14 @@ export const registerSchema = z.object({
     amsam_maanthi: z.any().optional(),
     amsam_kethu: z.any().optional(),
     amsam_lagnam: z.any().optional(),
+    
+    // Missing fields from UserDetail.js
+    referralDetails1Address: optionalTrimmedString,
+    referralDetails2Address: optionalTrimmedString,
+    photo: z.any().optional(),
+    sessionId: optionalTrimmedString,
+    updated_at: z.any().optional(),
+    is_deleted: z.boolean().optional(),
   }).passthrough()
 });
 

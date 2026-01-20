@@ -177,6 +177,13 @@ export const styles = {
     fontWeight: "bold",
     cursor: "pointer",
     minHeight: "44px",
+    transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+  },
+  button1Hover: {
+    transform: "translateY(-2px)",
+    boxShadow: "0 6px 12px rgba(40, 167, 69, 0.2)",
+    backgroundColor: "var(--secondary-accent)",
   },
   previousButton: {
     width: "100%",

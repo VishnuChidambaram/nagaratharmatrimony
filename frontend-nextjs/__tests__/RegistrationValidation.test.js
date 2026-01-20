@@ -24,14 +24,29 @@ jest.mock('@/app/register/styles', () => ({
   ...jest.requireActual('@/app/register/styles'),
   loadFormData: jest.fn(() => Promise.resolve({
     name: '',
-    email: '',
+    gender: '',
     password: '',
     confirmPassword: '',
     maritalStatus: '',
     fatherName: '',
+    motherName: '',
+    brothers: '',
+    brothersMarried: '',
+    sisters: '',
+    sistersMarried: '',
     yourTemple: '',
+    yourDivision: '',
+    nativePlace: '',
+    nativePlaceHouseName: '',
     presentResidence: '',
     pincode: '',
+    referredBy: '',
+    referralDetails1Name: '',
+    referralDetails1Phone: '',
+    referralDetails1Email: '',
+    referralDetails2Name: '',
+    referralDetails2Phone: '',
+    referralDetails2Email: '',
     profileCreatedBy: '',
   })),
   saveFormData: jest.fn(() => Promise.resolve()),
@@ -51,6 +66,7 @@ jest.mock('@/app/components/TamilInput', () => {
           onBlur={props.onBlur}
           value={props.value}
           type={props.type}
+          placeholder={props.placeholder}
         />
       </div>
     );
@@ -98,13 +114,37 @@ describe('Registration Step 1 Validation', () => {
     
     // fatherName is a TamilInput, name="fatherName"
     fireEvent.change(screen.getByTestId('fatherName'), { target: { name: 'fatherName', value: 'Father Name' } });
+    fireEvent.change(screen.getByTestId('motherName'), { target: { name: 'motherName', value: 'Mother Name' } });
     
     fireEvent.change(screen.getByDisplayValue(/select your temple/i), { target: { name: 'yourTemple', value: 'Nemam Kovil' } });
     
+    fireEvent.change(screen.getByDisplayValue(/select number of brothers/i), { target: { name: 'brothers', value: '1' } });
+    fireEvent.change(screen.getByDisplayValue(/select married number of brothers/i), { target: { name: 'brothersMarried', value: '0' } });
+    fireEvent.change(screen.getByDisplayValue(/select number of sisters/i), { target: { name: 'sisters', value: '1' } });
+    fireEvent.change(screen.getByDisplayValue(/select married number of sisters/i), { target: { name: 'sistersMarried', value: '0' } });
+
+    fireEvent.change(screen.getByDisplayValue(/select native place/i), { target: { name: 'nativePlace', value: 'Karaikudi – 630001' } });
+    fireEvent.change(screen.getByTestId('nativePlaceHouseName'), { target: { name: 'nativePlaceHouseName', value: 'House Name' } });
+
     // presentResidence is a TamilInput, name="presentResidence"
     fireEvent.change(screen.getByTestId('presentResidence'), { target: { name: 'presentResidence', value: 'Address line' } });
-
+    fireEvent.change(screen.getByTestId('pincode'), { target: { name: 'pincode', value: '123456' } });
     fireEvent.change(screen.getByDisplayValue(/select profile created by/i), { target: { name: 'profileCreatedBy', value: 'Self' } });
+    fireEvent.change(screen.getByDisplayValue(/select referred by/i), { target: { name: 'referredBy', value: 'Friends' } });
+    
+    // Referral 1
+    const refNames = screen.getAllByPlaceholderText(/referral name/i);
+    const refPhones = screen.getAllByPlaceholderText(/referral phone/i);
+    const refEmails = screen.getAllByPlaceholderText(/referral email/i);
+
+    fireEvent.change(refNames[0], { target: { name: 'referralDetails1Name', value: 'Ref 1' } });
+    fireEvent.change(refPhones[0], { target: { name: 'referralDetails1Phone', value: '9876543210' } });
+    fireEvent.change(refEmails[0], { target: { name: 'referralDetails1Email', value: 'ref1@test.com' } });
+
+    // Referral 2
+    fireEvent.change(refNames[1], { target: { name: 'referralDetails2Name', value: 'Ref 2' } });
+    fireEvent.change(refPhones[1], { target: { name: 'referralDetails2Phone', value: '9876543211' } });
+    fireEvent.change(refEmails[1], { target: { name: 'referralDetails2Email', value: 'ref2@test.com' } });
 
     const pincodeInput = screen.getByTestId('pincode');
     
@@ -115,6 +155,11 @@ describe('Registration Step 1 Validation', () => {
     fireEvent.click(nextButton);
 
     await waitFor(() => {
+      const allErrors = screen.queryAllByText(/required|must be|invalid/i);
+      const errorTexts = allErrors.map(e => e.textContent).join(", ");
+      if (errorTexts && !errorTexts.includes("Pincode must be a 6-digit number")) {
+          throw new Error(`VALIDATION ERRORS FOUND: ${errorTexts}`);
+      }
       expect(screen.getByText(/pincode must be a 6-digit number/i)).toBeInTheDocument();
     });
   });

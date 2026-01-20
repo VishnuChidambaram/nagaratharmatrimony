@@ -599,6 +599,7 @@ export default function Dashboard() {
               alignItems: "center",
               padding: "40px",
             }}
+            data-testid="loading-state"
           >
             <div className="loading-spinner"></div>
             <p
@@ -620,6 +621,7 @@ export default function Dashboard() {
               alignItems: "center",
               padding: "40px",
             }}
+            data-testid="error-state"
           >
             <div
               style={{
