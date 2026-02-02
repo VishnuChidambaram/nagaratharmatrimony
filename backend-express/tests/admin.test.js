@@ -13,7 +13,8 @@ jest.unstable_mockModule('../models/index.js', () => ({
       update: jest.fn(),
     },
     UserDetail: {
-        findAll: jest.fn()
+        findAll: jest.fn(),
+        findByPk: jest.fn()
     }
   }
 }));
@@ -69,5 +70,26 @@ describe('Admin API', () => {
     const res = await request(app).get('/admin/users');
     expect(res.statusCode).toBe(403);
     expect(res.body.success).toBe(false);
+  });
+
+  it('should fetch single user details with admin auth', async () => {
+    db.UserDetail.findByPk.mockResolvedValue({
+      id: 1,
+      email: 'user@example.com',
+      toJSON: () => ({ id: 1, email: 'user@example.com' })
+    });
+    db.AdminLogin.findOne.mockResolvedValue({
+      email: 'admin@example.com',
+      sessionId: 'admin-sess-123'
+    });
+
+    const res = await request(app)
+      .get('/upload-details/1')
+      .set('x-admin-email', 'admin@example.com')
+      .set('x-admin-session-id', 'admin-sess-123');
+    
+    expect(res.statusCode).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.data.email).toBe('user@example.com');
   });
 });

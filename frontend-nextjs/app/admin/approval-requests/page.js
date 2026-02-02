@@ -6,6 +6,7 @@ import { useLanguage } from "../../hooks/useLanguage";
 import { translations } from "../../utils/translations";
 import LanguageToggle from "../../components/LanguageToggle";
 import { API_URL } from "../../utils/config";
+import { getAuthHeaders } from "../../utils/auth-headers";
 
 export default function ApprovalRequests() {
   const [requests, setRequests] = useState([]);
@@ -24,6 +25,7 @@ export default function ApprovalRequests() {
   const fetchRequests = async () => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests`, {
+        headers: getAuthHeaders(),
         credentials: "include"
       });
       const data = await res.json();

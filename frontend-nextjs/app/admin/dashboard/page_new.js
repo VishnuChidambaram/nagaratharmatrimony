@@ -6,6 +6,7 @@ import AdminMenu from "../AdminMenu";
 import ConfirmationModal from "../components/ConfirmationModal";
 import styles from "./dashboard.module.css";
 import { API_URL } from "../../utils/config";
+import { getAuthHeaders } from "../../utils/auth-headers";
 import { getPhotoUrl } from "../../utils/photoUtils";
 import Image from "next/image";
 
@@ -300,7 +301,10 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const res = await fetch(`${API_URL}/all-details`);
+      const res = await fetch(`${API_URL}/all-details`, {
+        headers: getAuthHeaders(),
+        credentials: "include"
+      });
       const data = await res.json();
       if (data.success) {
         setUsers(data.data);
@@ -340,6 +344,8 @@ export default function AdminDashboard() {
 
       const res = await fetch(`${API_URL}/upload-details/${originalEmail}`, {
         method: "PUT",
+        headers: getAuthHeaders(),
+        credentials: "include",
         body: formData,
       });
 
@@ -366,6 +372,8 @@ export default function AdminDashboard() {
     try {
       const res = await fetch(`${API_URL}/soft-delete-user/${userToDelete}`, {
         method: "PUT",
+        headers: getAuthHeaders(),
+        credentials: "include",
       });
       const data = await res.json();
       if (data.success) {

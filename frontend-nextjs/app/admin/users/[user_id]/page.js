@@ -274,7 +274,10 @@ export default function UserDetail() {
 
   const fetchUser = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/upload-details/${user_id}`);
+      const res = await fetch(`${API_URL}/upload-details/${user_id}`, {
+        headers: getAuthHeaders(),
+        credentials: "include"
+      });
       const data = await res.json();
       if (data.success) {
         setUser(data.data);

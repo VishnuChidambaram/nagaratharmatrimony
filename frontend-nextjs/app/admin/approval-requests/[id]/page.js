@@ -6,6 +6,7 @@ import { useLanguage } from "../../../hooks/useLanguage";
 import { translations } from "../../../utils/translations";
 import { API_URL } from "../../../utils/config";
 import { getPhotoUrls } from "../../../utils/photoUtils";
+import { getAuthHeaders } from "../../../utils/auth-headers";
 import Image from "next/image";
 
 export default function ReviewRequest() {
@@ -33,7 +34,10 @@ export default function ReviewRequest() {
 
   const fetchRequest = useCallback(async () => {
     try {
-      const res = await fetch(`${API_URL}/api/update-requests/${id}`);
+      const res = await fetch(`${API_URL}/api/update-requests/${id}`, {
+        headers: getAuthHeaders(),
+        credentials: "include"
+      });
       const data = await res.json();
       if (data.success) {
         console.log("=== DEBUG: Full request data ===");
@@ -60,7 +64,11 @@ export default function ReviewRequest() {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/${id}/approve`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...getAuthHeaders()
+        },
+        credentials: "include",
         body: JSON.stringify({ admin_id: null }), // TODO: Add actual admin ID from auth
       });
       const data = await res.json();
@@ -94,7 +102,11 @@ export default function ReviewRequest() {
     try {
       const res = await fetch(`${API_URL}/api/update-requests/${id}/reject`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          ...getAuthHeaders()
+        },
+        credentials: "include",
         body: JSON.stringify({ admin_id: null, reason: rejectReason }), // TODO: Add actual admin ID
       });
       const data = await res.json();

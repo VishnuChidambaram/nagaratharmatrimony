@@ -28,6 +28,7 @@ export default function AdminDashboard() {
   const fetchPendingCount = useCallback(async () => {
     try {
       const res = await fetch(`${API_URL}/api/update-requests?status=pending`, {
+        headers: getAuthHeaders(),
         credentials: "include"
       });
       const data = await res.json();

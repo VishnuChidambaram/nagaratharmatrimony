@@ -10,6 +10,7 @@ import { API_URL } from "../../utils/config";
 
 import { translations } from "../../utils/translations";
 import LanguageToggle from "../../components/LanguageToggle";
+import { getAuthHeaders } from "../../utils/auth-headers";
 
 // Simplified UserCard for List View
 function UserCard({ user, onDelete, onEdit, t }) {
@@ -71,6 +72,7 @@ export default function UsersList() {
   const fetchUsers = async () => {
     try {
       const res = await fetch(`${API_URL}/all-details`, {
+        headers: getAuthHeaders(),
         credentials: "include"
       });
       const data = await res.json();

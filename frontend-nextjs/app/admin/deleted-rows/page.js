@@ -7,6 +7,7 @@ import AdminMenu from "../AdminMenu";
 import styles from "./deletedRows.module.css";
 import { useLanguage } from "../../hooks/useLanguage";
 import { API_URL } from "../../utils/config";
+import { getAuthHeaders } from "../../utils/auth-headers";
 
 import { translations } from "../../utils/translations";
 import LanguageToggle from "../../components/LanguageToggle";
@@ -30,7 +31,10 @@ export default function DeletedRows() {
 
   const fetchDeletedUsers = async () => {
     try {
-      const res = await fetch(`${API_URL}/deleted-details`);
+      const res = await fetch(`${API_URL}/deleted-details`, {
+        headers: getAuthHeaders(),
+        credentials: "include"
+      });
       const data = await res.json();
       if (data.success) {
         setDeletedUsers(data.data);
@@ -56,6 +60,8 @@ export default function DeletedRows() {
     try {
       const res = await fetch(`${API_URL}/restore-user/${selectedUserId}`, {
         method: "PUT",
+        headers: getAuthHeaders(),
+        credentials: "include"
       });
       const data = await res.json();
       if (data.success) {
@@ -80,6 +86,8 @@ export default function DeletedRows() {
     try {
       const res = await fetch(`${API_URL}/delete-user/${selectedUserId}`, {
         method: "DELETE",
+        headers: getAuthHeaders(),
+        credentials: "include"
       });
       const data = await res.json();
       if (data.success) {

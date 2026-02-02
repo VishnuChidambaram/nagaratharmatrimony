@@ -53,17 +53,7 @@ export const sessionAuthMiddleware = async (req, res, next) => {
       }
   } catch (error) {
       console.error("CRITICAL ERROR in sessionAuthMiddleware:", error);
-      // We don't want to crash the whole request if auth fails, just proceed without user attached
-      // Or maybe we SHOULD fail if it's a DB error?
-      // For now, let's log and proceed, effectively treating it as "not authenticated"
   }
 
-  // If we reach here, no valid session found.
-  // Should we block?
-  // Some routes might be public.
-  // We can just call next() and let the route handler decide, OR we can block.
-  // Given we are applying this to "Protected" routes generally...
-  // Let's just attach `req.user` if found, and let routes check `req.user`.
-  
-  next();
+  return next();
 };

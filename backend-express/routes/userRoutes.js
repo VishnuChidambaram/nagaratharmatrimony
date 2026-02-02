@@ -103,7 +103,6 @@ router.get("/all-details", async (req, res) => {
       attributes: { exclude: ['photoPassword'] }
     });
 
-    // Add Porutham and photoPassword boolean
     const currentUserEmail = req.user?.email;
     let currentUser = null;
     if (currentUserEmail) {
@@ -219,6 +218,11 @@ router.get("/upload-details/:id", async (req, res) => {
         message: "Detail not found",
       });
     }
+    // Check authentication
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
     // Check if the detail belongs to the requesting user OR if user is admin
     if (!req.user.isAdmin && uploadDetail.email !== req.user.email) {
       return res.status(403).json({
@@ -671,6 +675,11 @@ router.put(
 
 router.delete("/delete-user/:id", async (req, res) => {
   try {
+    // Only admins can permanently delete
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
     const { id } = req.params;
     const deletedCount = await db.UserDetail.destroy({
       where: { user_id: id },
@@ -736,6 +745,10 @@ router.put("/soft-delete-user/:id", async (req, res) => {
       });
     }
 
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
     // Only user themselves or admin can delete
     if (!req.user.isAdmin && req.user.email !== user.email) {
       return res.status(403).json({ success: false, message: "Unauthorized to delete this user" });
@@ -767,6 +780,10 @@ router.put("/restore-user/:id", async (req, res) => {
         success: false,
         message: "User not found",
       });
+    }
+
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required for restoration" });
     }
 
     await user.update({ is_deleted: false });
