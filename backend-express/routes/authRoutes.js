@@ -424,6 +424,11 @@ router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res)
 
 router.get("/admin/users", async (req, res) => {
   try {
+    // Only admins can see the full user list
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
     const users = await db.UserDetail.findAll({
       order: [['created_at', 'DESC']]
     });

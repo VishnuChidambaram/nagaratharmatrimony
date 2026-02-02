@@ -11,6 +11,9 @@ import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 
 const router = express.Router();
 
+// Apply auth middleware to all user routes for security
+router.use(sessionAuthMiddleware);
+
 // Configure multer for file uploads using Cloudinary
 const upload = multer({ 
   storage: cloudinaryStorage,
@@ -83,43 +86,8 @@ router.get("/upload-details", sessionAuthMiddleware, async (req, res) => {
 
 router.get("/all-details", async (req, res) => {
   try {
-    // Check if user is authenticated (either regular user or admin)
-    // Regular user details are stored in 'userEmail' cookie
-    // Admin details are stored in 'adminEmail' cookie
-    // Check if user is authenticated (either regular user or admin)
-    // Regular user details are stored in 'userEmail' cookie
-    // Admin details are stored in 'adminEmail' cookie
-    let isAuth = false;
-
-    // Check Admin Auth
-    // Prioritize Headers
-    let adminEmail = req.headers['x-admin-email'] || req.cookies.adminEmail;
-    let adminSessionId = req.headers['x-admin-session-id'] || req.cookies.adminSessionId; // Not strictly needed for basic check but good for verifying
-
-    if (adminEmail) {
-      // Basic check - we assume middleware or auth route handles strict session validation, 
-      // but here we trust the email if present (legacy logic) OR strictly check headers if we want robust security.
-      // For now, let's replicate the original logic: if adminEmail cookie/header is present, allow.
-      isAuth = true;
-    } 
-    
-    // Check User Auth
-    if (!isAuth) {
-       let userEmail = req.headers['x-user-email'] || req.cookies.userEmail;
-       let sessionId = req.headers['x-session-id'] || req.cookies.sessionId;
-
-       if (userEmail && sessionId) {
-          const user = await db.UserDetail.findOne({ 
-            where: { email: userEmail } 
-          });
-          if (user && user.sessionId === sessionId) {
-            isAuth = true;
-          }
-       }
-    }
-
-    if (!isAuth) {
-      // If not authenticated, return empty data to "fix the page as empty in browser view"
+    if (!req.user) {
+      // If not authenticated, return empty data
       return res.json({
         success: true,
         data: [],
@@ -188,9 +156,12 @@ router.get("/all-details", async (req, res) => {
     });
   }
 });
-
 router.get("/userdetails/:email", async (req, res) => {
   try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
     const { email } = req.params;
     const userDetail = await db.UserDetail.findOne({ where: { email } });
     if (!userDetail) {
@@ -199,6 +170,10 @@ router.get("/userdetails/:email", async (req, res) => {
         message: "User not found",
       });
     }
+
+    // Ownership check (users can view any profile but must be logged in, 
+    // however sensitive fields like email/phone for others might need further redaction)
+    // For now, we just ensure they are logged in.
     
     // Convert userDetail to plain object so we can modify it
     const userData = userDetail.toJSON();
@@ -244,8 +219,8 @@ router.get("/upload-details/:id", async (req, res) => {
         message: "Detail not found",
       });
     }
-    // Check if the detail belongs to the requesting user
-    if (email && uploadDetail.email !== email) {
+    // Check if the detail belongs to the requesting user OR if user is admin
+    if (!req.user.isAdmin && uploadDetail.email !== req.user.email) {
       return res.status(403).json({
         success: false,
         message: "Access denied: You do not own this detail",
@@ -363,45 +338,8 @@ router.put(
   async (req, res) => {
     const { email } = req.params;
 
-    // Manual Auth Check (since middleware is not in the chain for this specific route definition style, 
-    // or we can wrap the handler. But since we are editing inside the handler, let's call it or check headers manually? 
-    // Wait, I can't easily inject middleware into the array structure without changing the whole block.
-    // I will add the check inside the handler, assuming sessionAuthMiddleware logic or headers.)
-    
-    // Actually, I can't easily inject middleware in replace_file_content for this multi-handler syntax 
-    // without replacing the whole block properly.
-    // Let's rely on standard header check inside here for safety, or assume I can't use middleware easily.
-    
-    // Better: Re-implement the check locally for safety
-    // Prioritize Headers
-    let userEmail = req.headers['x-user-email'] || req.cookies.userEmail;
-    let sessionId = req.headers['x-session-id'] || req.cookies.sessionId;
-    let adminEmail = req.headers['x-admin-email'] || req.cookies.adminEmail;
-
-    let isAuthorized = false;
-    let isAdmin = false;
-
-    // Check ownership
-    // 1. Is Admin?
-    if (adminEmail) {
-       // Assume admin auth (simplified for this edit, ideally import verify logic)
-       isAdmin = true; 
-       isAuthorized = true;
-    }
-
-    // 2. Is Owner?
-    if (!isAuthorized && userEmail && sessionId) {
-       // Verify session (simplified check, ideally DB check)
-       // We'll trust the email for the ownership check if we assume the middleware ran? 
-       // No, middleware didn't run.
-       // Let's do a quick DB check.
-       const user = await db.UserDetail.findOne({ where: { email: userEmail } });
-       if (user && user.sessionId === sessionId) {
-          if (userEmail === email) isAuthorized = true;
-       }
-    }
-
-    if (!isAuthorized) {
+    // Check ownership or admin access
+    if (!req.user.isAdmin && req.user.email !== email) {
        return res.status(403).json({ success: false, message: "Unauthorized access: You can only update your own profile." });
     }
 
@@ -763,6 +701,11 @@ router.delete("/delete-user/:id", async (req, res) => {
 // Fetch soft-deleted users
 router.get("/deleted-details", async (req, res) => {
   try {
+    // Only admins can access the recycle bin
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
     const deletedDetails = await db.UserDetail.findAll({
       where: { is_deleted: true },
       order: [["updated_at", "DESC"]],
@@ -791,6 +734,11 @@ router.put("/soft-delete-user/:id", async (req, res) => {
         success: false,
         message: "User not found",
       });
+    }
+
+    // Only user themselves or admin can delete
+    if (!req.user.isAdmin && req.user.email !== user.email) {
+      return res.status(403).json({ success: false, message: "Unauthorized to delete this user" });
     }
 
     await user.update({ is_deleted: true });

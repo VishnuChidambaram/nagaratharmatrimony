@@ -10,11 +10,11 @@ const router = express.Router();
 // GET /api/shortlist - Get all shortlisted profiles for the logged-in user
 router.get("/api/shortlist", async (req, res) => {
   try {
-    const userEmail = req.user?.email;
-    
-    if (!userEmail) {
+    if (!req.user) {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
+
+    const userEmail = req.user.email;
 
     const shortlists = await db.Shortlist.findAll({
       where: { user_email: userEmail },
@@ -76,12 +76,12 @@ router.get("/api/shortlist", async (req, res) => {
 // POST /api/shortlist/toggle - Add or remove profile from shortlist
 router.post("/api/shortlist/toggle", async (req, res) => {
   try {
-    const userEmail = req.user?.email;
-    const { shortlisted_user_id } = req.body;
-
-    if (!userEmail) {
+    if (!req.user) {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
+
+    const userEmail = req.user.email;
+    const { shortlisted_user_id } = req.body;
 
     if (!shortlisted_user_id) {
       return res.status(400).json({ success: false, message: "Shortlisted user ID is required" });
@@ -112,24 +112,24 @@ router.post("/api/shortlist/toggle", async (req, res) => {
 
 // GET /api/shortlist/ids - Get only IDs of shortlisted users (for dashboard status)
 router.get("/api/shortlist/ids", async (req, res) => {
-    try {
-      const userEmail = req.user?.email;
-      
-      if (!userEmail) {
-        return res.status(401).json({ success: false, message: "Authentication required" });
-      }
-  
-      const shortlists = await db.Shortlist.findAll({
-        where: { user_email: userEmail },
-        attributes: ['shortlisted_user_id']
-      });
-  
-      const shortlistedIds = shortlists.map(s => s.shortlisted_user_id);
-      res.json({ success: true, ids: shortlistedIds });
-    } catch (error) {
-      console.error("Fetch shortlist IDs error:", error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
     }
-  });
+
+    const userEmail = req.user.email;
+
+    const shortlists = await db.Shortlist.findAll({
+      where: { user_email: userEmail },
+      attributes: ['shortlisted_user_id']
+    });
+
+    const shortlistedIds = shortlists.map(s => s.shortlisted_user_id);
+    res.json({ success: true, ids: shortlistedIds });
+  } catch (error) {
+    console.error("Fetch shortlist IDs error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+});
 
 export default router;

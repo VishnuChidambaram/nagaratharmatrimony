@@ -48,19 +48,26 @@ describe('Admin API', () => {
     expect(res.headers['set-cookie']).toBeDefined();
   });
 
-  it('should fetch users list', async () => {
+  it('should fetch users list with auth', async () => {
     db.UserDetail.findAll.mockResolvedValue([{ id: 1, name: 'Test User' }]);
+    db.AdminLogin.findOne.mockResolvedValue({
+      email: 'admin@example.com',
+      sessionId: 'admin-sess-123'
+    });
 
-    const res = await request(app).get('/admin/users');
-    
-    // Note: The current route /admin/users is NOT protected by middleware in the code provided!
-    // It's a public route in the current implementation (server.js:97 app.use("/", userRoutes) etc?? No, server.js:96 app.use("/", authRoutes))
-    // Wait, authRoutes.js:246 router.get("/admin/users"...)
-    // There is no middleware check inside that route handler.
-    // This confirms our security audit findings (though not explicitly mentioned, lack of auth check is bad).
+    const res = await request(app)
+      .get('/admin/users')
+      .set('x-admin-email', 'admin@example.com')
+      .set('x-admin-session-id', 'admin-sess-123');
     
     expect(res.statusCode).toBe(200);
     expect(res.body.success).toBe(true);
     expect(res.body.data).toHaveLength(1);
+  });
+
+  it('should fail to fetch users list without auth', async () => {
+    const res = await request(app).get('/admin/users');
+    expect(res.statusCode).toBe(403);
+    expect(res.body.success).toBe(false);
   });
 });
