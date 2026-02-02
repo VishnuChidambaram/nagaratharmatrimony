@@ -1,7 +1,6 @@
 import express from "express";
 import db from "../models/index.js";
 import { PoruthamCalculator } from "../utils/astrologyUtils.js";
-import { getAuthHeaders } from "../../frontend-nextjs/app/utils/auth-headers.js"; // Note: this import might not work directly in backend, but I'll implement logic manually
 
 const router = express.Router();
 
