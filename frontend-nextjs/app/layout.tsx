@@ -128,11 +128,11 @@ function PreventInspect() {
   return null;
 }
 
-// Global Button click restriction - Allow only one click every 3 seconds
+// Global Button click restriction - Allow only one click every 1.5 seconds
 function GlobalButtonClickLockout() {
   useEffect(() => {
     let lastClickTime = 0;
-    const LOCKOUT_DURATION = 3000; // 3 seconds
+    const LOCKOUT_DURATION = 1500; // 1.5 seconds
 
     const handleGlobalClick = (e: MouseEvent) => {
       // Find if the clicked element or any of its parents is a button
