@@ -61,6 +61,11 @@ router.post("/api/update-requests", async (req, res) => {
 // GET /api/update-requests - Get all pending requests (Admin only)
 router.get("/api/update-requests", async (req, res) => {
   try {
+    // Only admins can see the full list of pending requests
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
     const { status } = req.query;
     const whereClause = status ? { status } : { status: "pending" };
 
@@ -124,6 +129,11 @@ router.get("/api/update-requests/:id", async (req, res) => {
       });
     }
 
+    // Only creator or admin can view
+    if (!req.user || (!req.user.isAdmin && req.user.email !== request.user_email)) {
+      return res.status(403).json({ success: false, message: "Access denied" });
+    }
+
     res.json({
       success: true,
       data: request,
@@ -149,6 +159,10 @@ router.put("/api/update-requests/:id/approve", async (req, res) => {
         success: false,
         message: "Request not found",
       });
+    }
+
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
     }
 
     if (request.status !== "pending") {
@@ -217,6 +231,10 @@ router.put("/api/update-requests/:id/reject", async (req, res) => {
       });
     }
 
+    if (!req.user || !req.user.isAdmin) {
+      return res.status(403).json({ success: false, message: "Admin access required" });
+    }
+
     if (request.status !== "pending") {
       return res.status(400).json({
         success: false,
@@ -269,6 +287,11 @@ router.delete("/api/update-requests/:id", async (req, res) => {
         success: false,
         message: "Request not found",
       });
+    }
+
+    // Only creator or admin can cancel
+    if (!req.user || (!req.user.isAdmin && req.user.email !== request.user_email)) {
+      return res.status(403).json({ success: false, message: "Unauthorized access" });
     }
 
     if (request.status !== "pending") {

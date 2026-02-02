@@ -161,8 +161,13 @@ router.get("/userdetails/:email", async (req, res) => {
       return res.status(401).json({ success: false, message: "Authentication required" });
     }
 
-    const { email } = req.params;
-    const userDetail = await db.UserDetail.findOne({ where: { email } });
+    const { email: identifier } = req.params;
+    let userDetail = await db.UserDetail.findOne({ where: { email: identifier } });
+    
+    // Fallback: If not found by email, try searching by user_id if identifier is numeric
+    if (!userDetail && !isNaN(identifier)) {
+      userDetail = await db.UserDetail.findByPk(identifier);
+    }
     if (!userDetail) {
       return res.status(404).json({
         success: false,
@@ -340,7 +345,10 @@ router.put(
   },
   validate(updateProfileSchema),
   async (req, res) => {
-    const { email } = req.params;
+    // Check authentication
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
 
     // Check ownership or admin access
     if (!req.user.isAdmin && req.user.email !== email) {
