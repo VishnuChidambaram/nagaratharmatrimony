@@ -1,5 +1,6 @@
 import express from "express";
 import db from "../models/index.js";
+import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 import { getAuthHeaders } from "../../frontend-nextjs/app/utils/auth-headers.js"; // Note: this import might not work directly in backend, but I'll implement logic manually
 
 const router = express.Router();
@@ -10,7 +11,7 @@ const router = express.Router();
 // GET /api/shortlist - Get all shortlisted profiles for the logged-in user
 router.get("/api/shortlist", async (req, res) => {
   try {
-    const userEmail = req.cookies.userEmail || req.headers['x-user-email'];
+    const userEmail = req.user?.email;
     
     if (!userEmail) {
       return res.status(401).json({ success: false, message: "Authentication required" });
@@ -31,7 +32,42 @@ router.get("/api/shortlist", async (req, res) => {
       }
     });
 
-    res.json({ success: true, data: users });
+    // Add Porutham calculation
+    let currentUser = null;
+    if (userEmail) {
+      currentUser = await db.UserDetail.findOne({ where: { email: userEmail } });
+    }
+
+    const results = users.map(u => {
+      const plain = u.toJSON();
+      
+      // Add Porutham calculation
+      if (currentUser && currentUser.birthStar && currentUser.zodiacSign && u.birthStar && u.zodiacSign) {
+        try {
+          const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : u;
+          const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : u;
+          
+          const calc = new PoruthamCalculator(
+            { 
+              star: bride.birthStar, 
+              rasi: bride.zodiacSign,
+              amsamMoon: bride.amsam_chandiran 
+            },
+            { 
+              star: groom.birthStar, 
+              rasi: groom.zodiacSign,
+              amsamMoon: groom.amsam_chandiran
+            }
+          );
+          plain.porutham = calc.getSummary();
+        } catch (err) {
+          console.error(`Porutham calculation error in shortlist: ${err.message}`);
+        }
+      }
+      return plain;
+    });
+
+    res.json({ success: true, data: results });
   } catch (error) {
     console.error("Fetch shortlist error:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
@@ -41,7 +77,7 @@ router.get("/api/shortlist", async (req, res) => {
 // POST /api/shortlist/toggle - Add or remove profile from shortlist
 router.post("/api/shortlist/toggle", async (req, res) => {
   try {
-    const userEmail = req.cookies.userEmail || req.headers['x-user-email'];
+    const userEmail = req.user?.email;
     const { shortlisted_user_id } = req.body;
 
     if (!userEmail) {
@@ -78,7 +114,7 @@ router.post("/api/shortlist/toggle", async (req, res) => {
 // GET /api/shortlist/ids - Get only IDs of shortlisted users (for dashboard status)
 router.get("/api/shortlist/ids", async (req, res) => {
     try {
-      const userEmail = req.cookies.userEmail || req.headers['x-user-email'];
+      const userEmail = req.user?.email;
       
       if (!userEmail) {
         return res.status(401).json({ success: false, message: "Authentication required" });

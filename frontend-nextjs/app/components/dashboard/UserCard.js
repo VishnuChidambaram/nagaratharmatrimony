@@ -321,7 +321,7 @@ export default function UserCard({
         </div>
       </div>
 
-      {item.matchScore > 0 && (
+      {!isOwnCard && item.matchScore !== undefined && (
         <div
           style={{
             padding: "5px 12px",
@@ -337,7 +337,7 @@ export default function UserCard({
             gap: "6px",
             whiteSpace: "nowrap",
             width: "fit-content",
-            marginBottom: "15px",
+            marginBottom: "5px",
             marginLeft: "auto",
             marginRight: "auto",
             border: "1px solid rgba(255, 255, 255, 0.5)",
@@ -345,6 +345,35 @@ export default function UserCard({
           }}
         >
           <span style={{ fontSize: "14px" }}>🔥</span> {item.matchScore}% {t("Match")}
+        </div>
+      )}
+
+      {!isOwnCard && item.porutham && (
+        <div
+          style={{
+            padding: "5px 12px",
+            background: item.porutham.verdict?.includes("Not") 
+              ? "linear-gradient(135deg, #ff4d4d 0%, #cc0000 100%)"
+              : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            color: "white",
+            borderRadius: "20px",
+            fontSize: "11px",
+            fontWeight: "700",
+            boxShadow: "0 4px 10px rgba(16, 185, 129, 0.2)",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            whiteSpace: "nowrap",
+            width: "fit-content",
+            marginBottom: "15px",
+            marginLeft: "auto",
+            marginRight: "auto",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
+          }}
+          title={t(item.porutham.verdict)}
+        >
+          <span style={{ fontSize: "12px" }}>💠</span> {item.porutham.score}/{item.porutham.total} {t("Porutham")}
         </div>
       )}
 

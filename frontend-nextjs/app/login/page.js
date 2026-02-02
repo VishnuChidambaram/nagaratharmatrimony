@@ -30,8 +30,7 @@ export default function Login() {
         });
         
         if (typeof window !== "undefined") {
-          sessionStorage.removeItem("userEmail");
-          sessionStorage.removeItem("sessionExpiresAt");
+          sessionStorage.clear();
           localStorage.removeItem("userEmail");
         }
       } catch (e) {

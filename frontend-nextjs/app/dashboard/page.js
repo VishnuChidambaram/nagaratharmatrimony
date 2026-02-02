@@ -567,6 +567,7 @@ export default function Dashboard() {
             -webkit-backdrop-filter: blur(10px) !important;
             background: rgba(var(--card-bg-rgb), 0.7) !important;
             border: 1px solid #d1d5db !important;
+            border-radius: 16px !important;
             animation: cardFadeIn 0.6s ease-out backwards;
             min-height: 300px;
             display: flex;

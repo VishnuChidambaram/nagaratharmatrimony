@@ -7,6 +7,7 @@ import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 import { sessionAuthMiddleware } from "../middleware/authMiddleware.js";
 import validate from "../middleware/validation.js";
 import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
+import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 
 const router = express.Router();
 
@@ -134,10 +135,43 @@ router.get("/all-details", async (req, res) => {
       attributes: { exclude: ['photoPassword'] }
     });
 
-    // Add hasPhotoPassword boolean for frontend
+    // Add Porutham and photoPassword boolean
+    const currentUserEmail = req.user?.email;
+    let currentUser = null;
+    if (currentUserEmail) {
+      currentUser = await db.UserDetail.findOne({ where: { email: currentUserEmail } });
+    }
+
     const results = allDetails.map(u => {
       const plain = u.toJSON();
       plain.hasPhotoPassword = !!u.photoPassword;
+
+      // Add Porutham calculation
+      if (currentUser && currentUser.email !== u.email && currentUser.birthStar && currentUser.zodiacSign && u.birthStar && u.zodiacSign) {
+        try {
+          const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : u;
+          const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : u;
+          
+          const calc = new PoruthamCalculator(
+            { 
+              star: bride.birthStar, 
+              rasi: bride.zodiacSign,
+              amsamMoon: bride.amsam_chandiran 
+            },
+            { 
+              star: groom.birthStar, 
+              rasi: groom.zodiacSign,
+              amsamMoon: groom.amsam_chandiran
+            }
+          );
+          plain.porutham = calc.getSummary();
+          console.log(`[Debug] Porutham for ${u.email}: ${plain.porutham?.score}`);
+        } catch (err) {
+          console.error(`Porutham calculation error in all-details: ${err.message}`);
+        }
+      } else {
+          console.log(`[Debug] Skipping Porutham for ${u.email}: missing stars/rasi`);
+      }
       return plain;
     });
 

@@ -350,6 +350,35 @@ export default function UserDetailModal({
           </div>
         </div>
 
+        {/* Porutham Match Section (New) */}
+        {selectedUser.porutham && 
+         selectedUser.email?.toLowerCase() !== sessionStorage.getItem("userEmail")?.toLowerCase() && (
+          <div className="porutham-section">
+            <div className="porutham-header-box">
+              <div className="porutham-main-score">
+                <span className="score-label">{t("Compatibility Score")}</span>
+                <span className="score-value">{selectedUser.porutham.score} / {selectedUser.porutham.total}</span>
+              </div>
+              <div className="porutham-verdict">
+                <span className={`verdict-badge ${selectedUser.porutham.verdict.includes("Not") ? "verdict-bad" : "verdict-good"}`}>
+                  {t(selectedUser.porutham.verdict)}
+                </span>
+              </div>
+            </div>
+            <div className="porutham-grid-results">
+              {Object.entries(selectedUser.porutham.results).map(([name, result]) => (
+                <div key={name} className="porutham-item">
+                  <span className="p-item-name">{t(name)}</span>
+                  <span className={`p-item-result result-${result.toLowerCase()}`}>
+                    {t(result)}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+
         <div className="preview-container">
           {Object.entries(stepGroups).map(([stepName, fields]) => {
             if (fields === "chart") {
@@ -690,6 +719,75 @@ export default function UserDetailModal({
           font-weight: 700;
           box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
         }
+
+        /* Porutham Section Styles */
+        .porutham-section {
+          background: #fff;
+          border: 1px solid #d1d5db;
+          border-radius: 16px;
+          padding: 24px;
+          margin-bottom: 25px;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        .porutham-header-box {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 20px;
+          border-bottom: 1px solid #f3f4f6;
+          padding-bottom: 15px;
+        }
+        .porutham-main-score {
+          display: flex;
+          flex-direction: column;
+        }
+        .score-label {
+          font-size: 12px;
+          text-transform: uppercase;
+          color: #6b7280;
+          letter-spacing: 0.5px;
+        }
+        .score-value {
+          font-size: 24px;
+          font-weight: 700;
+          color: #111827;
+        }
+        .verdict-badge {
+          padding: 8px 16px;
+          border-radius: 50px;
+          font-size: 14px;
+          font-weight: 600;
+        }
+        .verdict-good { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+        .verdict-bad { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+        
+        .porutham-grid-results {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 15px;
+        }
+        .porutham-item {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          padding: 10px;
+          background: #f9fafb;
+          border-radius: 10px;
+          border: 1px solid #f3f4f6;
+        }
+        .p-item-name {
+          font-size: 11px;
+          color: #6b7280;
+          text-transform: uppercase;
+        }
+        .p-item-result {
+          font-size: 13px;
+          font-weight: 600;
+        }
+        .result-uthamam { color: #10b981; }
+        .result-madhyamam { color: #f59e0b; }
+        .result-athamam { color: #ef4444; }
+
 
         @media (max-width: 900px) {
           .identity-header {

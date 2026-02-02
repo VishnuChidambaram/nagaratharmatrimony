@@ -557,7 +557,7 @@ export default function RootLayout({
                         console.error("Logout error:", error);
                       }
                       await clearFormData(); // Clear registration data
-                      sessionStorage.removeItem("userEmail");
+                      sessionStorage.clear();
                       // Show toast and wait
                       window.dispatchEvent(new CustomEvent('show-notification', { 
                         detail: { message: 'Logout Successful', type: 'success' } 

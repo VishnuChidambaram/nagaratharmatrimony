@@ -2,9 +2,13 @@ import express from "express";
 import db from "../models/index.js";
 import { Op } from "sequelize";
 import logger from "../utils/logger.js";
+import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 
 const router = express.Router();
 
+/**
+ * Calculate match score between two users
+ */
 /**
  * Calculate match score between two users
  */
@@ -18,7 +22,21 @@ function calculateMatchScore(currentUser, targetUser) {
     const isTargetMale = maleGenders.includes(targetUser.gender);
     if (isCurrentMale === isTargetMale) return 0;
 
-    // 2. Heritage Hard Filters (Absolute Community Rules)
+    // 2. Marital Status Compatibility (Absolute)
+    // Rule: Unmarried matches with Unmarried. Widow/Widower/Divorced matches with Widow/Widower/Divorced.
+    const maritalStatus = (currentUser.maritalStatus || "").toLowerCase();
+    const targetMaritalStatus = (targetUser.maritalStatus || "").toLowerCase();
+    
+    const unmarriedTerms = ["unmarried", "திருமணமாகாதவர்"];
+    const remarriageTerms = ["widow", "divorced", "widower", "விதவை", "விவாகரத்து", "கைம்பெண்"];
+    
+    const isCurrentUnmarried = unmarriedTerms.includes(maritalStatus);
+    const isTargetUnmarried = unmarriedTerms.includes(targetMaritalStatus);
+    
+    // If one is unmarried and the other is not, it's generally not a match unless explicitly allowed (for now we filter)
+    if (isCurrentUnmarried !== isTargetUnmarried) return 0;
+
+    // 3. Heritage Hard Filters (Absolute Community Rules)
     if (currentUser.yourTemple && targetUser.yourTemple && currentUser.yourTemple === targetUser.yourTemple) {
         // If same temple, MUST have different divisions
         if (!currentUser.yourDivision || !targetUser.yourDivision) {
@@ -27,18 +45,35 @@ function calculateMatchScore(currentUser, targetUser) {
         if (currentUser.yourDivision === targetUser.yourDivision) {
             return 0; // Rule: Same Temple + Same Division = NOT ALLOWED
         }
-        // If same temple but different divisions, it's allowed (continues below)
     }
 
-    // 3. Age Match (Weight: 20)
-    if (currentUser.fromAge && currentUser.toAge && targetUser.dateOfBirth) {
+    // 4. Age Match (Weight: 20)
+    let fromAge = currentUser.fromAge;
+    let toAge = currentUser.toAge;
+    
+    // Fallback age preference if not set
+    if (!fromAge || !toAge) {
+        if (targetUser.dateOfBirth) {
+            const dob = new Date(currentUser.dateOfBirth);
+            const currentAge = new Date().getFullYear() - dob.getFullYear();
+            if (isCurrentMale) {
+                fromAge = Math.max(22, currentAge - 5);
+                toAge = currentAge + 2;
+            } else {
+                fromAge = currentAge - 2;
+                toAge = currentAge + 5;
+            }
+        }
+    }
+
+    if (fromAge && toAge && targetUser.dateOfBirth) {
         try {
             const dob = new Date(targetUser.dateOfBirth);
             if (!isNaN(dob.getTime())) {
                 const targetAge = new Date().getFullYear() - dob.getFullYear();
-                if (targetAge >= currentUser.fromAge && targetAge <= currentUser.toAge) {
+                if (targetAge >= fromAge && targetAge <= toAge) {
                     score += 20;
-                } else if (Math.abs(targetAge - currentUser.fromAge) <= 2 || Math.abs(targetAge - currentUser.toAge) <= 2) {
+                } else if (Math.abs(targetAge - fromAge) <= 2 || Math.abs(targetAge - toAge) <= 2) {
                     score += 10; // Close match
                 }
             }
@@ -47,7 +82,7 @@ function calculateMatchScore(currentUser, targetUser) {
         }
     }
 
-    // 3. Education Match (Weight: 15)
+    // 5. Education Match (Weight: 15)
     if (currentUser.educationQualification1 && targetUser.educationQualification) {
         const pref = currentUser.educationQualification1.toLowerCase();
         const target = targetUser.educationQualification.toLowerCase();
@@ -58,14 +93,32 @@ function calculateMatchScore(currentUser, targetUser) {
         }
     }
 
-    // 4. Height Match (Weight: 15)
-    if (currentUser.fromHeight && currentUser.toHeight && targetUser.height) {
-        if (targetUser.height >= currentUser.fromHeight && targetUser.height <= currentUser.toHeight) {
-            score += 15;
+    // 6. Height Match (Weight: 10)
+    let fromHeight = parseFloat(currentUser.fromHeight);
+    let toHeight = parseFloat(currentUser.toHeight);
+    let targetHeight = parseFloat(targetUser.height);
+
+    // Fallback height if missing
+    if (isNaN(fromHeight) || isNaN(toHeight)) {
+        const currentH = parseFloat(currentUser.height);
+        if (!isNaN(currentH)) {
+            if (isCurrentMale) {
+                fromHeight = currentH - 20;
+                toHeight = currentH;
+            } else {
+                fromHeight = currentH;
+                toHeight = currentH + 20;
+            }
         }
     }
 
-    // 5. Occupation Match (Weight: 10)
+    if (!isNaN(fromHeight) && !isNaN(toHeight) && !isNaN(targetHeight)) {
+        if (targetHeight >= fromHeight && targetHeight <= toHeight) {
+            score += 10;
+        }
+    }
+
+    // 7. Occupation Match (Weight: 10)
     if (currentUser.occupationBusiness1 && (targetUser.occupationBusiness || targetUser.otherOccupation)) {
         const pref = currentUser.occupationBusiness1.toLowerCase();
         const occ = (targetUser.occupationBusiness || "").toLowerCase();
@@ -75,14 +128,14 @@ function calculateMatchScore(currentUser, targetUser) {
         }
     }
 
-    // 6. Complexion Match (Weight: 10)
+    // 8. Complexion Match (Weight: 5)
     if (currentUser.complexion1 && targetUser.complexion) {
         if (currentUser.complexion1 === targetUser.complexion) {
-            score += 10;
+            score += 5;
         }
     }
 
-    // 7. Location Match (Weight: 10)
+    // 9. Location Match (Weight: 10)
     if (currentUser.workingPlace1) {
         const pref = currentUser.workingPlace1.toLowerCase();
         const city = (targetUser.city || "").toLowerCase();
@@ -96,28 +149,25 @@ function calculateMatchScore(currentUser, targetUser) {
         }
     }
 
-    // 8. Willingness to Work (Weight: 10)
-    // If preference is 'Yes', and target has an occupation or works, give points
+    // 10. Willingness to Work (Weight: 5)
     if (currentUser.willingnessToWork1 === "Yes" || currentUser.willingnessToWork1 === "ஆம்") {
         if (targetUser.occupationBusiness || targetUser.workDetails || targetUser.workingPlace) {
-            score += 10;
+            score += 5;
         }
     } else if (currentUser.willingnessToWork1 === "No" || currentUser.willingnessToWork1 === "இல்லை") {
         if (!targetUser.occupationBusiness && !targetUser.workingPlace) {
-            score += 10;
+            score += 5;
         }
     } else {
-        score += 10; // 'Any' or not specified
+        score += 5; // 'Any' or not specified
     }
 
-    // 9. Temple Match (Weight: 5 Bonus)
+    // 11. Temple/Division Match (Weight: 5 Bonus)
     if (currentUser.yourTemple && targetUser.yourTemple && currentUser.yourTemple === targetUser.yourTemple) {
-        score += 5;
+        score += 2;
     }
-
-    // 10. Division Match (Weight: 5 Bonus)
     if (currentUser.yourDivision && targetUser.yourDivision && currentUser.yourDivision === targetUser.yourDivision) {
-        score += 5;
+        score += 3;
     }
 
     return Math.min(score, 100);
@@ -126,7 +176,7 @@ function calculateMatchScore(currentUser, targetUser) {
 // GET /api/matches/suggested - Get suggested matches for logged-in user
 router.get("/api/matches/suggested", async (req, res) => {
     try {
-        const userEmail = req.cookies.userEmail || req.headers['x-user-email'];
+        const userEmail = req.user?.email;
         
         if (!userEmail) {
             return res.status(401).json({ success: false, message: "Authentication required" });
@@ -167,10 +217,61 @@ router.get("/api/matches/suggested", async (req, res) => {
         logger.info(`[Matches] Found ${potentialMatches.length} potential opposite-gender profiles.`);
 
         const scoredMatches = potentialMatches.map(user => {
-            const score = calculateMatchScore(currentUser, user);
+            let prefScore = calculateMatchScore(currentUser, user); // Base score from preferences (0-100)
+            
+            // Add Porutham calculation
+            let poruthamResult = null;
+            let poruthamPoints = 0;
+            if (currentUser.birthStar && currentUser.zodiacSign && user.birthStar && user.zodiacSign) {
+                try {
+                    const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : user;
+                    const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : user;
+                    
+                    const calc = new PoruthamCalculator(
+                        { 
+                            star: bride.birthStar, 
+                            rasi: bride.zodiacSign,
+                            amsamMoon: bride.amsam_chandiran 
+                        },
+                        { 
+                            star: groom.birthStar, 
+                            rasi: groom.zodiacSign,
+                            amsamMoon: groom.amsam_chandiran
+                        }
+                    );
+                    poruthamResult = calc.getSummary();
+                    
+                    // Add Porutham score to match score (Weight: 20 points)
+                    // poruthamResult.score is typically out of 10
+                    if (poruthamResult && poruthamResult.score !== undefined) {
+                        poruthamPoints = (poruthamResult.score / poruthamResult.total) * 20;
+                    }
+                } catch (err) {
+                    logger.error(`Porutham calculation error: ${err.message}`);
+                }
+            }
+
+            // Final score: 80% preferences + 20% Porutham
+            // If Porutham not applicable, poruthamPoints remains 0.
+            // Scale prefScore to 80 and add poruthamPoints.
+            let finalScore = (prefScore * 0.8) + poruthamPoints;
+
+            // Add a deterministic but unique jitter for variety (0.0 to 1.5 points)
+            // This ensures that even if stars and preferences are identical, the scores differ slightly
+            const jitterSeed = (currentUser.user_id || 0) + (user.user_id || 0);
+            const jitter = (jitterSeed % 15) / 10; 
+            finalScore += jitter;
+
+            const roundedScore = Math.min(Math.round(finalScore), 100);
+            
+            if (user.email.includes('test')) {
+                console.log(`[Debug] Match for ${user.email}: Score=${roundedScore}, Porutham=${poruthamResult?.score}`);
+            }
+
             return {
                 ...user.toJSON(),
-                matchScore: score
+                matchScore: roundedScore,
+                porutham: poruthamResult
             };
         }).sort((a, b) => b.matchScore - a.matchScore);
 
