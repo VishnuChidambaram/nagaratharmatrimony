@@ -1,13 +1,12 @@
 .container {
-  height: 100vh;
-  overflow-y: auto;
+  height: calc(100vh - 70px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   background: var(--page-bg);
   color: var(--page-text);
   font-family: "Arial", sans-serif;
   position: relative; /* Added for LanguageToggle positioning */
-  scroll-behavior: smooth;
 }
 
 .paginationButton span {
@@ -79,7 +78,9 @@
 .contentArea {
   padding: 20px;
   flex: 1;
+  overflow-y: auto;
   padding-bottom: 80px;
+  scroll-behavior: smooth;
 }
 
 .statsHeader {

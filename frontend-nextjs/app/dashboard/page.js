@@ -222,6 +222,11 @@ export default function Dashboard() {
     setCurrentPage(1);
   }, [view]);
 
+  // Reset page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
+
   const currentUserEmail =
     typeof window !== "undefined"
       ? sessionStorage.getItem("userEmail")?.toLowerCase()
@@ -236,7 +241,11 @@ export default function Dashboard() {
       return false;
     }
 
-    if (!debouncedSearchTerm) return true;
+    if (!debouncedSearchTerm) {
+      // If we are in search view and no term is entered, we return nothing
+      // This is handled in the UI rendering part below
+      return true;
+    }
     const term = debouncedSearchTerm.toLowerCase();
 
     if (searchField) {
@@ -271,6 +280,15 @@ export default function Dashboard() {
     (item) => shortlistedIds.includes(item.user_id)
   );
   // suggestedMatches state already contains the ranked data with scores
+
+  const allDisplayData = React.useMemo(() => {
+    if (view === "personal") return personalData;
+    if (view === "other") return otherData;
+    if (view === "shortlist") return shortlistedData;
+    if (view === "matches") return suggestedMatches;
+    if (view === "search") return debouncedSearchTerm ? filteredData : [];
+    return filteredData;
+  }, [view, personalData, otherData, shortlistedData, suggestedMatches, filteredData, debouncedSearchTerm]);
 
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
@@ -458,7 +476,8 @@ export default function Dashboard() {
   return (
     <div
       style={{
-        height: "100vh",
+        height: "calc(100vh - 70px)",
+        overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         background: "var(--page-bg)",
@@ -940,56 +959,60 @@ export default function Dashboard() {
               </div>
             ) : (
               <>
-                <UserGrid
-                  data={(() => {
-                    const fullData =
-                      view === "personal"
-                        ? personalData
-                        : view === "other"
-                        ? otherData
-                        : view === "shortlist"
-                        ? shortlistedData
-                        : view === "matches"
-                        ? suggestedMatches
-                        : filteredData;
-                    
-                    const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
-                    return fullData.slice(startIndex, startIndex + PROFILES_PER_PAGE);
-                  })()}
-                  view={view}
-                  t={t}
-                  onViewDetail={setSelectedUser}
-                  onToggleShortlist={handleToggleShortlist}
-                  shortlistedIds={shortlistedIds}
-                  onPrivacy={() => setIsPrivacyMode(true)}
-                  onEdit={() => {
-                    if (pendingUpdateStatus) {
-                      setShowCancelModal(true);
-                    } else {
-                      window.location.href = "/editdetail";
-                    }
-                  }}
-                  onRefresh={fetchData}
-                  pendingUpdateStatus={pendingUpdateStatus}
-                  unlockedUsers={unlockedUsers}
-                  setSelectedImage={setSelectedImage}
-                  setSelectedImageOwner={setSelectedImageOwner}
-                  setIsPrivacyMode={setIsPrivacyMode}
-                />
+                {view === "search" && !searchTerm.trim() ? (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      padding: "80px 20px",
+                      textAlign: "center",
+                      background: "rgba(var(--card-bg-rgb), 0.5)",
+                      borderRadius: "16px",
+                      border: "1px dashed var(--input-border)",
+                      margin: "20px auto",
+                      maxWidth: "600px"
+                    }}
+                  >
+                    <div style={{ fontSize: "60px", marginBottom: "20px" }}>🔍</div>
+                    <h3 style={{ margin: "0 0 10px 0", color: "var(--page-text)" }}>
+                      {t("Find Members")}
+                    </h3>
+                    <p style={{ opacity: 0.7, margin: 0 }}>
+                      {t("Please select a field and enter a search term above to find matching profiles.")}
+                    </p>
+                  </div>
+                ) : (
+                  <UserGrid
+                    data={(() => {
+                      const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
+                      return allDisplayData.slice(startIndex, startIndex + PROFILES_PER_PAGE);
+                    })()}
+                    view={view}
+                    t={t}
+                    onViewDetail={setSelectedUser}
+                    onToggleShortlist={handleToggleShortlist}
+                    shortlistedIds={shortlistedIds}
+                    onPrivacy={() => setIsPrivacyMode(true)}
+                    onEdit={() => {
+                      if (pendingUpdateStatus) {
+                        setShowCancelModal(true);
+                      } else {
+                        window.location.href = "/editdetail";
+                      }
+                    }}
+                    onRefresh={fetchData}
+                    pendingUpdateStatus={pendingUpdateStatus}
+                    unlockedUsers={unlockedUsers}
+                    setSelectedImage={setSelectedImage}
+                    setSelectedImageOwner={setSelectedImageOwner}
+                    setIsPrivacyMode={setIsPrivacyMode}
+                  />
+                )}
 
                 {(() => {
-                  const fullData =
-                    view === "personal"
-                      ? personalData
-                      : view === "other"
-                      ? otherData
-                      : view === "shortlist"
-                      ? shortlistedData
-                      : view === "matches"
-                      ? suggestedMatches
-                      : filteredData;
-                  
-                  const totalPages = Math.ceil(fullData.length / PROFILES_PER_PAGE);
+                  const totalPages = Math.ceil(allDisplayData.length / PROFILES_PER_PAGE);
                   
                   if (totalPages <= 1) return null;
 
