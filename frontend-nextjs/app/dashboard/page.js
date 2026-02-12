@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { useLanguage } from "../hooks/useLanguage";
 import { translations } from "../utils/translations";
@@ -17,6 +18,7 @@ import CancelUpdateModal from "../components/dashboard/CancelUpdateModal";
 
 export default function Dashboard() {
   const router = useRouter();
+  const scrollRef = useRef(null);
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -36,6 +38,8 @@ export default function Dashboard() {
   const [isPrivacyMode, setIsPrivacyMode] = useState(false);
   const [view, setView] = useState("dashboard"); // dashboard, personal, other, search, shortlist, matches
   const [searchField, setSearchField] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PROFILES_PER_PAGE = 18;
 
   const { language } = useLanguage();
 
@@ -204,7 +208,19 @@ export default function Dashboard() {
 
     const interval = setInterval(() => checkPendingUpdate(userEmail), 15000);
     return () => clearInterval(interval);
-  }, [fetchData, checkPendingUpdate, fetchMatches, fetchShortlist, router, view]);
+  }, [fetchData, checkPendingUpdate, fetchMatches, fetchShortlist, router]);
+
+  // Reset page and scroll to top when view or page changes
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [view, currentPage]);
+
+  // Handle view changes specifically for page reset
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [view]);
 
   const currentUserEmail =
     typeof window !== "undefined"
@@ -511,6 +527,7 @@ export default function Dashboard() {
       />
 
       <div
+        ref={scrollRef}
         className={`scrollable-content ${
           view === "dashboard" ? "no-scroll-desktop" : ""
         }`}
@@ -664,6 +681,121 @@ export default function Dashboard() {
             .dashboard-card p {
                 font-size: 12px !important;
             }
+
+            /* Mobile Pagination Fixes */
+            .pagination-container {
+              gap: 8px !important;
+              padding: 15px 10px !important;
+              margin: 20px auto !important;
+              flex-wrap: wrap !important;
+            }
+
+            .pagination-button {
+              padding: 6px 10px !important;
+              font-size: 12px !important;
+              gap: 4px !important;
+            }
+
+            .pagination-button span {
+              display: none; /* Hide 'Previous'/'Next' text on mobile */
+            }
+
+            .pagination-pages {
+              gap: 4px !important;
+            }
+
+            .page-number {
+              width: 30px !important;
+              height: 30px !important;
+              font-size: 12px !important;
+            }
+          }
+
+          /* Pagination Styles */
+          .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin: 30px auto;
+            padding: 20px;
+            width: 100%;
+          }
+
+          .pagination-button {
+            padding: 8px 16px;
+            background: rgba(var(--card-bg-rgb), 0.7);
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            color: var(--page-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+          }
+
+          .pagination-button:hover:not(:disabled) {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            transform: translateY(-2px);
+          }
+
+          .pagination-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+          }
+
+          .pagination-pages {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+          }
+
+          .page-number {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            background: rgba(var(--card-bg-rgb), 0.7);
+            border: 1px solid #d1d5db;
+            color: var(--page-text);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+          }
+
+          .page-number:hover:not(.active-page):not(.dots) {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            transform: translateY(-2px);
+          }
+
+          .page-number.active-page {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+            cursor: default;
+          }
+
+          .page-number.dots {
+            border: none;
+            background: transparent;
+            cursor: default;
+            width: auto;
+            padding: 0 4px;
+          }
+
+          .page-info {
+            font-size: 14px;
+            color: var(--page-text);
+            opacity: 0.8;
+            font-weight: 500;
           }
         `}</style>
         {loading ? (
@@ -807,38 +939,140 @@ export default function Dashboard() {
                 </div>
               </div>
             ) : (
-              <UserGrid
-                data={
-                  view === "personal"
-                    ? personalData
-                    : view === "other"
-                    ? otherData
-                    : view === "shortlist"
-                    ? shortlistedData
-                    : view === "matches"
-                    ? suggestedMatches
-                    : filteredData
-                }
-                view={view}
-                t={t}
-                onViewDetail={setSelectedUser}
-                onToggleShortlist={handleToggleShortlist}
-                shortlistedIds={shortlistedIds}
-                onPrivacy={() => setIsPrivacyMode(true)}
-                onEdit={() => {
-                  if (pendingUpdateStatus) {
-                    setShowCancelModal(true);
-                  } else {
-                    window.location.href = "/editdetail";
-                  }
-                }}
-                onRefresh={fetchData}
-                pendingUpdateStatus={pendingUpdateStatus}
-                unlockedUsers={unlockedUsers}
-                setSelectedImage={setSelectedImage}
-                setSelectedImageOwner={setSelectedImageOwner}
-                setIsPrivacyMode={setIsPrivacyMode}
-              />
+              <>
+                <UserGrid
+                  data={(() => {
+                    const fullData =
+                      view === "personal"
+                        ? personalData
+                        : view === "other"
+                        ? otherData
+                        : view === "shortlist"
+                        ? shortlistedData
+                        : view === "matches"
+                        ? suggestedMatches
+                        : filteredData;
+                    
+                    const startIndex = (currentPage - 1) * PROFILES_PER_PAGE;
+                    return fullData.slice(startIndex, startIndex + PROFILES_PER_PAGE);
+                  })()}
+                  view={view}
+                  t={t}
+                  onViewDetail={setSelectedUser}
+                  onToggleShortlist={handleToggleShortlist}
+                  shortlistedIds={shortlistedIds}
+                  onPrivacy={() => setIsPrivacyMode(true)}
+                  onEdit={() => {
+                    if (pendingUpdateStatus) {
+                      setShowCancelModal(true);
+                    } else {
+                      window.location.href = "/editdetail";
+                    }
+                  }}
+                  onRefresh={fetchData}
+                  pendingUpdateStatus={pendingUpdateStatus}
+                  unlockedUsers={unlockedUsers}
+                  setSelectedImage={setSelectedImage}
+                  setSelectedImageOwner={setSelectedImageOwner}
+                  setIsPrivacyMode={setIsPrivacyMode}
+                />
+
+                {(() => {
+                  const fullData =
+                    view === "personal"
+                      ? personalData
+                      : view === "other"
+                      ? otherData
+                      : view === "shortlist"
+                      ? shortlistedData
+                      : view === "matches"
+                      ? suggestedMatches
+                      : filteredData;
+                  
+                  const totalPages = Math.ceil(fullData.length / PROFILES_PER_PAGE);
+                  
+                  if (totalPages <= 1) return null;
+
+                  return (
+                    <div className="pagination-container">
+                      <button
+                        className="pagination-button"
+                        onClick={() => {
+                          setCurrentPage((prev) => Math.max(prev - 1, 1));
+                        }}
+                        disabled={currentPage === 1}
+                      >
+                        ← <span>{t("Previous")}</span>
+                      </button>
+
+                      <div className="pagination-pages">
+                        {(() => {
+                          const getVisiblePages = (curr, total) => {
+                            if (total <= 5)
+                              return Array.from({ length: total }, (_, i) => i + 1);
+
+                            let pages = [1];
+                            let start = Math.max(2, curr - 1);
+                            let end = Math.min(total - 1, curr + 1);
+
+                            if (curr <= 3) {
+                              end = Math.min(4, total - 1);
+                            }
+
+                            if (curr >= total - 2) {
+                              start = Math.max(2, total - 3);
+                            }
+
+                            if (start > 2) {
+                              pages.push("...");
+                            }
+
+                            for (let i = start; i <= end; i++) {
+                              pages.push(i);
+                            }
+
+                            if (end < total - 1) {
+                              pages.push("...");
+                            }
+
+                            pages.push(total);
+                            return pages;
+                          };
+
+                          return getVisiblePages(currentPage, totalPages).map(
+                            (page, index) => (
+                              <button
+                                key={index}
+                                onClick={() => {
+                                  if (typeof page === "number") {
+                                    setCurrentPage(page);
+                                  }
+                                }}
+                                className={`page-number ${
+                                  currentPage === page ? "active-page" : ""
+                                } ${typeof page !== "number" ? "dots" : ""}`}
+                                disabled={typeof page !== "number"}
+                              >
+                                {page}
+                              </button>
+                            )
+                          );
+                        })()}
+                      </div>
+
+                      <button
+                        className="pagination-button"
+                        onClick={() => {
+                          setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+                        }}
+                        disabled={currentPage === totalPages}
+                      >
+                        <span>{t("Next")}</span> →
+                      </button>
+                    </div>
+                  );
+                })()}
+              </>
             )}
           </div>
         )}

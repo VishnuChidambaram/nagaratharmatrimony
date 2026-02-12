@@ -1,11 +1,23 @@
 .container {
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   background: var(--page-bg);
   color: var(--page-text);
   font-family: "Arial", sans-serif;
   position: relative; /* Added for LanguageToggle positioning */
+  scroll-behavior: smooth;
+}
+
+.paginationButton span {
+  display: inline;
+}
+
+@media (max-width: 768px) {
+  .paginationButton span {
+    display: none;
+  }
 }
 
 .header {

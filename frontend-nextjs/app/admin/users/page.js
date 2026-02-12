@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import AdminMenu from "../AdminMenu";
 import ConfirmationModal from "../components/ConfirmationModal";
@@ -42,6 +42,7 @@ function UserCard({ user, onDelete, onEdit, t }) {
 
 export default function UsersList() {
   const router = useRouter();
+  const scrollRef = useRef(null);
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -50,7 +51,7 @@ export default function UsersList() {
   const [userToDelete, setUserToDelete] = useState(null);
   const { language, toggleLanguage } = useLanguage();
 
-  const USERS_PER_PAGE = 10;
+  const USERS_PER_PAGE = 18;
 
   // Translation helper function
   const t = (key) => {
@@ -68,6 +69,13 @@ export default function UsersList() {
       fetchUsers();
     }
   }, [router]);
+
+  // Scroll to top when page changes
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentPage]);
 
   const fetchUsers = async () => {
     try {
@@ -130,14 +138,16 @@ export default function UsersList() {
   const currentUsers = filteredUsers.slice(indexOfFirstUser, indexOfLastUser);
   const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE);
 
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+  const paginate = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
 
   if (isLoading) {
     return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}>{t("Loading...")}</div>;
   }
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} ref={scrollRef}>
       {/* Fixed Sticky Header */}
       <div className={styles.header}>
         <div style={{ display: "flex", alignItems: "center" }}>
@@ -231,7 +241,7 @@ export default function UsersList() {
               className={`${styles.paginationButton} ${styles.prevBtn}`}
               style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
             >
-              {t("Prev")}
+              ← <span>{t("Prev")}</span>
             </button>
             
             <div className={styles.pageNumbers}>
@@ -286,7 +296,7 @@ export default function UsersList() {
               className={`${styles.paginationButton} ${styles.nextBtn}`}
               style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
             >
-              {t("Next")}
+              <span>{t("Next")}</span> →
             </button>
           </div>
         )}
