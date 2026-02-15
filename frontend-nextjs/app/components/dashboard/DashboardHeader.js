@@ -2,6 +2,42 @@
 
 import React from "react";
 
+const TEMPLE_OPTIONS = [
+  "Nemam Kovil",
+  "Ilayatrangudi",
+  "Iluppakudi",
+  "Iraniyur",
+  "Mathur",
+  "Pillaiyarpatti",
+  "Soorakudi",
+  "Vairavan Kovil",
+  "Velangudi",
+];
+
+const ALL_DIVISION_OPTIONS = [
+  // Ilayatrangudi
+  "Kazhani Vaasarkkudaiyar",
+  "Kinginikkurudaiyar",
+  "Okkurudaiyar",
+  "Pattanasamiyar",
+  "Perusenthrudaiyar",
+  "Sirusenthrudaiyar",
+  "Perumaruthurudaiyar",
+  // Mathur
+  "Arumbakkur",
+  "Karuppur",
+  "Kulathur",
+  "Mannur",
+  "Manalur",
+  "Uraiyur",
+  // Vairavan Kovil
+  "Maruthenthirapuram",
+  "Periya vahuppu",
+  "Pilliyar vahuppu",
+  "Theyyanar vahuppu",
+  "Kannur", // Also in Mathur but keeping unique list
+];
+
 export default function DashboardHeader({
   view,
   setView,
@@ -9,8 +45,27 @@ export default function DashboardHeader({
   setSearchTerm,
   searchField,
   setSearchField,
+  currentUserTemple,
+  currentUserDivision,
   t,
 }) {
+  const isTempleSearch = searchField === "yourTemple";
+  const isDivisionSearch = searchField === "yourDivision";
+
+  const getFilteredOptions = () => {
+    if (isTempleSearch) {
+      return TEMPLE_OPTIONS.filter((opt) => opt !== currentUserTemple);
+    }
+    if (isDivisionSearch) {
+      // Get unique options and filter
+      const uniqueDivisions = [...new Set(ALL_DIVISION_OPTIONS)];
+      return uniqueDivisions.filter((opt) => opt !== currentUserDivision);
+    }
+    return [];
+  };
+
+  const filteredOptions = getFilteredOptions();
+
   return (
     <>
       <div className="dashboard-header">
@@ -63,7 +118,10 @@ export default function DashboardHeader({
           <div className="search-controls">
             <select
               value={searchField}
-              onChange={(e) => setSearchField(e.target.value)}
+              onChange={(e) => {
+                setSearchField(e.target.value);
+                setSearchTerm(""); // Clear search term when field changes
+              }}
               className="search-select"
             >
               <option value="">{t("Select Search Field")}</option>
@@ -76,17 +134,35 @@ export default function DashboardHeader({
               <option value="educationQualification">{t("Education Details")}</option>
               <option value="workDetails">{t("Work Details")}</option>
             </select>
-            <input
-              type="text"
-              placeholder={t("Search")}
-              disabled={!searchField}
-              value={searchTerm}
-              onChange={(e) => {
-                const value = e.target.value;
-                setSearchTerm(value);
-              }}
-              className="search-input"
-            />
+            {isTempleSearch || isDivisionSearch ? (
+              <select
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="search-input"
+                style={{ paddingLeft: "12px", backgroundImage: "none" }}
+              >
+                <option value="">
+                  {isTempleSearch ? t("Select Temple") : t("Select Division")}
+                </option>
+                {filteredOptions.map((opt) => (
+                  <option key={opt} value={opt}>
+                    {t(opt)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                placeholder={t("Search")}
+                disabled={!searchField}
+                value={searchTerm}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSearchTerm(value);
+                }}
+                className="search-input"
+              />
+            )}
           </div>
         )}
       </div>

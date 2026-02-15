@@ -290,6 +290,9 @@ export default function Dashboard() {
     return filteredData;
   }, [view, personalData, otherData, shortlistedData, suggestedMatches, filteredData, debouncedSearchTerm]);
 
+  const currentUserTemple = personalData[0]?.yourTemple;
+  const currentUserDivision = personalData[0]?.yourDivision;
+
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
 
@@ -542,6 +545,8 @@ export default function Dashboard() {
         setSearchTerm={setSearchTerm}
         searchField={searchField}
         setSearchField={setSearchField}
+        currentUserTemple={currentUserTemple}
+        currentUserDivision={currentUserDivision}
         t={t}
       />
 
