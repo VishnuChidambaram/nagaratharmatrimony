@@ -240,12 +240,22 @@ export default function Dashboard() {
 
   // Base filter for community rules and current user exclusion
   const baseFilteredData = data.filter((item) => {
-    if (
-      currentUserEmail &&
-      item.email &&
-      item.email.toLowerCase() === currentUserEmail
-    ) {
-      return false;
+    const isCurrentUser = currentUserEmail && item.email && item.email.toLowerCase() === currentUserEmail;
+    
+    if (isCurrentUser) {
+      return false; // Exclude current user from "Other Profiles" lists
+    }
+
+    // Gender Filter: Show only opposite gender
+    if (currentUser?.gender) {
+      const maleGenders = ["Male", "ஆண்"];
+      const femaleGenders = ["Female", "பெண்"];
+      const isCurrentMale = maleGenders.includes(currentUser.gender);
+      const isItemMale = maleGenders.includes(item.gender);
+      const isItemFemale = femaleGenders.includes(item.gender);
+      
+      if (isCurrentMale && !isItemFemale) return false;
+      if (!isCurrentMale && !isItemMale) return false;
     }
 
     // Community Rule: Hide if same temple and (missing division or same division)

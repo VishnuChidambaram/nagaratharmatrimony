@@ -96,18 +96,47 @@ router.get("/all-details", async (req, res) => {
       });
     }
 
-    // Fetch ALL details from the database without any filter
-    const allDetails = await db.UserDetail.findAll({
-      where: { is_deleted: false }, // Only fetch non-deleted users
-      order: [["created_at", "DESC"]], // Order by newest first
-      attributes: { exclude: ['photoPassword'] }
-    });
-
+    // Determine complementary gender filters for security/efficiency if not admin
+    let whereClause = { is_deleted: false };
     const currentUserEmail = req.user?.email;
     let currentUser = null;
+
     if (currentUserEmail) {
       currentUser = await db.UserDetail.findOne({ where: { email: currentUserEmail } });
     }
+
+    if (!req.user.isAdmin && currentUser) {
+      const maleGenders = ["Male", "ஆண்"];
+      const femaleGenders = ["Female", "பெண்"];
+      
+      let targetGenders = [];
+      if (maleGenders.includes(currentUser.gender)) {
+        targetGenders = femaleGenders;
+      } else if (femaleGenders.includes(currentUser.gender)) {
+        targetGenders = maleGenders;
+      }
+
+      if (targetGenders.length > 0) {
+        whereClause = {
+          [db.Sequelize.Op.and]: [
+            { is_deleted: false },
+            {
+              [db.Sequelize.Op.or]: [
+                { gender: { [db.Sequelize.Op.in]: targetGenders } },
+                { email: currentUserEmail } // Always include current user for Personal tab
+              ]
+            }
+          ]
+        };
+      }
+    }
+
+    // Fetch details from the database with filtering
+    const allDetails = await db.UserDetail.findAll({
+      where: whereClause,
+      order: [["created_at", "DESC"]], // Order by newest first
+      attributes: { exclude: ['photoPassword'] }
+    });
 
     const results = allDetails.map(u => {
       const plain = u.toJSON();
