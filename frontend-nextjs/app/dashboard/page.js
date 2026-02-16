@@ -232,7 +232,14 @@ export default function Dashboard() {
       ? sessionStorage.getItem("userEmail")?.toLowerCase()
       : null;
 
-  const filteredData = data.filter((item) => {
+  const currentUser = data.find(
+    (item) => item.email?.toLowerCase() === currentUserEmail
+  );
+  const currentUserTemple = currentUser?.yourTemple;
+  const currentUserDivision = currentUser?.yourDivision;
+
+  // Base filter for community rules and current user exclusion
+  const baseFilteredData = data.filter((item) => {
     if (
       currentUserEmail &&
       item.email &&
@@ -241,9 +248,34 @@ export default function Dashboard() {
       return false;
     }
 
+    // Community Rule: Hide if same temple and (missing division or same division)
+    if (currentUserTemple && item.yourTemple === currentUserTemple) {
+      if (
+        !item.yourDivision ||
+        !currentUserDivision ||
+        item.yourDivision === currentUserDivision
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const filteredSuggestedMatches = suggestedMatches.filter((item) => {
+    if (currentUserTemple && item.yourTemple === currentUserTemple) {
+      if (
+        !item.yourDivision ||
+        !currentUserDivision ||
+        item.yourDivision === currentUserDivision
+      ) {
+        return false;
+      }
+    }
+    return true;
+  });
+
+  const filteredData = baseFilteredData.filter((item) => {
     if (!debouncedSearchTerm) {
-      // If we are in search view and no term is entered, we return nothing
-      // This is handled in the UI rendering part below
       return true;
     }
     const term = debouncedSearchTerm.toLowerCase();
@@ -273,9 +305,7 @@ export default function Dashboard() {
   const personalData = data.filter(
     (item) => item.email?.toLowerCase() === currentUserEmail
   );
-  const otherData = data.filter(
-    (item) => item.email?.toLowerCase() !== currentUserEmail
-  );
+  const otherData = baseFilteredData;
   const shortlistedData = data.filter(
     (item) => shortlistedIds.includes(item.user_id)
   );
@@ -285,13 +315,10 @@ export default function Dashboard() {
     if (view === "personal") return personalData;
     if (view === "other") return otherData;
     if (view === "shortlist") return shortlistedData;
-    if (view === "matches") return suggestedMatches;
+    if (view === "matches") return filteredSuggestedMatches;
     if (view === "search") return debouncedSearchTerm ? filteredData : [];
     return filteredData;
-  }, [view, personalData, otherData, shortlistedData, suggestedMatches, filteredData, debouncedSearchTerm]);
-
-  const currentUserTemple = personalData[0]?.yourTemple;
-  const currentUserDivision = personalData[0]?.yourDivision;
+  }, [view, personalData, otherData, shortlistedData, filteredSuggestedMatches, filteredData, debouncedSearchTerm]);
 
   const handleCancelUpdate = async () => {
     if (!pendingRequestId) return;
