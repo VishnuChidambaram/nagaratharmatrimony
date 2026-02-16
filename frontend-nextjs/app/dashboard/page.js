@@ -254,8 +254,14 @@ export default function Dashboard() {
       const isItemMale = maleGenders.includes(item.gender);
       const isItemFemale = femaleGenders.includes(item.gender);
       
-      if (isCurrentMale && !isItemFemale) return false;
-      if (!isCurrentMale && !isItemMale) return false;
+      if (isCurrentMale && !isItemFemale) {
+         // console.log(`Filtering out ${item.email} (Gender: ${item.gender}) for Male user`);
+         return false;
+      }
+      if (!isCurrentMale && !isItemMale) {
+         // console.log(`Filtering out ${item.email} (Gender: ${item.gender}) for Female user`);
+         return false;
+      }
     }
 
     // Community Rule: Hide if same temple and (missing division or same division)
@@ -265,6 +271,7 @@ export default function Dashboard() {
         !currentUserDivision ||
         item.yourDivision === currentUserDivision
       ) {
+        // console.log(`Filtering out ${item.email} based on Community Rule (Temple: ${item.yourTemple}, Div: ${item.yourDivision})`);
         return false;
       }
     }
@@ -531,6 +538,7 @@ export default function Dashboard() {
         fontFamily: '"Outfit", "Inter", sans-serif',
       }}
     >
+
       {/* Modals */}
       {showCancelModal && (
         <CancelUpdateModal

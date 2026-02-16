@@ -53,6 +53,7 @@ export const sessionAuthMiddleware = async (req, res, next) => {
       }
   } catch (error) {
       console.error("CRITICAL ERROR in sessionAuthMiddleware:", error);
+      return res.status(500).json({ success: false, message: "Internal server error during authentication check" });
   }
 
   return next();

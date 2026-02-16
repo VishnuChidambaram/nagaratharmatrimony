@@ -8,6 +8,7 @@ import { sessionAuthMiddleware } from "../middleware/authMiddleware.js";
 import validate from "../middleware/validation.js";
 import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
 import { PoruthamCalculator } from "../utils/astrologyUtils.js";
+import logger from "../utils/logger.js";
 
 const router = express.Router();
 
@@ -178,6 +179,7 @@ router.get("/all-details", async (req, res) => {
     });
   } catch (error) {
     console.error("Fetch all details error:", error);
+    logger.error("Fetch all details error: " + error.message, { stack: error.stack });
     res.status(500).json({
       success: false,
       message: "Internal server error",
