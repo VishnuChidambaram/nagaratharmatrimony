@@ -27,17 +27,24 @@ jest.mock('@/app/hooks/useLanguage', () => {
 global.fetch = jest.fn();
 
 describe('Dashboard Page', () => {
+  const mockSessionStorage = {
+    getItem: jest.fn(),
+    setItem: jest.fn(),
+    removeItem: jest.fn(),
+    clear: jest.fn(),
+  };
+
   beforeEach(() => {
     jest.resetAllMocks();
     
     // Clean Session Storage Mock
-    const mockSessionStorage = {
-      getItem: jest.fn(),
-      setItem: jest.fn(),
-      removeItem: jest.fn(),
-      clear: jest.fn(),
-    };
     Object.defineProperty(window, 'sessionStorage', { value: mockSessionStorage, writable: true });
+    
+    // Mock scrolling functions
+    window.scrollTo = jest.fn();
+    if (typeof Element !== 'undefined') {
+      Element.prototype.scrollTo = jest.fn();
+    }
     // No window.location hack needed anymore!
   });
 
