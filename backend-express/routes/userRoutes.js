@@ -9,7 +9,7 @@ import validate from "../middleware/validation.js";
 import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
 import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 import logger from "../utils/logger.js";
-import { Sequelize } from "sequelize";
+import { Sequelize, Op } from "sequelize";
 
 const router = express.Router();
 
@@ -125,19 +125,19 @@ router.get("/all-details", async (req, res) => {
           
           let maritalStatusCondition;
           if (isCurrentUnmarried) {
-            maritalStatusCondition = { [Sequelize.Op.in]: unmarriedTerms };
+            maritalStatusCondition = { [Op.in]: unmarriedTerms };
           } else {
-            maritalStatusCondition = { [Sequelize.Op.notIn]: unmarriedTerms };
+            maritalStatusCondition = { [Op.notIn]: unmarriedTerms };
           }
 
           whereClause = {
-            [Sequelize.Op.and]: [
+            [Op.and]: [
               { is_deleted: false },
               {
-                [Sequelize.Op.or]: [
+                [Op.or]: [
                   {
-                    [Sequelize.Op.and]: [
-                      { gender: { [Sequelize.Op.in]: targetGenders } },
+                    [Op.and]: [
+                      { gender: { [Op.in]: targetGenders } },
                       { maritalStatus: maritalStatusCondition }
                     ]
                   },
@@ -150,7 +150,7 @@ router.get("/all-details", async (req, res) => {
       } else {
         // If not admin and no profile found for current user, only show their own record (which might not exist yet)
         whereClause = { 
-          [Sequelize.Op.and]: [
+          [Op.and]: [
             { is_deleted: false },
             { email: currentUserEmail }
           ]

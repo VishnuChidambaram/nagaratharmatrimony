@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
 import multer from "multer";
 import path from "path";
+import { Op } from "sequelize";
 import db from "../models/index.js";
 import crypto from "crypto";
 import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
@@ -669,7 +670,7 @@ router.post("/check-user-exists", async (req, res) => {
   try {
     const existingUser = await db.UserDetail.findOne({
       where: {
-        [db.sequelize.Sequelize.Op.or]: [{ email: email }, { phone: phone }],
+        [Op.or]: [{ email: email }, { phone: phone }],
       },
     });
 
@@ -715,7 +716,7 @@ router.post("/validate-registration", validate(registerSchema), async (req, res)
     // 2. User Existence Check
     const existingUser = await db.UserDetail.findOne({
       where: {
-        [db.sequelize.Sequelize.Op.or]: [
+        [Op.or]: [
           { email: data.email },
           { phone: data.phone },
         ],
@@ -801,7 +802,7 @@ router.post("/register", registrationLimiter, (req, res, next) => {
     // Check if user already exists
     const existingUser = await db.UserDetail.findOne({
       where: {
-        [db.sequelize.Sequelize.Op.or]: [
+        [Op.or]: [
           { email: data.email },
           { phone: data.phone },
         ],
