@@ -9,6 +9,7 @@ import validate from "../middleware/validation.js";
 import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
 import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 import logger from "../utils/logger.js";
+import { Sequelize } from "sequelize";
 
 const router = express.Router();
 
@@ -106,42 +107,52 @@ router.get("/all-details", async (req, res) => {
       currentUser = await db.UserDetail.findOne({ where: { email: currentUserEmail } });
     }
 
-    if (!req.user.isAdmin && currentUser) {
-      const maleGenders = ["Male", "ஆண்"];
-      const femaleGenders = ["Female", "பெண்"];
-      
-      let targetGenders = [];
-      if (maleGenders.includes(currentUser.gender)) {
-        targetGenders = femaleGenders;
-      } else if (femaleGenders.includes(currentUser.gender)) {
-        targetGenders = maleGenders;
-      }
-
-      if (targetGenders.length > 0) {
-        const unmarriedTerms = ["unmarried", "திருமணமாகாதவர்"];
-        const isCurrentUnmarried = unmarriedTerms.includes((currentUser.maritalStatus || "").toLowerCase());
+    if (!req.user.isAdmin) {
+      if (currentUser) {
+        const maleGenders = ["Male", "ஆண்"];
+        const femaleGenders = ["Female", "பெண்"];
         
-        let maritalStatusCondition;
-        if (isCurrentUnmarried) {
-          maritalStatusCondition = { [db.Sequelize.Op.in]: unmarriedTerms };
-        } else {
-          maritalStatusCondition = { [db.Sequelize.Op.notIn]: unmarriedTerms };
+        let targetGenders = [];
+        if (maleGenders.includes(currentUser.gender)) {
+          targetGenders = femaleGenders;
+        } else if (femaleGenders.includes(currentUser.gender)) {
+          targetGenders = maleGenders;
         }
 
-        whereClause = {
-          [db.Sequelize.Op.and]: [
+        if (targetGenders.length > 0) {
+          const unmarriedTerms = ["unmarried", "திருமணமாகாதவர்"];
+          const isCurrentUnmarried = unmarriedTerms.includes((currentUser.maritalStatus || "").toLowerCase());
+          
+          let maritalStatusCondition;
+          if (isCurrentUnmarried) {
+            maritalStatusCondition = { [Sequelize.Op.in]: unmarriedTerms };
+          } else {
+            maritalStatusCondition = { [Sequelize.Op.notIn]: unmarriedTerms };
+          }
+
+          whereClause = {
+            [Sequelize.Op.and]: [
+              { is_deleted: false },
+              {
+                [Sequelize.Op.or]: [
+                  {
+                    [Sequelize.Op.and]: [
+                      { gender: { [Sequelize.Op.in]: targetGenders } },
+                      { maritalStatus: maritalStatusCondition }
+                    ]
+                  },
+                  { email: currentUserEmail } // Always include current user for Personal tab
+                ]
+              }
+            ]
+          };
+        }
+      } else {
+        // If not admin and no profile found for current user, only show their own record (which might not exist yet)
+        whereClause = { 
+          [Sequelize.Op.and]: [
             { is_deleted: false },
-            {
-              [db.Sequelize.Op.or]: [
-                {
-                  [db.Sequelize.Op.and]: [
-                    { gender: { [db.Sequelize.Op.in]: targetGenders } },
-                    { maritalStatus: maritalStatusCondition }
-                  ]
-                },
-                { email: currentUserEmail } // Always include current user for Personal tab
-              ]
-            }
+            { email: currentUserEmail }
           ]
         };
       }
@@ -164,25 +175,24 @@ router.get("/all-details", async (req, res) => {
           const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : u;
           const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : u;
           
-          const calc = new PoruthamCalculator(
-            { 
-              star: bride.birthStar, 
-              rasi: bride.zodiacSign,
-              amsamMoon: bride.amsam_chandiran 
-            },
-            { 
-              star: groom.birthStar, 
-              rasi: groom.zodiacSign,
-              amsamMoon: groom.amsam_chandiran
-            }
-          );
-          plain.porutham = calc.getSummary();
-          console.log(`[Debug] Porutham for ${u.email}: ${plain.porutham?.score}`);
+          if (bride.birthStar && bride.zodiacSign && groom.birthStar && groom.zodiacSign) {
+            const calc = new PoruthamCalculator(
+              { 
+                star: bride.birthStar, 
+                rasi: bride.zodiacSign,
+                amsamMoon: bride.amsam_chandiran 
+              },
+              { 
+                star: groom.birthStar, 
+                rasi: groom.zodiacSign,
+                amsamMoon: groom.amsam_chandiran
+              }
+            );
+            plain.porutham = calc.getSummary();
+          }
         } catch (err) {
           console.error(`Porutham calculation error in all-details: ${err.message}`);
         }
-      } else {
-          console.log(`[Debug] Skipping Porutham for ${u.email}: missing stars/rasi`);
       }
       return plain;
     });
