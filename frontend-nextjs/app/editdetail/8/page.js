@@ -812,7 +812,7 @@ export default function EditStep8() {
                 <div className="step-label-mobile comparison-header-original">{t("Before Edit (Original)", language)}</div>
                 <div className="preview-fields-container">
                   {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => {
-                    const changed = hasFieldChanged(k);
+
                     return (
                     <div key={k} className="preview-field-row">
                       <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
