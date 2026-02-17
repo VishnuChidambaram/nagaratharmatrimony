@@ -98,18 +98,21 @@ export default function Login() {
           detail: { message: 'Login Successful', type: 'success' } 
         }));
         
+        // Use the email returned from the server (matches DB exactly)
+        const userEmail = data.email || email;
+        
         if (typeof window !== "undefined") {
-          sessionStorage.setItem("userEmail", email);
+          sessionStorage.setItem("userEmail", userEmail);
           if (data.sessionId) sessionStorage.setItem("sessionId", data.sessionId);
           if (data.expiresAt) sessionStorage.setItem("sessionExpiresAt", data.expiresAt);
 
           // Set cookie for middleware (not httpOnly as it's set by client-side JS)
-          document.cookie = `userEmail=${email}; path=/; samesite=lax`;
+          document.cookie = `userEmail=${userEmail}; path=/; samesite=lax`;
           
           // Dispatch event to update layout menu profile
-          window.dispatchEvent(new CustomEvent('user-login', { detail: email }));
+          window.dispatchEvent(new CustomEvent('user-login', { detail: userEmail }));
         }
-        window.sessionStorage.setItem("userEmail", email);
+        window.sessionStorage.setItem("userEmail", userEmail);
 
          // Redirect immediately without delay
         router.push("/dashboard");

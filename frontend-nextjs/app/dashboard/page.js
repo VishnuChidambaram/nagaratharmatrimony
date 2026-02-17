@@ -238,7 +238,6 @@ export default function Dashboard() {
   const currentUserTemple = currentUser?.yourTemple;
   const currentUserDivision = currentUser?.yourDivision;
 
-  // Base filter for community rules and current user exclusion
   const baseFilteredData = data.filter((item) => {
     const isCurrentUser = currentUserEmail && item.email && item.email.toLowerCase() === currentUserEmail;
     
@@ -255,15 +254,23 @@ export default function Dashboard() {
       const isItemFemale = femaleGenders.includes(item.gender);
       
       if (isCurrentMale && !isItemFemale) {
-         // console.log(`Filtering out ${item.email} (Gender: ${item.gender}) for Male user`);
          return false;
       }
       if (!isCurrentMale && !isItemMale) {
-         // console.log(`Filtering out ${item.email} (Gender: ${item.gender}) for Female user`);
          return false;
       }
     }
 
+    // Marital Status Filter: Unmarried with Unmarried only
+    if (currentUser?.maritalStatus && item.maritalStatus) {
+      const unmarriedTerms = ["unmarried", "திருமணமாகாதவர்"];
+      const isCurrentUnmarried = unmarriedTerms.includes(currentUser.maritalStatus.toLowerCase());
+      const isItemUnmarried = unmarriedTerms.includes(item.maritalStatus.toLowerCase());
+      
+      if (isCurrentUnmarried !== isItemUnmarried) {
+        return false;
+      }
+    }
     // Community Rule: Hide if same temple and (missing division or same division)
     if (currentUserTemple && item.yourTemple === currentUserTemple) {
       if (
@@ -271,7 +278,6 @@ export default function Dashboard() {
         !currentUserDivision ||
         item.yourDivision === currentUserDivision
       ) {
-        // console.log(`Filtering out ${item.email} based on Community Rule (Temple: ${item.yourTemple}, Div: ${item.yourDivision})`);
         return false;
       }
     }
@@ -308,6 +314,8 @@ export default function Dashboard() {
       (item.phone && item.phone.toLowerCase().includes(term)) ||
       (item.yourTemple && item.yourTemple.toLowerCase().includes(term)) ||
       (item.yourDivision && item.yourDivision.toLowerCase().includes(term)) ||
+      (item.nativePlace && item.nativePlace.toLowerCase().includes(term)) ||
+      (item.nativePlaceHouseName && item.nativePlaceHouseName.toLowerCase().includes(term)) ||
       (item.description && item.description.toLowerCase().includes(term)) ||
       (item.educationQualification &&
         item.educationQualification.toLowerCase().includes(term)) ||

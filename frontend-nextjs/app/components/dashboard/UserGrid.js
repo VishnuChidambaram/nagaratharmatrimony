@@ -31,7 +31,9 @@ export default function UserGrid({
           color: "#999",
         }}
       >
-        {t("No matching results.")}
+        {view === "personal"
+          ? t("Your profile was not found. Please make sure you have completed your registration.")
+          : t("No matching results.")}
       </div>
     );
   }

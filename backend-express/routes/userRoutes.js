@@ -118,12 +118,27 @@ router.get("/all-details", async (req, res) => {
       }
 
       if (targetGenders.length > 0) {
+        const unmarriedTerms = ["unmarried", "திருமணமாகாதவர்"];
+        const isCurrentUnmarried = unmarriedTerms.includes((currentUser.maritalStatus || "").toLowerCase());
+        
+        let maritalStatusCondition;
+        if (isCurrentUnmarried) {
+          maritalStatusCondition = { [db.Sequelize.Op.in]: unmarriedTerms };
+        } else {
+          maritalStatusCondition = { [db.Sequelize.Op.notIn]: unmarriedTerms };
+        }
+
         whereClause = {
           [db.Sequelize.Op.and]: [
             { is_deleted: false },
             {
               [db.Sequelize.Op.or]: [
-                { gender: { [db.Sequelize.Op.in]: targetGenders } },
+                {
+                  [db.Sequelize.Op.and]: [
+                    { gender: { [db.Sequelize.Op.in]: targetGenders } },
+                    { maritalStatus: maritalStatusCondition }
+                  ]
+                },
                 { email: currentUserEmail } // Always include current user for Personal tab
               ]
             }
@@ -135,13 +150,13 @@ router.get("/all-details", async (req, res) => {
     // Fetch details from the database with filtering
     const allDetails = await db.UserDetail.findAll({
       where: whereClause,
-      order: [["created_at", "DESC"]], // Order by newest first
-      attributes: { exclude: ['photoPassword'] }
+      order: [["created_at", "DESC"]],
     });
 
     const results = allDetails.map(u => {
       const plain = u.toJSON();
-      plain.hasPhotoPassword = !!u.photoPassword;
+      plain.hasPhotoPassword = !!plain.photoPassword;
+      delete plain.photoPassword; // Remove sensitive data from response
 
       // Add Porutham calculation
       if (currentUser && currentUser.email !== u.email && currentUser.birthStar && currentUser.zodiacSign && u.birthStar && u.zodiacSign) {
