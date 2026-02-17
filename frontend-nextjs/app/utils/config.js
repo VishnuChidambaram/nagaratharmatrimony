@@ -5,10 +5,12 @@ const getApiUrl = () => {
     }
 
     if (typeof window !== 'undefined') {
-        const hostname = window.location.hostname;
-        // If accessed via IP, use that same IP for the API
+        const { hostname, protocol } = window.location;
+        // If accessed via a non-local hostname, use the same protocol and guess port if needed
         if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-            return `http://${hostname}:5000`;
+            // If it's HTTPS (production), don't append :5000 as typical proxies handle it
+            const port = protocol === 'https:' ? '' : ':5000';
+            return `${protocol}//${hostname}${port}`;
         }
     }
     return 'http://localhost:5000';
