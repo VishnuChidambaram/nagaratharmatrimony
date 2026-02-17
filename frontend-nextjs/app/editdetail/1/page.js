@@ -9,6 +9,7 @@ import { t } from "@/app/utils/translations";
 import { useLanguage } from "@/app/hooks/useLanguage";
 import { API_URL } from "@/app/utils/config";
 import { normalizeDropdownValue } from "@/app/utils/normalization";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
 
 export default function EditStep1() {
   const router = useRouter();
@@ -18,46 +19,49 @@ export default function EditStep1() {
   const [loading, setLoading] = useState(true);
   const { language } = useLanguage();
 
-    // Fetch user data from database when component mounts
-    useEffect(() => {
-    // 1. Load data from localStorage immediately
+  useEffect(() => {
     const initializeData = async () => {
-      // 1. Load data from localStorage immediately
+      // 1. Get Target Email (URL > Session > Local)
+      const emailFromUrl = searchParams.get("email");
+      const emailFromStorage = sessionStorage.getItem("userEmail");
+      const lastFetchedEmail = sessionStorage.getItem("lastFetchedEmail");
+      const targetEmail = (emailFromUrl || lastFetchedEmail || emailFromStorage || "").trim().toLowerCase();
+
+      // 2. Load Local Data
       const localData = await loadFormData();
-      setForm(localData);
+      const localEmail = (localData.email || "").trim().toLowerCase();
 
+      // 3. Decision Logic
+      if (!targetEmail) {
+        // Case A: No target user specified -> Use whatever is in local storage (continuation)
+        console.log("Step 1: No target email, using local data.");
+        setForm(localData);
+        setLoading(false);
+        return;
+      }
+
+      if (localEmail === targetEmail) {
+        // Case B: Local data matches target -> Use local storage (fast load)
+        console.log("Step 1: Local data matches target", targetEmail, "- Using Local Storage.");
+        setForm(localData);
+        setLoading(false);
+        return;
+      }
+
+      // Case C: Mismatch -> Fetch fresh data
+      console.log("Step 1: Data mismatch (Local:", localEmail, "Target:", targetEmail, ") - Fetching fresh data.");
       try {
-        const emailFromUrl = searchParams.get("email");
-        const emailFromStorage = sessionStorage.getItem("userEmail");
-        const lastFetchedEmail = sessionStorage.getItem("lastFetchedEmail");
-        const email = emailFromUrl || lastFetchedEmail || emailFromStorage;
-
-        if (!email) {
-          setLoading(false);
-          return;
-        }
-
-        // 2. CHECK: Do we already have data for this user?
-        const localEmail = (localData.email || "").trim().toLowerCase();
-        const targetEmail = email.trim().toLowerCase();
-
-        // FIX: Ensure localData actually has the correct user data (avoid empty forms if cache cleared)
-        if (lastFetchedEmail && lastFetchedEmail.toLowerCase() === targetEmail && localEmail === targetEmail) {
-           console.log("Step 1: Data already loaded for", email, "- Using Local Storage.");
-           setLoading(false);
-           return;
-        }
-
-        // 3. FETCH: If mismatch or empty, fetch fresh from DB
-        console.log("Step 1: Fetching fresh data for", email);
-        const response = await fetch(`${API_URL}/userdetails/${encodeURIComponent(email)}`);
+        const response = await fetch(`${API_URL}/userdetails/${encodeURIComponent(targetEmail)}`, {
+          credentials: "include",
+          headers: { ...getAuthHeaders() },
+        });
         const result = await response.json();
 
         if (result.success && result.data) {
           const userData = result.data;
           
-          // Clean overwrite - we are starting a fresh edits session
-          userData.email = userData.email || email;
+          // Clean overwrite
+          userData.email = userData.email || targetEmail;
           delete userData.password;
           delete userData.confirmPassword;
 
@@ -70,15 +74,16 @@ export default function EditStep1() {
           userData.nativePlace = normalizeDropdownValue("nativePlace", userData.nativePlace);
           userData.referredBy = normalizeDropdownValue("referredBy", userData.referredBy);
 
-
           console.log("Step 1: Loaded fresh data:", userData);
           setForm(userData);
           saveFormData(userData); // Seed LocalStorage
-          sessionStorage.setItem("lastFetchedEmail", email);
-          sessionStorage.setItem("originalEmail", userData.email); // Store original email for update URL
+          sessionStorage.setItem("lastFetchedEmail", targetEmail);
+          sessionStorage.setItem("originalEmail", userData.email);
+        } else {
+             console.error("Step 1: Failed to fetch data or no data found");
+             // Fallback to empty/default if fetch fails but we expected a user?
+             // Or maybe keep loading? For now, let's just stop loading.
         }
-
-
       } catch (err) {
         console.error("Error fetching user data:", err);
       } finally {
@@ -312,6 +317,15 @@ export default function EditStep1() {
     await saveFormData(form); // Save before navigating
     router.push("/editdetail/2");
   };
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+        <p className="ml-4 text-xl font-semibold">Loading user data...</p>
+      </div>
+    );
+  }
+
   return (
     <>
       {/* Standardized CSS imported above */}
