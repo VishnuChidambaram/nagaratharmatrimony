@@ -64,7 +64,10 @@ export default function EditStep8() {
       // Fetch original data for comparison
       const email = sessionStorage.getItem("originalEmail") || sessionStorage.getItem("lastFetchedEmail") || localData.email;
       if (email) {
-          fetch(`${API_URL}/userdetails/${encodeURIComponent(email)}`)
+          fetch(`${API_URL}/userdetails/${encodeURIComponent(email)}`, {
+            credentials: "include",
+            headers: { ...getAuthHeaders() },
+          })
             .then(res => res.json())
             .then(res => {
                 console.log("Backend response for original data:", res);
@@ -743,6 +746,27 @@ export default function EditStep8() {
     return true;
   };
 
+  /* Helper to check if a field has changed */
+  const hasFieldChanged = (key) => {
+    // If original data isn't loaded yet, don't show changes (avoid all-green screen)
+    if (!originalForm || Object.keys(originalForm).length === 0) return false;
+
+    let original = originalForm[key];
+    let current = form[key];
+
+    // Handle null/undefined
+    if (original === null || original === undefined) original = "";
+    if (current === null || current === undefined) current = "";
+
+    // Handle special case for arrays (like photos)
+    if (Array.isArray(original) && Array.isArray(current)) {
+         return JSON.stringify(original) !== JSON.stringify(current);
+    }
+
+    // Convert to string and trim for loose comparison
+    return String(original).trim() !== String(current).trim();
+  };
+
   return (
     <>
       <div className="edit-detail-container">
@@ -787,14 +811,17 @@ export default function EditStep8() {
               <div className="comparison-column-original preview-column">
                 <div className="step-label-mobile comparison-header-original">{t("Before Edit (Original)", language)}</div>
                 <div className="preview-fields-container">
-                  {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => (
+                  {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => {
+                    const changed = hasFieldChanged(k);
+                    return (
                     <div key={k} className="preview-field-row">
                       <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
                       <div className="preview-field-value">
                         {renderFieldValue(originalForm, k) || <span className="preview-empty-value">-</span>}
                       </div>
                     </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
     
@@ -803,17 +830,14 @@ export default function EditStep8() {
                 <div className="step-label-mobile comparison-header-new">{t("After Edit (New)", language)}</div>
                 <div className="preview-fields-container">
                   {fields.filter(k => shouldShowField(k, originalForm) || shouldShowField(k, form)).map((k) => {
-                    const originalVal = JSON.stringify(originalForm[k]);
-                    const newVal = JSON.stringify(form[k]);
-                    const isChanged = originalVal !== newVal;
-                    
+                    const changed = hasFieldChanged(k);
                     return (
-                      <div key={k} className={`preview-field-row ${isChanged ? 'field-changed' : ''}`}>
-                        <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
-                        <div className={`preview-field-value ${isChanged ? 'value-changed' : ''}`}>
-                          {renderFieldValue(form, k) || <span className="preview-empty-value">-</span>}
-                        </div>
+                    <div key={k} className="preview-field-row">
+                      <strong className="preview-field-label">{t(displayNames[k] || k, language)}:</strong>
+                      <div className={`preview-field-value ${changed ? "value-changed-text value-changed-bg" : ""}`}>
+                        {renderFieldValue(form, k) || <span className="preview-empty-value">-</span>}
                       </div>
+                    </div>
                     );
                   })}
                 </div>
@@ -822,7 +846,8 @@ export default function EditStep8() {
           </div>
         );
       })}
-    </div>
+      </div>
+
       {/* Email Verification Section */}
       <div
         className="edit-verification-section"
