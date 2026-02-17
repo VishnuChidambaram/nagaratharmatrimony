@@ -1,19 +1,30 @@
+import dotenv from "dotenv";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Explicitly load .env from the backend-express directory
+dotenv.config({ path: path.join(__dirname, "../.env") });
 
 import db from "../models/index.js";
 
 async function reproduce() {
   try {
+    console.log("DB Config Check:", {
+        host: process.env.DB_HOST,
+        user: process.env.DB_USER,
+        db: process.env.DB_NAME,
+        port: process.env.DB_PORT,
+        passLength: process.env.DB_PASS ? process.env.DB_PASS.length : 0
+    });
+
     await db.sequelize.authenticate();
-    console.log("Database connected.");
+    console.log("Database connected successfully.");
 
     // Find a non-admin user
-    const user = await db.UserDetail.findOne({
-      where: {
-         // Assuming we can find one. 
-         // If no user exists, we can't test. 
-         // We'll just take the first one found.
-      }
-    });
+    const user = await db.UserDetail.findOne();
 
     if (!user) {
       console.log("No users found in DB to test with.");
@@ -45,9 +56,14 @@ async function reproduce() {
     const text = await response.text();
     try {
         const json = JSON.parse(text);
-        console.log("Response JSON:", JSON.stringify(json, null, 2).substring(0, 1000) + "...");
+        console.log("Response JSON (first 1000 chars):", JSON.stringify(json, null, 2).substring(0, 1000) + "...");
+        if (json.success) {
+            console.log("\n✅ SUCCESS: /all-details fetched successfully!");
+        } else {
+            console.log("\n❌ FAILED: API returned success: false", json.message);
+        }
     } catch (e) {
-        console.log("Response Text:", text);
+        console.log("Response is not JSON. Response Text:", text);
     }
 
   } catch (error) {
