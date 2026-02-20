@@ -232,75 +232,77 @@ export default function UsersList() {
           {currentUsers.length === 0 && <p style={{textAlign: "center", fontStyle: "italic"}}>{t("No users found.")}</p>}
         </div>
 
-        {/* Pagination Controls */}
-        {totalPages > 1 && (
-          <div className={styles.pagination}>
-            <button 
-              onClick={() => paginate(currentPage - 1)} 
-              disabled={currentPage === 1}
-              className={`${styles.paginationButton} ${styles.prevBtn}`}
-              style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
-            >
-              ← <span>{t("Prev")}</span>
-            </button>
-            
-            <div className={styles.pageNumbers}>
-            {(() => {
-              const getVisiblePages = (curr, total) => {
-                if (total <= 5) return Array.from({length: total}, (_, i) => i + 1);
-                
-                let pages = [1];
-                let start = Math.max(2, curr - 1);
-                let end = Math.min(total - 1, curr + 1);
 
-                if (curr <= 3) {
-                    end = Math.min(4, total - 1);
-                }
-                
-                if (curr >= total - 2) {
-                    start = Math.max(2, total - 3);
-                }
-
-                if (start > 2) {
-                    pages.push('...');
-                }
-                
-                for (let i = start; i <= end; i++) {
-                    pages.push(i);
-                }
-                
-                if (end < total - 1) {
-                    pages.push('...');
-                }
-                
-                pages.push(total);
-                return pages;
-              };
-
-              return getVisiblePages(currentPage, totalPages).map((page, index) => (
-                <button
-                  key={index}
-                  onClick={() => typeof page === 'number' ? paginate(page) : null}
-                  className={`${styles.paginationButton} ${currentPage === page ? styles.activePage : ""} ${typeof page !== 'number' ? styles.dots : ""}`}
-                  disabled={typeof page !== 'number'}
-                >
-                  {page}
-                </button>
-              ));
-            })()}
-            </div>
-
-            <button 
-              onClick={() => paginate(currentPage + 1)} 
-              disabled={currentPage === totalPages}
-              className={`${styles.paginationButton} ${styles.nextBtn}`}
-              style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
-            >
-              <span>{t("Next")}</span> →
-            </button>
-          </div>
-        )}
       </div>
+    
+      {/* Pagination Controls - Moved Outside Content Area */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button 
+            onClick={() => paginate(currentPage - 1)} 
+            disabled={currentPage === 1}
+            className={`${styles.paginationButton} ${styles.prevBtn}`}
+            style={{ opacity: currentPage === 1 ? 0.5 : 1 }}
+          >
+            ← <span>{t("Prev")}</span>
+          </button>
+          
+          <div className={styles.pageNumbers}>
+          {(() => {
+            const getVisiblePages = (curr, total) => {
+              if (total <= 5) return Array.from({length: total}, (_, i) => i + 1);
+              
+              let pages = [1];
+              let start = Math.max(2, curr - 1);
+              let end = Math.min(total - 1, curr + 1);
+
+              if (curr <= 3) {
+                  end = Math.min(4, total - 1);
+              }
+              
+              if (curr >= total - 2) {
+                  start = Math.max(2, total - 3);
+              }
+
+              if (start > 2) {
+                  pages.push('...');
+              }
+              
+              for (let i = start; i <= end; i++) {
+                  pages.push(i);
+              }
+              
+              if (end < total - 1) {
+                  pages.push('...');
+              }
+              
+              pages.push(total);
+              return pages;
+            };
+
+            return getVisiblePages(currentPage, totalPages).map((page, index) => (
+              <button
+                key={index}
+                onClick={() => typeof page === 'number' ? paginate(page) : null}
+                className={`${styles.paginationButton} ${currentPage === page ? styles.activePage : ""} ${typeof page !== 'number' ? styles.dots : ""}`}
+                disabled={typeof page !== 'number'}
+              >
+                {page}
+              </button>
+            ));
+          })()}
+          </div>
+
+          <button 
+            onClick={() => paginate(currentPage + 1)} 
+            disabled={currentPage === totalPages}
+            className={`${styles.paginationButton} ${styles.nextBtn}`}
+            style={{ opacity: currentPage === totalPages ? 0.5 : 1 }}
+          >
+            <span>{t("Next")}</span> →
+          </button>
+        </div>
+      )}
 
       <ConfirmationModal
         isOpen={modalOpen}
