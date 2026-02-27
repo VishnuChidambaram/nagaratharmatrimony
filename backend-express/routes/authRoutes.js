@@ -29,7 +29,7 @@ async function sendEmailViaBridge(to, subject, text) {
     to,
     subject,
     text,
-    key: process.env.EMAIL_BRIDGE_KEY || "MATRIMONY_SECRET_2025"
+    key: process.env.EMAIL_BRIDGE_KEY
   };
 
   try {

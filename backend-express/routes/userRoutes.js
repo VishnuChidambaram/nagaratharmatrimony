@@ -10,6 +10,7 @@ import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userS
 import { PoruthamCalculator } from "../utils/astrologyUtils.js";
 import logger from "../utils/logger.js";
 import { Sequelize, Op } from "sequelize";
+import crypto from "crypto";
 
 const router = express.Router();
 
@@ -339,9 +340,9 @@ router.post(
         });
       }
 
-      // Check if phoneNumber already exists
+      // Check if phone already exists
       const existingPhone = await db.UserDetail.findOne({
-        where: { phoneNumber },
+        where: { phone: phoneNumber },
       });
       if (existingPhone) {
         return res.status(400).json({
@@ -365,8 +366,8 @@ router.post(
       const userDetail = await db.UserDetail.create({
         name,
         email,
-        password: "defaultpass", // You might want to generate a random password or ask for it
-        phoneNumber,
+        password: await bcrypt.hash(crypto.randomBytes(12).toString("hex"), 10),
+        phone: phoneNumber,
         description,
         photo: photoPath, // Changed from imagePath to photo
         pdfPath,
@@ -401,6 +402,7 @@ router.put(
   },
   validate(updateProfileSchema),
   async (req, res) => {
+    const { email } = req.params;
     // Check authentication
     if (!req.user) {
       return res.status(401).json({ success: false, message: "Authentication required" });
