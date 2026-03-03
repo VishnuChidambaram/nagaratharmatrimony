@@ -12,5 +12,9 @@ export const en = {
   errorGeneric: "Something went wrong. Please try again.",
   loginFailed: "Login failed",
   passwordShow: "Show password",
-  passwordHide: "Hide password"
+  passwordHide: "Hide password",
+  alreadyLoggedInTitle: "Already Logged In",
+  alreadyLoggedInMessage: "You are already logged in on another device. Do you want to continue here? (This will log out the other session)",
+  yes: "Yes",
+  no: "No"
 };

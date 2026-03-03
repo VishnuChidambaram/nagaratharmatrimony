@@ -377,42 +377,54 @@ router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res)
         }
     }
 
-    if (!isMatch) {
+    if (isMatch) {
+      // Check if admin is already logged in
+      const { forceLogin } = req.body;
+      
+      if (admin.sessionId && !forceLogin) {
+        return res.json({
+          success: false,
+          status: "error",
+          code: "ALREADY_LOGGED_IN",
+          message: "You are already logged in on another device.",
+        });
+      }
+
+      // Generate Session ID
+      const sessionId = crypto.randomUUID();
+      
+      // Update Admin with Session ID
+      await admin.update({ sessionId });
+
+      // Set httpOnly cookie with admin email
+      res.cookie("adminEmail", admin.email, {
+        httpOnly: true,
+        secure: true, // Required for cross-site sameSite: none
+        sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
+        maxAge: SESSION_DURATION,
+      });
+
+      // Set Admin Session ID cookie
+      res.cookie("adminSessionId", sessionId, {
+        httpOnly: true,
+        secure: true, 
+        sameSite: "none",
+        maxAge: SESSION_DURATION,
+      });
+
       return res.json({
-        success: false,
-        status: "error",
-        message: "Invalid email or password",
+        success: true,
+        message: "Admin Login successful",
+        sessionId: sessionId,
+        email: admin.email,
+        expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
       });
     }
 
-    // Generate Session ID
-    const sessionId = crypto.randomUUID();
-    
-    // Update Admin with Session ID
-    await admin.update({ sessionId });
-
-    // Set httpOnly cookie with admin email
-    res.cookie("adminEmail", admin.email, {
-      httpOnly: true,
-      secure: true, // Required for cross-site sameSite: none
-      sameSite: "none", // Required for cross-site cookies (Render -> Vercel)
-      maxAge: SESSION_DURATION,
-    });
-
-    // Set Admin Session ID cookie
-    res.cookie("adminSessionId", sessionId, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: "none",
-      maxAge: SESSION_DURATION,
-    });
-
     return res.json({
-      success: true,
-      message: "Admin Login successful",
-      sessionId: sessionId,
-      email: admin.email,
-      expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
+      success: false,
+      status: "error",
+      message: "Invalid email or password",
     });
   } catch (error) {
     console.error("Admin Login error:", error);

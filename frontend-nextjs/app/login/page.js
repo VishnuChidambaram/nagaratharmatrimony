@@ -212,11 +212,9 @@ export default function Login() {
                   textAlign: 'center',
                   boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
                 }}>
-                  <h3 style={{ marginTop: 0, color: 'var(--card-text)' }}>{language === 'ta' ? 'ஏற்கனவே உள்நுழைந்துள்ளீர்கள்' : 'Already Logged In'}</h3>
+                  <h3 style={{ marginTop: 0, color: 'var(--card-text)' }}>{t.alreadyLoggedInTitle}</h3>
                   <p style={{ color: 'var(--card-text)' }}>
-                    {language === 'ta' 
-                      ? 'நீங்கள் ஏற்கனவே மற்றொரு சாதனத்தில் உள்நுழைந்துள்ளீர்கள். இங்கே உள்நுழைய விரும்புகிறீர்களா? (இது முந்தைய அமர்வை வெளியேற்றும்)' 
-                      : 'You are already logged in on another device. Do you want to continue here? (This will log out the other session)'}
+                    {t.alreadyLoggedInMessage}
                   </p>
                   <div style={{ display: 'flex', gap: '10px', justifyContent: 'center', marginTop: '20px' }}>
                     <button
@@ -229,7 +227,7 @@ export default function Login() {
                         cursor: 'pointer'
                       }}
                     >
-                      {language === 'ta' ? 'இல்லை' : 'No'}
+                      {t.no}
                     </button>
                     <button
                       onClick={() => {
@@ -246,7 +244,7 @@ export default function Login() {
                         fontWeight: 'bold'
                       }}
                     >
-                      {language === 'ta' ? 'ஆம்' : 'Yes'}
+                      {t.yes}
                     </button>
                   </div>
                 </div>

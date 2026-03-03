@@ -8,4 +8,8 @@ export const en = {
   emailRequired: "Please enter both email and password",
   emailInvalid: "Please enter a valid email address",
   onlyEnglish: "Please type in English only",
+  alreadyLoggedInTitle: "Already Logged In",
+  alreadyLoggedInMessage: "You are already logged in on another device. Do you want to continue here? (This will log out the other session)",
+  yes: "Yes",
+  no: "No"
 };
