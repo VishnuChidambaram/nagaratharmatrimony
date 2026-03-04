@@ -379,7 +379,7 @@ export default function UserCard({
                 {t("Match Breakdown")}
               </h4>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                {Object.entries(item.matchBreakdown).filter(([_, val]) => val > 0).map(([key, val]) => (
+                {Object.entries(item.matchBreakdown).filter(([, val]) => val > 0).map(([key, val]) => (
                   <div key={key} style={{ display: 'flex', justifyContent: 'space-between', opacity: val > 0 ? 1 : 0.5 }}>
                     <span style={{ textTransform: 'capitalize' }}>
                       {t(key)}
