@@ -871,19 +871,23 @@ router.put("/restore-user/:id", async (req, res) => {
 router.post("/verify-photo-password", validate(verifyPhotoPasswordSchema), async (req, res) => {
   try {
     const { email, password } = req.body;
+    logger.info(`Photo password verification attempt for: ${email}`);
     if (!email || !password) {
       return res.status(400).json({ success: false, message: "Email and password are required" });
     }
 
     const user = await db.UserDetail.findOne({ where: { email } });
     if (!user || !user.photoPassword) {
+      logger.warn(`Verification failed: No photo password set or user not found for ${email}`);
       return res.json({ success: false, message: "No photo password set for this user" });
     }
 
     const isMatch = await bcrypt.compare(password, user.photoPassword);
     if (isMatch) {
+      logger.info(`Photo password verified successfully for ${email}`);
       return res.json({ success: true, message: "Password verified" });
     } else {
+      logger.warn(`Incorrect photo password for ${email}`);
       return res.json({ success: false, message: "Incorrect password" });
     }
   } catch (error) {

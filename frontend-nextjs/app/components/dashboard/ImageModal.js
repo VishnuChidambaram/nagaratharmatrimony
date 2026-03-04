@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
+import { API_URL } from "../../utils/config";
+import { getAuthHeaders } from "../../utils/auth-headers";
 
 export default function ImageModal({
   selectedImage,
@@ -123,9 +125,13 @@ export default function ImageModal({
                   <button
                     onClick={async () => {
                       try {
-                        const res = await fetch(`${API_URL}/api/verify-photo-password`, {
+                        const res = await fetch(`${API_URL}/verify-photo-password`, {
                           method: "POST",
-                          headers: { "Content-Type": "application/json" },
+                          headers: { 
+                            "Content-Type": "application/json",
+                            ...getAuthHeaders()
+                          },
+                          credentials: "include",
                           body: JSON.stringify({
                             email: selectedImageOwner.email,
                             password: imagePasswordInput,

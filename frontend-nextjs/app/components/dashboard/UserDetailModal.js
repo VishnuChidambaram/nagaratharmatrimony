@@ -320,8 +320,7 @@ export default function UserDetailModal({
                   className="identity-photo"
                   style={{
                     filter:
-                      selectedUser.photoPassword &&
-                      selectedUser.photoPassword.length > 0 &&
+                      selectedUser.hasPhotoPassword &&
                       selectedUser.email?.toLowerCase() !==
                         sessionStorage.getItem("userEmail")?.toLowerCase() &&
                       !unlockedUsers.includes(selectedUser.email)
@@ -480,7 +479,7 @@ export default function UserDetailModal({
                     alt={`Photo ${i + 1}`} 
                     className="gallery-photo"
                     style={{
-                      filter: selectedUser.photoPassword && selectedUser.photoPassword.length > 0 && selectedUser.email?.toLowerCase() !== sessionStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email) ? "blur(18px)" : "none"
+                      filter: selectedUser.hasPhotoPassword && selectedUser.email?.toLowerCase() !== sessionStorage.getItem("userEmail")?.toLowerCase() && !unlockedUsers.includes(selectedUser.email) ? "blur(18px)" : "none"
                     }}
                     onClick={() => {
                       setSelectedImage(url);

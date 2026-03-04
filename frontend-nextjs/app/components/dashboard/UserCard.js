@@ -151,8 +151,7 @@ export default function UserCard({
               cursor: "pointer",
               border: isOwnCard ? "2px solid #28a745" : "none",
               filter:
-                item.photoPassword &&
-                item.photoPassword.length > 0 &&
+                item.hasPhotoPassword &&
                 !isOwnCard &&
                 !unlockedUsers.includes(item.email)
                   ? "blur(8px)"
