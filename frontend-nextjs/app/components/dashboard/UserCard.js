@@ -21,6 +21,7 @@ export default function UserCard({
   onToggleShortlist,
   isShortlisted,
 }) {
+  const [showBreakdown, setShowBreakdown] = useState(false);
   const [currentUserEmail] = useState(() =>
     typeof window !== "undefined" ? sessionStorage.getItem("userEmail") : null
   );
@@ -321,29 +322,78 @@ export default function UserCard({
       </div>
 
       {!isOwnCard && item.matchScore !== undefined && (
-        <div
-          style={{
-            padding: "5px 12px",
-            background: "linear-gradient(135deg, #ffd700 0%, #ffa500 100%)",
-            color: "#333",
-            borderRadius: "20px",
-            fontSize: "12px",
-            fontWeight: "900",
-            boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "6px",
-            whiteSpace: "nowrap",
-            width: "fit-content",
-            marginBottom: "5px",
-            marginLeft: "auto",
-            marginRight: "auto",
-            border: "1px solid rgba(255, 255, 255, 0.5)",
-            animation: "pulse 2s ease-in-out infinite",
+        <div 
+          style={{ position: 'relative', width: 'fit-content', margin: '0 auto 5px' }}
+          onMouseEnter={() => setShowBreakdown(true)}
+          onMouseLeave={() => setShowBreakdown(false)}
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowBreakdown(!showBreakdown);
           }}
         >
-          <span style={{ fontSize: "14px" }}>🔥</span> {item.matchScore}% {t("Match")}
+          <div
+            style={{
+              padding: "5px 12px",
+              background: "linear-gradient(135deg, #ffd700 0%, #ffa500 100%)",
+              color: "#333",
+              borderRadius: "20px",
+              fontSize: "12px",
+              fontWeight: "900",
+              boxShadow: "0 4px 10px rgba(255, 215, 0, 0.3)",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "6px",
+              whiteSpace: "nowrap",
+              border: "1px solid rgba(255, 255, 255, 0.5)",
+              animation: "pulse 2s ease-in-out infinite",
+              cursor: "help",
+            }}
+          >
+            <span style={{ fontSize: "14px" }}>🔥</span> {item.matchScore.toFixed(1)}% {t("Match")}
+          </div>
+
+          {showBreakdown && item.matchBreakdown && (
+            <div
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "rgba(255, 255, 255, 0.98)",
+                backdropFilter: "blur(15px)",
+                border: "1px solid #ffd700",
+                borderRadius: "12px",
+                padding: "15px",
+                zIndex: 9999,
+                width: "220px",
+                boxShadow: "0 15px 35px rgba(0,0,0,0.3)",
+                fontSize: "13px",
+                color: "#333",
+                animation: "cardFadeIn 0.3s ease-out",
+                marginTop: "10px"
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h4 style={{ margin: "0 0 8px 0", borderBottom: "1px solid #eee", paddingBottom: "4px", fontSize: "13px", color: "#ffa500" }}>
+                {t("Match Breakdown")}
+              </h4>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                {Object.entries(item.matchBreakdown).filter(([_, val]) => val > 0).map(([key, val]) => (
+                  <div key={key} style={{ display: 'flex', justifyContent: 'space-between', opacity: val > 0 ? 1 : 0.5 }}>
+                    <span style={{ textTransform: 'capitalize' }}>
+                      {t(key)}
+                    </span>
+                    <span style={{ fontWeight: 'bold' }}>+{val.toFixed(1)}</span>
+                  </div>
+                ))}
+                <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '2px solid #eee', display: 'flex', justifyContent: 'space-between', fontWeight: '900', color: '#28a745' }}>
+                  <span>{t("Total")}</span>
+                  <span>{item.matchScore.toFixed(1)}%</span>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
