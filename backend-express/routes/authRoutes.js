@@ -17,33 +17,63 @@ const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
 
 // Rate limiters imported from middleware/rateLimiter.js
 
-// Email bridge function to bypass Render SMTP block
-async function sendEmailViaBridge(to, subject, text) {
-  const url = process.env.EMAIL_BRIDGE_URL;
-  if (!url) {
-    console.error("EMAIL_BRIDGE_URL is not set");
-    return false;
+// Configure nodemailer transporter
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: process.env.SMTP_PORT,
+  secure: process.env.SMTP_SECURE === 'true', // true for 465, false for other ports
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  },
+});
+
+// Generic email sender with bridge fallback and development logging
+async function sendEmail(to, subject, text) {
+  // 1. Try Nodemailer if configured
+  if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+    try {
+      const info = await transporter.sendMail({
+        from: process.env.SMTP_FROM || `"Matrimony Support" <${process.env.SMTP_USER}>`,
+        to,
+        subject,
+        text,
+      });
+      console.log("Email sent via SMTP:", info.messageId);
+      return true;
+    } catch (error) {
+      console.error("Nodemailer Error:", error);
+    }
   }
 
-  const payload = {
-    to,
-    subject,
-    text,
-    key: process.env.EMAIL_BRIDGE_KEY
-  };
+  // 2. Try Bridge if configured
+  const bridgeUrl = process.env.EMAIL_BRIDGE_URL;
+  if (bridgeUrl) {
+    const payload = {
+      to,
+      subject,
+      text,
+      key: process.env.EMAIL_BRIDGE_KEY
+    };
 
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const result = await response.json();
-    return result.success;
-  } catch (error) {
-    console.error("Bridge Error:", error);
-    return false;
+    try {
+      const response = await fetch(bridgeUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+      if (result.success) {
+        console.log("Email sent via Bridge");
+        return true;
+      }
+      console.error("Bridge reported failure:", result);
+    } catch (error) {
+      console.error("Bridge Error:", error);
+    }
   }
+
+  return false;
 }
 
 // Multer for file uploads - use local storage in development, Cloudinary in production
@@ -259,13 +289,12 @@ router.post("/send-email-otp", async (req, res) => {
       expiration,
     });
 
-    const success = await sendEmailViaBridge(email, "Email Verification OTP", `Your OTP for email verification is: ${otp}. It will expire in 10 minutes.`);
+    const success = await sendEmail(email, "Email Verification OTP", `Your OTP for email verification is: ${otp}. It will expire in 10 minutes.`);
     
     if (success) {
-      console.log("OTP sent via bridge:", otp);
       res.json({ success: true, message: "OTP sent to your email" });
     } else {
-      // Fallback for development: Log OTP to console when email bridge is unavailable
+      // Fallback for development: Log OTP to console when email service is unavailable
       const isDevelopment = process.env.NODE_ENV !== "production";
       if (isDevelopment) {
         console.log("\n========================================");
@@ -277,8 +306,8 @@ router.post("/send-email-otp", async (req, res) => {
         console.log("========================================\n");
         res.json({ success: true, message: "OTP sent (check backend console in development mode)" });
       } else {
-        console.error("Bridge failed to send email in production");
-        res.json({ success: false, message: "Failed to send OTP" });
+        console.error("Failed to send email in production");
+        res.json({ success: false, message: "Failed to send OTP. Please try again later." });
       }
     }
   } catch (error) {

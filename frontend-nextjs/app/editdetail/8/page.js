@@ -258,10 +258,10 @@ export default function EditStep8() {
         setOtpSent(true);
         setResendCooldown(60);
         setEmailVerificationError("");
-        setOtpMessage(t("OTP sended to email", language));
+        setOtpMessage(data.message || t("OTP sent to email", language));
         setTimeout(() => {
           setOtpMessage("");
-        }, 2000);
+        }, 5000);
       } else {
         setEmailVerificationError(data.message);
       }

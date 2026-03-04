@@ -577,10 +577,10 @@ export default function Step8() {
             setOtpSent(true);
             setResendCooldown(60);
             setEmailVerificationError("");
-            setOtpMessage("OTP sended to email");
+            setOtpMessage(data.message || "OTP sent to email");
             setTimeout(() => {
             setOtpMessage("");
-            }, 2000);
+            }, 5000); // Increased duration for better readability of the longer message
         } else {
             setEmailVerificationError(data.message);
         }
