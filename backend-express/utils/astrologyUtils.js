@@ -21,6 +21,24 @@ export const RASIS = [
     "Kumbam", "Meenam"
 ];
 
+// Tamil equivalents for robust matching
+const TAMIL_NAKSHATRAS = {
+    "அஸ்வினி": "Ashwini", "பாரணி": "Bharani", "கார்த்திகை": "Karthigai", "ரோகிணி": "Rohini",
+    "மிருகசீரிஷம்": "Mirugaseerisham", "திருவாதிரை": "Thiruvathirai", "புனர்பூசம்": "Punarpoosam",
+    "பூசம்": "Poosam", "ஆயிலியம்": "Ayilyam", "மகம்": "Magam", "பூரம்": "Pooram",
+    "உத்திரம்": "Uthiram", "ஹஸ்தம்": "Hastham", "சித்திரை": "Chithirai", "சுவாதி": "Swathi",
+    "விசாகம்": "Visakam", "அனுஷம்": "Anusham", "கேட்டை": "Kettai", "மூலம்": "Moolam",
+    "பூராடம்": "Pooradam", "புறாடம்": "Pooradam", "உத்திராடம்": "Uthiradam", "திருவோணம்": "Thiruvonam",
+    "அவிட்டம்": "Avittam", "சதயம்": "Sadhayam", "பூரட்டாதி": "Poorattathi", "உத்திரட்டாதி": "Uthirattathi",
+    "ரேவதி": "Revathi"
+};
+
+const TAMIL_RASIS = {
+    "மேஷம்": "Mesham", "ரிஷபம்": "Rishabam", "மிதுனம்": "Mithunam", "கடகம்": "Kadagam",
+    "சிம்மம்": "Simmam", "கன்னி": "Kanni", "துலாம்": "Thulam", "விருச்சிகம்": "Viruchigam",
+    "தனுசு": "Dhanusu", "மகரம்": "Magaram", "கும்பம்": "Kumbam", "மீனம்": "Meenam"
+};
+
 // Planetary Lords for Rasyadhipathi
 const RASI_LORDS = {
     "Mesham": "Mars", "Rishabam": "Venus", "Mithunam": "Mercury", "Kadagam": "Moon",
@@ -96,18 +114,48 @@ const RAJJUS = {
 export class PoruthamCalculator {
     constructor(bride, groom) {
         // Normalization helper
-        const normalize = (val) => {
+        const normalize = (val, list, tamilMap) => {
             if (!val) return "";
-            let v = val.includes("-") ? val.split("-")[1] : val;
-            let result = v.trim();
-            console.log(`[Trace] normalize(${val}) -> "${result}"`);
-            return result;
+            
+            // Clean input: remove invisible characters and normalize whitespace
+            const cleanVal = val.toString().trim().replace(/[\u200B-\u200D\uFEFF]/g, "");
+            
+            // Split by various possible separators
+            const parts = cleanVal.includes("-") ? cleanVal.split("-") : 
+                         cleanVal.includes("–") ? cleanVal.split("–") : // en-dash
+                         [cleanVal];
+            
+            // Try matching each part
+            for (const part of parts) {
+                const trimmed = part.trim();
+                if (!trimmed) continue;
+
+                // 1. Direct Case-insensitive lookup against the allowed English list
+                if (list) {
+                    const found = list.find(item => item.toLowerCase() === trimmed.toLowerCase());
+                    if (found) return found;
+                }
+
+                // 2. Tamil mapping lookup
+                if (tamilMap && tamilMap[trimmed]) {
+                    return tamilMap[trimmed];
+                }
+            }
+
+            // Fallback: If no match found in list, return the first non-empty trimmed part
+            const fallback = parts.map(p => p.trim()).find(p => p) || cleanVal;
+            
+            if (list) {
+                console.log(`[Porutham Debug] Failed to match "${val}" against allowed values. Using fallback: "${fallback}"`);
+            }
+            
+            return fallback;
         };
 
-        this.brideStar = normalize(bride.star);
-        this.groomStar = normalize(groom.star);
-        this.brideRasi = normalize(bride.rasi);
-        this.groomRasi = normalize(groom.rasi);
+        this.brideStar = normalize(bride.star, NAKSHATRAS, TAMIL_NAKSHATRAS);
+        this.groomStar = normalize(groom.star, NAKSHATRAS, TAMIL_NAKSHATRAS);
+        this.brideRasi = normalize(bride.rasi, RASIS, TAMIL_RASIS);
+        this.groomRasi = normalize(groom.rasi, RASIS, TAMIL_RASIS);
 
         this.brideStarIdx = NAKSHATRAS.indexOf(this.brideStar);
         this.groomStarIdx = NAKSHATRAS.indexOf(this.groomStar);
