@@ -2,7 +2,7 @@ import express from "express";
 import db from "../models/index.js";
 import { Op } from "sequelize";
 import logger from "../utils/logger.js";
-import { PoruthamCalculator } from "../utils/astrologyUtils.js";
+
 
 const router = express.Router();
 
@@ -217,61 +217,19 @@ router.get("/api/matches/suggested", async (req, res) => {
         logger.info(`[Matches] Found ${potentialMatches.length} potential opposite-gender profiles.`);
 
         const scoredMatches = potentialMatches.map(user => {
-            let prefScore = calculateMatchScore(currentUser, user); // Base score from preferences (0-100)
+            const finalScore = calculateMatchScore(currentUser, user); // Base score from preferences (0-100)
             
-            // Add Porutham calculation
-            let poruthamResult = null;
-            let poruthamPoints = 0;
-            if (currentUser.birthStar && currentUser.zodiacSign && user.birthStar && user.zodiacSign) {
-                try {
-                    const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : user;
-                    const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : user;
-                    
-                    const calc = new PoruthamCalculator(
-                        { 
-                            star: bride.birthStar, 
-                            rasi: bride.zodiacSign,
-                            amsamMoon: bride.amsam_chandiran 
-                        },
-                        { 
-                            star: groom.birthStar, 
-                            rasi: groom.zodiacSign,
-                            amsamMoon: groom.amsam_chandiran
-                        }
-                    );
-                    poruthamResult = calc.getSummary();
-                    
-                    // Add Porutham score to match score (Weight: 20 points)
-                    // poruthamResult.score is typically out of 10
-                    if (poruthamResult && poruthamResult.score !== undefined) {
-                        poruthamPoints = (poruthamResult.score / poruthamResult.total) * 20;
-                    }
-                } catch (err) {
-                    logger.error(`Porutham calculation error: ${err.message}`);
-                }
-            }
-
-            // Final score: 80% preferences + 20% Porutham
-            // If Porutham not applicable, poruthamPoints remains 0.
-            // Scale prefScore to 80 and add poruthamPoints.
-            let finalScore = (prefScore * 0.8) + poruthamPoints;
-
             // Add a deterministic but unique jitter for variety (0.0 to 1.5 points)
             // This ensures that even if stars and preferences are identical, the scores differ slightly
             const jitterSeed = (currentUser.user_id || 0) + (user.user_id || 0);
             const jitter = (jitterSeed % 15) / 10; 
-            finalScore += jitter;
+            const finalScoreWithJitter = finalScore + jitter;
 
-            const roundedScore = Math.min(Math.round(finalScore), 100);
+            const roundedScore = Math.min(Math.round(finalScoreWithJitter), 100);
             
-            if (user.email.includes('test')) {
-                console.log(`[Debug] Match for ${user.email}: Score=${roundedScore}, Porutham=${poruthamResult?.score}`);
-            }
-
             return {
                 ...user.toJSON(),
-                matchScore: roundedScore,
-                porutham: poruthamResult
+                matchScore: roundedScore
             };
         }).sort((a, b) => b.matchScore - a.matchScore);
 

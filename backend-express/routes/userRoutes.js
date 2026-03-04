@@ -7,7 +7,7 @@ import { storage as cloudinaryStorage } from "../config/cloudinaryConfig.js";
 import { sessionAuthMiddleware } from "../middleware/authMiddleware.js";
 import validate from "../middleware/validation.js";
 import { updateProfileSchema, verifyPhotoPasswordSchema } from "../schemas/userSchemas.js";
-import { PoruthamCalculator } from "../utils/astrologyUtils.js";
+
 import logger from "../utils/logger.js";
 import { Sequelize, Op } from "sequelize";
 import crypto from "crypto";
@@ -170,31 +170,6 @@ router.get("/all-details", async (req, res) => {
       plain.hasPhotoPassword = !!plain.photoPassword;
       delete plain.photoPassword; // Remove sensitive data from response
 
-      // Add Porutham calculation
-      if (currentUser && currentUser.email !== u.email && currentUser.birthStar && currentUser.zodiacSign && u.birthStar && u.zodiacSign) {
-        try {
-          const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : u;
-          const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : u;
-          
-          if (bride.birthStar && bride.zodiacSign && groom.birthStar && groom.zodiacSign) {
-            const calc = new PoruthamCalculator(
-              { 
-                star: bride.birthStar, 
-                rasi: bride.zodiacSign,
-                amsamMoon: bride.amsam_chandiran 
-              },
-              { 
-                star: groom.birthStar, 
-                rasi: groom.zodiacSign,
-                amsamMoon: groom.amsam_chandiran
-              }
-            );
-            plain.porutham = calc.getSummary();
-          }
-        } catch (err) {
-          console.error(`Porutham calculation error in all-details: ${err.message}`);
-        }
-      }
       return plain;
     });
 

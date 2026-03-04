@@ -1,6 +1,6 @@
 import express from "express";
 import db from "../models/index.js";
-import { PoruthamCalculator } from "../utils/astrologyUtils.js";
+
 
 const router = express.Router();
 
@@ -31,40 +31,7 @@ router.get("/api/shortlist", async (req, res) => {
       }
     });
 
-    // Add Porutham calculation
-    let currentUser = null;
-    if (userEmail) {
-      currentUser = await db.UserDetail.findOne({ where: { email: userEmail } });
-    }
-
-    const results = users.map(u => {
-      const plain = u.toJSON();
-      
-      // Add Porutham calculation
-      if (currentUser && currentUser.birthStar && currentUser.zodiacSign && u.birthStar && u.zodiacSign) {
-        try {
-          const bride = currentUser.gender === "Female" || currentUser.gender === "பெண்" ? currentUser : u;
-          const groom = currentUser.gender === "Male" || currentUser.gender === "ஆண்" ? currentUser : u;
-          
-          const calc = new PoruthamCalculator(
-            { 
-              star: bride.birthStar, 
-              rasi: bride.zodiacSign,
-              amsamMoon: bride.amsam_chandiran 
-            },
-            { 
-              star: groom.birthStar, 
-              rasi: groom.zodiacSign,
-              amsamMoon: groom.amsam_chandiran
-            }
-          );
-          plain.porutham = calc.getSummary();
-        } catch (err) {
-          console.error(`Porutham calculation error in shortlist: ${err.message}`);
-        }
-      }
-      return plain;
-    });
+    const results = users.map(u => u.toJSON());
 
     res.json({ success: true, data: results });
   } catch (error) {
