@@ -32,18 +32,20 @@ function ReceivedTab({ data, loading, t, onApprove, onReject, onViewDetail }) {
             t={t}
             onViewDetail={() => onViewDetail(req.requester)}
           />
-          <div className="approval-actions" style={{ marginTop: 0 }}>
+          <div className="approval-actions">
             <button
               className="approval-btn approve-btn"
               onClick={() => onApprove(req.id)}
             >
-              ✅ {t("Approve")}
+              <span className="btn-icon">✅</span>
+              <span className="btn-text">{t("Approve")}</span>
             </button>
             <button
               className="approval-btn reject-btn"
               onClick={() => onReject(req.id)}
             >
-              ❌ {t("Reject")}
+              <span className="btn-icon">❌</span>
+              <span className="btn-text">{t("Reject")}</span>
             </button>
           </div>
         </div>
@@ -633,33 +635,86 @@ export default function ContactApprovalSection({ t }) {
 
         .approval-btn {
           flex: 1;
-          padding: 9px 12px;
+          padding: 12px 20px;
           border: none;
-          border-radius: 8px;
-          font-weight: 600;
-          font-size: 13px;
+          border-radius: 14px;
+          font-weight: 800;
+          font-size: 14px;
           cursor: pointer;
-          transition: all 0.2s ease;
+          transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .approval-btn::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(
+            120deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent
+          );
+          transition: all 0.6s;
+        }
+
+        .approval-btn:hover::before {
+          left: 100%;
+        }
+
+        .btn-icon {
+          font-size: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.4s ease;
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .approval-btn:hover .btn-icon {
+          transform: scale(1.3) rotate(10deg);
         }
 
         .approve-btn {
-          background: rgba(40,167,69,0.12);
-          color: #28a745;
-          border: 1.5px solid #28a745;
-        }
-        .approve-btn:hover {
-          background: #28a745;
+          background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
           color: white;
+          box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+          border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .approve-btn:hover {
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+          filter: brightness(1.1);
         }
 
         .reject-btn {
-          background: rgba(239,68,68,0.1);
+          background: rgba(var(--card-bg-rgb), 0.4);
+          backdrop-filter: blur(10px);
           color: #ef4444;
-          border: 1.5px solid #ef4444;
+          border: 1px solid rgba(239, 68, 68, 0.3);
         }
+
         .reject-btn:hover {
           background: #ef4444;
           color: white;
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 8px 25px rgba(239, 68, 68, 0.3);
+          border-color: #ef4444;
+        }
+
+        .approval-btn:active {
+          transform: translateY(0) scale(0.98);
         }
 
         .approval-card-grid {
