@@ -15,6 +15,7 @@ import UserGrid from "../components/dashboard/UserGrid";
 import UserDetailModal from "../components/dashboard/UserDetailModal";
 import ImageModal from "../components/dashboard/ImageModal";
 import CancelUpdateModal from "../components/dashboard/CancelUpdateModal";
+import ContactApprovalSection from "../components/dashboard/ContactApprovalSection";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -36,7 +37,7 @@ export default function Dashboard() {
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [pendingRequestId, setPendingRequestId] = useState(null);
   const [isPrivacyMode, setIsPrivacyMode] = useState(false);
-  const [view, setView] = useState("dashboard"); // dashboard, personal, other, search, shortlist, matches
+  const [view, setView] = useState("dashboard"); // dashboard, personal, other, search, shortlist, matches, approvals
   const [searchField, setSearchField] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const PROFILES_PER_PAGE = 18;
@@ -1014,7 +1015,22 @@ export default function Dashboard() {
                     {t("Suggested match based on your preference")}
                   </p>
                 </div>
+                <div
+                  onClick={() => setView("approvals")}
+                  className="dashboard-card"
+                  style={{ cursor: "pointer" }}
+                >
+                  <div style={{ fontSize: "50px" }}>📋</div>
+                  <h2 style={{ margin: 0, color: "var(--page-text)", fontWeight: "normal", fontSize: "18px" }}>
+                    {t("Contact Approvals")}
+                  </h2>
+                  <p style={{ opacity: 0.7, fontSize: "13px" }}>
+                    {t("Manage contact requests & approvals")}
+                  </p>
+                </div>
               </div>
+            ) : view === "approvals" ? (
+              <ContactApprovalSection t={t} />
             ) : (
               <>
                 {view === "search" && !searchTerm.trim() ? (

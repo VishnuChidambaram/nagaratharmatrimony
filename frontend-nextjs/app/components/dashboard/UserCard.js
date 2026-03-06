@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { API_URL } from "@/app/utils/config";
+import { getAuthHeaders } from "@/app/utils/auth-headers";
 import { getPhotoUrl, getPhotoUrls } from "@/app/utils/photoUtils";
 
 export default function UserCard({
@@ -22,14 +23,62 @@ export default function UserCard({
   isShortlisted,
 }) {
   const [showBreakdown, setShowBreakdown] = useState(false);
-  const [currentUserEmail] = useState(() =>
-    typeof window !== "undefined" ? sessionStorage.getItem("userEmail") : null
-  );
+  const [contactRequestStatus, setContactRequestStatus] = useState(null); // null | 'pending' | 'approved' | 'rejected'
+  const [requestLoading, setRequestLoading] = useState(false);
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUserEmail(sessionStorage.getItem("userEmail"));
+    }
+  }, []);
+
+  // Compute isOwnCard before hooks that depend on it
   const isOwnCard =
     currentUserEmail &&
     item.email &&
     currentUserEmail.toLowerCase() === item.email.toLowerCase();
+
+  // Check existing contact request status for non-own cards
+  useEffect(() => {
+    if (isOwnCard || !item.user_id || !currentUserEmail) return;
+    const checkStatus = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/contact-requests/status/${item.user_id}`, {
+          credentials: "include",
+          headers: { ...getAuthHeaders() },
+        });
+        const data = await res.json();
+        if (data.success) setContactRequestStatus(data.status);
+      } catch {}
+    };
+    checkStatus();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item.user_id, isOwnCard]);
+
+  const handleRequestContact = async (e) => {
+    e.stopPropagation();
+    if (requestLoading || contactRequestStatus) return;
+    setRequestLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/contact-requests/send`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({ target_user_id: item.user_id }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setContactRequestStatus("pending");
+      } else {
+        setContactRequestStatus(data.status || "pending");
+      }
+    } catch {
+      // silent
+    } finally {
+      setRequestLoading(false);
+    }
+  };
 
   const allPhotos = getPhotoUrls(item);
   const mainPhoto = getPhotoUrl(item, "https://via.placeholder.com/80");
@@ -404,13 +453,17 @@ export default function UserCard({
           <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Email")}:
           </span>{" "}
-          <span style={{ color: "var(--card-text)" }}>{item.email}</span>
+          <span style={{ color: "var(--card-text)" }}>
+            {isOwnCard || contactRequestStatus === "approved" ? item.email : "🔒 " + t("Hidden")}
+          </span>
         </div>
         <div style={{ marginBottom: "8px" }}>
           <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
             {t("Phone")}:
           </span>{" "}
-          <span style={{ color: "var(--card-text)" }}>{item.phone}</span>
+          <span style={{ color: "var(--card-text)" }}>
+            {isOwnCard || contactRequestStatus === "approved" ? item.phone : "🔒 " + t("Hidden")}
+          </span>
         </div>
         <div style={{ marginBottom: "8px" }}>
           <span style={{ color: "var(--card-text)", opacity: 0.7, fontWeight: "500", fontSize: "13px" }}>
@@ -445,7 +498,7 @@ export default function UserCard({
         <button
           onClick={(e) => {
             e.stopPropagation();
-            if (onViewDetail) onViewDetail(item);
+            if (onViewDetail) onViewDetail({ ...item, contactRequestStatus });
           }}
           className="action-btn view-btn"
           onMouseLeave={(e) => {
@@ -488,6 +541,30 @@ export default function UserCard({
             {t("Edit Profile")}
           </button>
         )}
+        {!isOwnCard && (() => {
+          const statusConfig = {
+            pending:  { label: t("Requested"), bg: "#f59e0b", color: "white" },
+            approved: { label: t("Approved"),  bg: "#28a745", color: "white" },
+            rejected: { label: t("Rejected"),   bg: "#6c757d", color: "white" },
+          };
+          const cfg = contactRequestStatus ? statusConfig[contactRequestStatus] : null;
+          return (
+            <button
+              onClick={handleRequestContact}
+              className="action-btn"
+              disabled={!!contactRequestStatus || requestLoading}
+              style={{
+                backgroundColor: cfg ? cfg.bg : "#6f42c1",
+                color: cfg ? cfg.color : "white",
+                cursor: contactRequestStatus ? "default" : "pointer",
+                opacity: requestLoading ? 0.7 : 1,
+              }}
+              title={t("Request contact details")}
+            >
+              {requestLoading ? "..." : cfg ? cfg.label : "📞 " + t("Request Contact")}
+            </button>
+          );
+        })()}
       </div>
 
       <style jsx>{`

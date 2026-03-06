@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { API_URL } from "@/app/utils/config";
 import { getPhotoUrl, getPhotoUrls } from "@/app/utils/photoUtils";
@@ -15,6 +15,14 @@ export default function UserDetailModal({
   setIsPrivacyMode,
   unlockedUsers = [],
 }) {
+  const [currentUserEmail, setCurrentUserEmail] = useState(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setCurrentUserEmail(sessionStorage.getItem("userEmail"));
+    }
+  }, []);
+
   if (!selectedUser) return null;
 
   const leftPlanets = [
@@ -414,6 +422,10 @@ export default function UserDetailModal({
                         <div className="preview-value">
                           {k === "dasaRemain" ? (
                             `${selectedUser.dasaRemainYears || 0} Y, ${selectedUser.dasaRemainMonths || 0} M, ${selectedUser.dasaRemainDays || 0} D`
+                          ) : ["fullStreetAddress", "phone", "otherPhone", "whatsAppNo", "email"].includes(k) && 
+                              selectedUser.contactRequestStatus !== "approved" &&
+                              !(currentUserEmail?.toLowerCase() === selectedUser.email?.toLowerCase()) ? (
+                            "🔒 " + t("Hidden")
                           ) : (
                             String(selectedUser[k] || "")
                           )}
@@ -428,6 +440,10 @@ export default function UserDetailModal({
                         <div className="preview-value">
                           {k === "dasaRemain" ? (
                             `${selectedUser.dasaRemainYears || 0} Y, ${selectedUser.dasaRemainMonths || 0} M, ${selectedUser.dasaRemainDays || 0} D`
+                          ) : ["fullStreetAddress", "phone", "otherPhone", "whatsAppNo", "email"].includes(k) && 
+                              selectedUser.contactRequestStatus !== "approved" &&
+                              !(typeof window !== "undefined" && sessionStorage.getItem("userEmail")?.toLowerCase() === selectedUser.email?.toLowerCase()) ? (
+                            "🔒 " + t("Hidden")
                           ) : (
                             String(selectedUser[k] || "")
                           )}

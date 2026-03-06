@@ -111,6 +111,8 @@ export default function DashboardHeader({
               ? t("Shortlisted Profiles")
               : view === "matches"
               ? t("Best Matches")
+              : view === "approvals"
+              ? t("Contact Approvals")
               : t("Search Members")}
           </h1>
         </div>

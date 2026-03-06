@@ -5,6 +5,7 @@ import AdminLogin from "./AdminLogin.js";
 import UpdateRequestModel from "./UpdateRequest.js";
 import NotificationModel from "./Notification.js";
 import Shortlist from "./Shortlist.js";
+import ContactRequestModel from "./ContactRequest.js";
 
 const db = {
   sequelize,
@@ -14,6 +15,7 @@ const db = {
   UpdateRequest: UpdateRequestModel(sequelize),
   Notification: NotificationModel(sequelize),
   Shortlist,
+  ContactRequest: ContactRequestModel(sequelize),
 };
 
 export default db;
