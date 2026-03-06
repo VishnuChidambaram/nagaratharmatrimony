@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import Image from "next/image";
+
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
-import { getPhotoUrl } from "@/app/utils/photoUtils";
+
 import UserCard from "./UserCard";
 import UserDetailModal from "./UserDetailModal";
 
