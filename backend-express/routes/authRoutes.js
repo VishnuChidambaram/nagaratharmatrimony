@@ -377,7 +377,7 @@ router.post("/verify-otp", async (req, res) => {
 });
 
 
-router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res) => {
+router.post("/admin/login", validate(loginSchema), async (req, res) => {
   const { email, password } = req.body;
 
   try {
@@ -408,9 +408,7 @@ router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res)
 
     if (isMatch) {
       // Check if admin is already logged in
-      const { forceLogin } = req.body;
-      
-      if (admin.sessionId && !forceLogin) {
+      if (admin.sessionId) {
         return res.json({
           success: false,
           status: "error",
@@ -418,8 +416,6 @@ router.post("/admin/login", authLimiter, validate(loginSchema), async (req, res)
           message: "You are already logged in on another device.",
         });
       }
-
-      // Generate Session ID
       const sessionId = crypto.randomUUID();
       
       // Update Admin with Session ID
