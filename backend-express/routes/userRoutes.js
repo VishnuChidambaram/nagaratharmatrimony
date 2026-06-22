@@ -748,6 +748,35 @@ router.delete("/delete-user/:id", async (req, res) => {
 
 // Soft Delete Routes
 
+// Cleanup helper to permanently delete accounts after 180 days
+export const deleteExpiredAccounts = async () => {
+  try {
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 180);
+
+    const expiredUsers = await db.UserDetail.findAll({
+      where: {
+        is_deleted: true,
+        updated_at: {
+          [Op.lt]: cutoffDate,
+        },
+      },
+    });
+
+    if (expiredUsers.length > 0) {
+      const ids = expiredUsers.map((u) => u.user_id);
+      logger.info(`Permanently deleting expired soft-deleted users: ${ids.join(", ")}`);
+      await db.UserDetail.destroy({
+        where: {
+          user_id: ids,
+        },
+      });
+    }
+  } catch (error) {
+    logger.error("Error in deleteExpiredAccounts: " + error.message, { stack: error.stack });
+  }
+};
+
 // Fetch soft-deleted users
 router.get("/deleted-details", async (req, res) => {
   try {
@@ -756,13 +785,31 @@ router.get("/deleted-details", async (req, res) => {
       return res.status(403).json({ success: false, message: "Admin access required" });
     }
 
+    // Run cleanup of expired accounts first
+    await deleteExpiredAccounts();
+
     const deletedDetails = await db.UserDetail.findAll({
       where: { is_deleted: true },
       order: [["updated_at", "DESC"]],
     });
+
+    const results = deletedDetails.map((u) => {
+      const plain = u.toJSON();
+      const updatedDate = new Date(plain.updated_at);
+      const now = new Date();
+      const diffTime = now - updatedDate;
+      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+      const remainingDays = Math.max(0, 180 - diffDays);
+
+      return {
+        ...plain,
+        daysRemaining: remainingDays,
+      };
+    });
+
     res.json({
       success: true,
-      data: deletedDetails,
+      data: results,
     });
   } catch (error) {
     console.error("Fetch deleted details error:", error);
@@ -773,7 +820,43 @@ router.get("/deleted-details", async (req, res) => {
   }
 });
 
-// Soft delete a user
+// Soft delete currently logged in user's own account
+router.put("/soft-delete-my-account", async (req, res) => {
+  try {
+    if (!req.user) {
+      return res.status(401).json({ success: false, message: "Authentication required" });
+    }
+
+    const user = await db.UserDetail.findOne({ where: { email: req.user.email } });
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    // Soft delete the user, log them out, and update timestamp
+    await user.update({
+      is_deleted: true,
+      sessionId: null,
+      updated_at: new Date(),
+    });
+
+    // Clear session cookies
+    res.clearCookie("userEmail", { httpOnly: true, secure: true, sameSite: "none" });
+    res.clearCookie("sessionId", { httpOnly: true, secure: true, sameSite: "none" });
+
+    res.json({
+      success: true,
+      message: "Your account has been deleted successfully and moved to the recycle bin.",
+    });
+  } catch (error) {
+    console.error("Soft delete my account error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Soft delete a user (admin or self)
 router.put("/soft-delete-user/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -795,7 +878,12 @@ router.put("/soft-delete-user/:id", async (req, res) => {
       return res.status(403).json({ success: false, message: "Unauthorized to delete this user" });
     }
 
-    await user.update({ is_deleted: true });
+    // Set is_deleted = true, log user out by clearing sessionId, and update the deletion time
+    await user.update({
+      is_deleted: true,
+      sessionId: null,
+      updated_at: new Date(),
+    });
 
     res.json({
       success: true,
@@ -827,7 +915,10 @@ router.put("/restore-user/:id", async (req, res) => {
       return res.status(403).json({ success: false, message: "Admin access required for restoration" });
     }
 
-    await user.update({ is_deleted: false });
+    await user.update({
+      is_deleted: false,
+      updated_at: new Date(),
+    });
 
     res.json({
       success: true,

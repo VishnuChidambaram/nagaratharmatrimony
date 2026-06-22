@@ -14,7 +14,9 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [showForceLoginModal, setShowForceLoginModal] = useState(false); // New state for popup
+  const [showForceLoginModal, setShowForceLoginModal] = useState(false);
+  const [deletedAccountInfo, setDeletedAccountInfo] = useState(null); // { daysRemaining, email }
+  const [isRestoringAccount, setIsRestoringAccount] = useState(false);
   const { language, toggleLanguage } = useLanguage();
 
   const t = language === "en" ? en : ta;
@@ -119,6 +121,12 @@ export default function Login() {
       } else {
         if (data.code === "ALREADY_LOGGED_IN") {
           setShowForceLoginModal(true);
+        } else if (data.code === "ACCOUNT_DELETED") {
+          // Show the deleted account warning panel
+          setDeletedAccountInfo({
+            daysRemaining: data.daysRemaining,
+            email: data.email,
+          });
         } else {
           setError(data.message || t.loginFailed);
           window.dispatchEvent(new CustomEvent('show-notification', { 
@@ -132,6 +140,67 @@ export default function Login() {
       window.dispatchEvent(new CustomEvent('show-notification', { 
         detail: { message: t.errorGeneric, type: 'error' } 
       }));
+    }
+  };
+
+  const handleCancelDeletion = async () => {
+    if (!password) {
+      setError(t.errorMissing);
+      window.dispatchEvent(new CustomEvent('show-notification', { 
+        detail: { message: t.errorMissing, type: 'error' } 
+      }));
+      return;
+    }
+
+    setIsRestoringAccount(true);
+    setError("");
+
+    try {
+      const res = await fetch(`${API_URL}/cancel-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: deletedAccountInfo.email, password }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Show success toast
+        window.dispatchEvent(new CustomEvent('show-notification', { 
+          detail: { message: t.restorationSuccess, type: 'success' } 
+        }));
+
+        const userEmail = data.email || deletedAccountInfo.email;
+        
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("userEmail", userEmail);
+          if (data.sessionId) sessionStorage.setItem("sessionId", data.sessionId);
+          if (data.expiresAt) sessionStorage.setItem("sessionExpiresAt", data.expiresAt);
+          document.cookie = `userEmail=${userEmail}; path=/; samesite=lax`;
+          window.dispatchEvent(new CustomEvent('user-login', { detail: userEmail }));
+        }
+
+        setDeletedAccountInfo(null);
+
+        // Redirect after a short delay so the user sees the success message
+        setTimeout(() => {
+          router.push("/dashboard");
+        }, 1500);
+      } else {
+        setError(data.message || t.loginFailed);
+        window.dispatchEvent(new CustomEvent('show-notification', { 
+          detail: { message: data.message || t.loginFailed, type: 'error' } 
+        }));
+      }
+    } catch (err) {
+      console.error("Cancel deletion error:", err);
+      setError(t.errorGeneric);
+      window.dispatchEvent(new CustomEvent('show-notification', { 
+        detail: { message: t.errorGeneric, type: 'error' } 
+      }));
+    } finally {
+      setIsRestoringAccount(false);
     }
   };
 
@@ -248,6 +317,48 @@ export default function Login() {
                     </button>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {/* Deleted Account Warning Panel */}
+            {deletedAccountInfo && (
+              <div style={{
+                background: '#fff3cd',
+                border: '1px solid #ffc107',
+                borderRadius: '8px',
+                padding: '15px',
+                marginBottom: '15px',
+                textAlign: 'center',
+              }}>
+                <div style={{ fontSize: '36px', marginBottom: '8px' }}>⚠️</div>
+                <h4 style={{ margin: '0 0 8px 0', color: '#856404', fontSize: '16px' }}>
+                  {t.accountDeletedTitle}
+                </h4>
+                <p style={{ color: '#856404', fontSize: '14px', margin: '0 0 8px 0', lineHeight: '1.5' }}>
+                  {t.accountDeletedMsg1}{' '}
+                  <strong style={{ fontSize: '18px' }}>{deletedAccountInfo.daysRemaining}</strong>{' '}
+                  {t.accountDeletedMsg2}
+                </p>
+                <p style={{ color: '#856404', fontSize: '13px', margin: '0 0 12px 0', lineHeight: '1.4' }}>
+                  {t.accountDeletedMsg3}
+                </p>
+                <button
+                  onClick={handleCancelDeletion}
+                  disabled={isRestoringAccount}
+                  style={{
+                    width: '100%',
+                    padding: '10px 16px',
+                    background: isRestoringAccount ? '#6c757d' : '#28a745',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '6px',
+                    cursor: isRestoringAccount ? 'not-allowed' : 'pointer',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {isRestoringAccount ? '...' : t.cancelDeletionButton}
+                </button>
               </div>
             )}
 

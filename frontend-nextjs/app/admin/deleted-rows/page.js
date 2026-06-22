@@ -166,6 +166,20 @@ export default function DeletedRows() {
                   <div>{user.email}</div>
                   <div>{user.phone}</div>
                   <div style={{ fontSize: '0.8em', opacity: 0.7 }}>{t("Deleted:")} {new Date(user.updated_at).toLocaleString()}</div>
+                  {user.daysRemaining !== undefined && (
+                    <div style={{
+                      display: 'inline-block',
+                      marginTop: '5px',
+                      padding: '3px 10px',
+                      borderRadius: '12px',
+                      fontSize: '0.8em',
+                      fontWeight: 'bold',
+                      color: '#fff',
+                      background: user.daysRemaining <= 30 ? '#dc3545' : user.daysRemaining <= 90 ? '#fd7e14' : '#28a745',
+                    }}>
+                      ⏳ {user.daysRemaining} {t("days remaining")}
+                    </div>
+                  )}
                 </div>
                 <div className={styles.userActions}>
                   <button 

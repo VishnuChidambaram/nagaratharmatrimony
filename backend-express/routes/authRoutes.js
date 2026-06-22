@@ -11,6 +11,7 @@ import rateLimit from "express-rate-limit";
 import { authLimiter, registrationLimiter } from "../middleware/rateLimiter.js";
 import validate from "../middleware/validation.js";
 import { loginSchema, registerSchema } from "../schemas/userSchemas.js";
+import { deleteExpiredAccounts } from "./userRoutes.js";
 
 const router = express.Router();
 const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
@@ -376,7 +377,6 @@ router.post("/verify-otp", async (req, res) => {
   }
 });
 
-
 router.post("/admin/login", validate(loginSchema), async (req, res) => {
   const { email, password } = req.body;
 
@@ -407,15 +407,7 @@ router.post("/admin/login", validate(loginSchema), async (req, res) => {
     }
 
     if (isMatch) {
-      // Check if admin is already logged in
-      if (admin.sessionId) {
-        return res.json({
-          success: false,
-          status: "error",
-          code: "ALREADY_LOGGED_IN",
-          message: "You are already logged in on another device.",
-        });
-      }
+      // NOTE: Single session limit for admin login is removed (admin login number of user limit is not needed)
       const sessionId = crypto.randomUUID();
       
       // Update Admin with Session ID
@@ -467,6 +459,9 @@ router.get("/admin/users", async (req, res) => {
       return res.status(403).json({ success: false, message: "Admin access required" });
     }
 
+    // Run database cleanup for expired soft-deleted users
+    await deleteExpiredAccounts();
+
     const users = await db.UserDetail.findAll({
       order: [['created_at', 'DESC']]
     });
@@ -481,6 +476,9 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    // Run database cleanup for expired soft-deleted users
+    await deleteExpiredAccounts();
+
     const user = await db.UserDetail.findOne({ where: { email } });
 
     if (!user) {
@@ -509,12 +507,40 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
         if (user.password === password) {
             isMatch = true;
             // Upgrade security: Hash the password and update
-            const newHash = await bcrypt.hash(password, 10);
-            await user.update({ password: newHash });
+            await user.update({ password: await bcrypt.hash(password, 10) });
         }
     }
 
     if (isMatch) {
+      // Check if the user is soft-deleted
+      if (user.is_deleted) {
+        // Calculate remaining grace period days
+        const updatedDate = new Date(user.updated_at);
+        const now = new Date();
+        const diffTime = now - updatedDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+        const remainingDays = Math.max(0, 180 - diffDays);
+
+        if (remainingDays <= 0) {
+          // Permanently delete user
+          await user.destroy();
+          return res.json({
+            success: false,
+            status: "error",
+            message: "Invalid email or password",
+          });
+        }
+
+        return res.json({
+          success: false,
+          status: "deleted",
+          code: "ACCOUNT_DELETED",
+          message: `This account has been deleted and is scheduled for permanent deletion in ${remainingDays} days.`,
+          daysRemaining: remainingDays,
+          email: user.email,
+        });
+      }
+
       // Check if user is already logged in
       const { forceLogin } = req.body;
       
@@ -566,6 +592,96 @@ router.post("/login", authLimiter, validate(loginSchema), async (req, res) => {
   } catch (error) {
 
     console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// Route to cancel deletion and restore user account
+router.post("/cancel-delete", authLimiter, validate(loginSchema), async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    await deleteExpiredAccounts();
+
+    const user = await db.UserDetail.findOne({ where: { email } });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        status: "error",
+        message: "Invalid email or password",
+      });
+    }
+
+    if (!user.password) {
+      return res.json({
+        success: false,
+        status: "error",
+        message: "Account configuration error. Please contact support.",
+      });
+    }
+
+    let isMatch = false;
+    if (user.password && (user.password.startsWith('$2b$') || user.password.startsWith('$2a$') || user.password.startsWith('$2y$'))) {
+        isMatch = await bcrypt.compare(password, user.password);
+    } else {
+        if (user.password === password) {
+            isMatch = true;
+            const newHash = await bcrypt.hash(password, 10);
+            await user.update({ password: newHash });
+        }
+    }
+
+    if (isMatch) {
+      // Restore account if it was deleted
+      if (user.is_deleted) {
+        await user.update({
+          is_deleted: false,
+          updated_at: new Date(),
+        });
+      }
+
+      // Generate Session ID
+      const sessionId = crypto.randomUUID();
+
+      // Update User with Session ID
+      await user.update({ sessionId });
+
+      // Set httpOnly cookie with user email
+      res.cookie("userEmail", user.email, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: SESSION_DURATION,
+      });
+
+      // Set Session ID cookie
+      res.cookie("sessionId", sessionId, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+        maxAge: SESSION_DURATION,
+      });
+
+      return res.json({
+        success: true,
+        message: "Account deletion cancelled and logged in successfully",
+        sessionId: sessionId,
+        email: user.email,
+        expiresAt: new Date(Date.now() + SESSION_DURATION).toISOString()
+      });
+    }
+
+    res.json({
+      success: false,
+      status: "error",
+      message: "Invalid email or password",
+    });
+  } catch (error) {
+    console.error("Cancel delete error:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

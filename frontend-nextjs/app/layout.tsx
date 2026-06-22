@@ -188,6 +188,7 @@ export default function RootLayout({
   const [menuTimeout, setMenuTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showThemeModal, setShowThemeModal] = useState(false);
   const [showApprovalModal, setShowApprovalModal] = useState(false);
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
@@ -263,13 +264,19 @@ export default function RootLayout({
         }
       };
 
+      const handleDeleteAccountModal = () => {
+        setShowDeleteAccountModal(true);
+      };
+
       window.addEventListener("theme-sync", handleThemeChange);
       window.addEventListener("user-login", handleUserLogin);
+      window.addEventListener("show-delete-account-modal", handleDeleteAccountModal);
       
       // Cleanup listener
       return () => {
         window.removeEventListener("theme-sync", handleThemeChange);
         window.removeEventListener("user-login", handleUserLogin);
+        window.removeEventListener("show-delete-account-modal", handleDeleteAccountModal);
       };
     }
   }, []);
@@ -878,6 +885,144 @@ export default function RootLayout({
               >
                 <T>Okay, I&apos;ll wait</T>
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Account Confirmation Modal */}
+        {showDeleteAccountModal && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              background: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 2200,
+            }}
+            onClick={() => setShowDeleteAccountModal(false)}
+          >
+            <div
+              style={{
+                background: isDarkMode ? "#333" : "#ffffff",
+                padding: "30px",
+                borderRadius: "12px",
+                textAlign: "center",
+                maxWidth: "400px",
+                width: "90%",
+                boxShadow: "0 10px 30px rgba(0,0,0,0.3)",
+                position: "relative",
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button 
+                onClick={() => setShowDeleteAccountModal(false)}
+                style={{
+                  position: "absolute",
+                  top: "10px",
+                  right: "10px",
+                  border: "none",
+                  background: "none",
+                  fontSize: "24px",
+                  cursor: "pointer",
+                  color: isDarkMode ? "#fff" : "#000",
+                }}
+              >
+                ×
+              </button>
+              
+              <div style={{ fontSize: "48px", marginBottom: "20px" }}>
+                ⚠️
+              </div>
+              
+              <h2
+                style={{
+                  margin: "0 0 15px 0",
+                  fontSize: "22px",
+                  color: isDarkMode ? "#fff" : "#000000",
+                }}
+              >
+                <T>Delete Account</T>
+              </h2>
+              
+              <p
+                style={{
+                  margin: "0 0 25px 0",
+                  fontSize: "15px",
+                  color: isDarkMode ? "#ccc" : "#666",
+                  lineHeight: "1.5",
+                }}
+              >
+                <T>Are you sure you want to delete your account? This will log you out and start a 180-day grace period.</T>
+              </p>
+              
+              <div style={{ display: "flex", gap: "10px", justifyContent: "center" }}>
+                <button
+                  onClick={() => setShowDeleteAccountModal(false)}
+                  style={{
+                    padding: "10px 25px",
+                    background: isDarkMode ? "#555" : "#e0e0e0",
+                    color: isDarkMode ? "#fff" : "#333",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <T>Cancel</T>
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      const headers = getAuthHeaders() as Record<string, string>;
+                      headers["Content-Type"] = "application/json";
+                      const res = await fetch(`${API_URL}/soft-delete-my-account`, {
+                        method: "PUT",
+                        credentials: "include",
+                        headers: headers,
+                      });
+                      const data = await res.json();
+                      if (data.success) {
+                        setShowDeleteAccountModal(false);
+                        await clearFormData();
+                        sessionStorage.clear();
+                        window.dispatchEvent(new CustomEvent('show-notification', { 
+                          detail: { message: data.message || 'Account deleted successfully', type: 'success' } 
+                        }));
+                        setTimeout(() => {
+                          window.location.href = "/login";
+                        }, 2000);
+                      } else {
+                        window.dispatchEvent(new CustomEvent('show-notification', { 
+                          detail: { message: data.message || 'Failed to delete account', type: 'error' } 
+                        }));
+                      }
+                    } catch (error) {
+                      console.error("Delete account error:", error);
+                      window.dispatchEvent(new CustomEvent('show-notification', { 
+                        detail: { message: 'Something went wrong. Please try again.', type: 'error' } 
+                      }));
+                    }
+                  }}
+                  style={{
+                    padding: "10px 25px",
+                    background: "#dc3545",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "16px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  <T>Delete Account</T>
+                </button>
+              </div>
             </div>
           </div>
         )}

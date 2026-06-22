@@ -1,6 +1,15 @@
 export const translations = {
   // Common
   "Register Form": { ta: "பதிவு படிவம்" },
+  "Delete Account": { ta: "கணக்கை நீக்கு" },
+  "Are you sure you want to delete your account? This will log you out and start a 180-day grace period.": { ta: "உங்கள் கணக்கை நீக்க விரும்புகிறீர்களா? இது உங்களை வெளியேற்றி 180 நாட்கள் அவகாச காலத்தைத் தொடங்கும்." },
+  "days remaining": { ta: "நாட்கள் மீதமுள்ளன" },
+  "days until permanent deletion": { ta: "நிரந்தர நீக்கத்திற்கு இன்னும் நாட்கள்" },
+  "Retrieve / Cancel Deletion": { ta: "மீட்டெடு / நீக்கலை ரத்து செய்" },
+  "This account is scheduled for deletion in": { ta: "இந்த கணக்கு நீக்க திட்டமிடப்பட்டுள்ளது, இன்னும்" },
+  "days. Contact admin to restore, or click below to cancel the delete request.": { ta: "நாட்கள். மீட்டெடுக்க நிர்வாகியை தொடர்பு கொள்ளவும், அல்லது நீக்கல் கோரிக்கையை ரத்து செய்ய கீழே கிளிக் செய்யவும்." },
+  "Cancel Deletion Request": { ta: "நீக்குதல் கோரிக்கையை ரத்துசெய்" },
+  "Your deletion request has been cancelled, and your account has been restored!": { ta: "உங்கள் நீக்குதல் கோரிக்கை ரத்து செய்யப்பட்டு, கணக்கு மீட்டெடுக்கப்பட்டது!" },
   "Next": { ta: "அடுத்து" },
   "Previous": { ta: "முந்தைய" },
   "Login": { ta: "உள்நுழைய" },

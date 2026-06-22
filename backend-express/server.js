@@ -159,6 +159,8 @@ async function initDB(retries = 5) {
   }
 }
 
+import { deleteExpiredAccounts } from "./routes/userRoutes.js";
+
 const PORT = process.env.PORT || 5000;
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
@@ -169,6 +171,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     // Initialize DB after server starts listening
     try {
       await initDB();
+      // Run automatic deletion cleanup for expired soft-deleted accounts
+      await deleteExpiredAccounts();
+      // Setup daily cleanup interval (24 hours)
+      setInterval(deleteExpiredAccounts, 24 * 60 * 60 * 1000);
     } catch (err) {
       logger.error(`Critical error during database initialization: ${err.message}`);
     }

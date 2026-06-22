@@ -13,8 +13,10 @@ jest.unstable_mockModule('../models/index.js', () => ({
       update: jest.fn(),
     },
     UserDetail: {
-        findAll: jest.fn(),
-        findByPk: jest.fn()
+        findAll: jest.fn().mockResolvedValue([]),
+        findByPk: jest.fn(),
+        update: jest.fn().mockResolvedValue([1]),
+        destroy: jest.fn().mockResolvedValue(0),
     }
   }
 }));

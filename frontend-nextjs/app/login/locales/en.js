@@ -16,5 +16,12 @@ export const en = {
   alreadyLoggedInTitle: "Already Logged In",
   alreadyLoggedInMessage: "You are already logged in on another device. Do you want to continue here? (This will log out the other session)",
   yes: "Yes",
-  no: "No"
+  no: "No",
+  accountDeletedTitle: "Account Scheduled for Deletion",
+  accountDeletedMsg1: "This account is scheduled for permanent deletion in",
+  accountDeletedMsg2: "days.",
+  accountDeletedMsg3: "Contact admin to restore, or enter your password below to cancel the deletion request and restore your account.",
+  cancelDeletionButton: "Cancel Deletion & Restore Account",
+  restorationSuccess: "Your account has been restored successfully! Logging you in...",
+  daysRemaining: "days remaining"
 };

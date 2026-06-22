@@ -541,6 +541,22 @@ export default function UserCard({
             {t("Edit Profile")}
           </button>
         )}
+        {isOwnCard && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.dispatchEvent(new CustomEvent("show-delete-account-modal"));
+            }}
+            className="action-btn delete-btn"
+            style={{
+              backgroundColor: "#dc3545",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          >
+            {t("Delete Account")}
+          </button>
+        )}
         {!isOwnCard && (() => {
           const statusConfig = {
             pending:  { label: t("Requested"), bg: "#f59e0b", color: "white" },

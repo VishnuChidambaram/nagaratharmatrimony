@@ -11,6 +11,9 @@ jest.unstable_mockModule('../models/index.js', () => ({
     UserDetail: {
       findOne: jest.fn(),
       create: jest.fn(),
+      update: jest.fn(),
+      findAll: jest.fn().mockResolvedValue([]),
+      destroy: jest.fn().mockResolvedValue(0),
     },
     Otp: { create: jest.fn() }
   }
