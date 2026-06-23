@@ -605,9 +605,14 @@ export default function UserCard({
           font-weight: 500;
           cursor: pointer;
           transition: background-color 0.2s;
-          flex: 1; /* Allow equal width */
+          /* Fixed uniform height, flexible width */
+          height: 38px;
+          flex: 0 0 auto;
           white-space: nowrap;
           min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          box-sizing: border-box;
         }
 
         .view-btn {
@@ -628,12 +633,26 @@ export default function UserCard({
           }
 
           .card-actions {
-            flex-direction: column;
+            flex-direction: row;
+            flex-wrap: wrap;
             gap: 5px;
+            /* Ensure rows of two buttons but allow flexible width */
+            justify-content: flex-start;
+          }
+
+          /* Buttons: allow natural width and prevent equal flex sizing */
+          .view-btn,
+          .privacy-btn,
+          .edit-btn,
+          .delete-btn {
+            order: 0; /* default order, rows will wrap naturally */
+            flex: 0 0 auto; /* do not stretch */
+            width: auto;
+            margin-bottom: 5px; /* spacing when wrapped */
           }
 
           .action-btn {
-            width: 100%;
+            width: auto; /* base style, overridden by specific classes */
             padding: 8px;
             font-size: 11px;
           }
