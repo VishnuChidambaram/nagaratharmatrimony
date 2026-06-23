@@ -590,7 +590,8 @@ export default function UserCard({
           border-top: 1px solid var(--input-border);
           padding-top: 15px;
           display: flex;
-          gap: 10px;
+          justify-content: center; // center align buttons
+          gap: 10px; /* added gap between buttons */
           flex-wrap: wrap;
         }
 
