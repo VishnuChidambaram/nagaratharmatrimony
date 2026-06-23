@@ -5,6 +5,7 @@ import Image from "next/image";
 import { API_URL } from "@/app/utils/config";
 import { getAuthHeaders } from "@/app/utils/auth-headers";
 import { getPhotoUrl, getPhotoUrls } from "@/app/utils/photoUtils";
+import { useLanguage } from "@/app/context/LanguageContext";
 
 export default function UserCard({
   item,
@@ -22,6 +23,7 @@ export default function UserCard({
   onToggleShortlist,
   isShortlisted,
 }) {
+  const { language } = useLanguage();
   const [showBreakdown, setShowBreakdown] = useState(false);
   const [contactRequestStatus, setContactRequestStatus] = useState(null); // null | 'pending' | 'approved' | 'rejected'
   const [requestLoading, setRequestLoading] = useState(false);
@@ -520,7 +522,7 @@ export default function UserCard({
             }}
             className="action-btn privacy-btn"
           >
-            {t("Privacy")}
+            {language === "ta" ? "தனியுரிமை" : t("Privacy")}
           </button>
         )}
         {isOwnCard && (
@@ -538,7 +540,7 @@ export default function UserCard({
               pendingUpdateStatus ? t("Pending Approval") : t("Edit Profile")
             }
           >
-            {t("Edit Profile")}
+            {language === "ta" ? "பிரொபைல் திருத்தம்" : t("Edit Profile")}
           </button>
         )}
         {isOwnCard && (
@@ -620,13 +622,19 @@ export default function UserCard({
 
         /* Mobile Adjustments */
         @media (max-width: 768px) {
+          .user-card {
+            align-items: center;
+            padding: 20px;
+          }
+
           .card-actions {
-            flex-wrap: nowrap; /* Enforce single line */
+            flex-direction: column;
             gap: 5px;
           }
 
           .action-btn {
-            padding: 6px 4px;
+            width: 100%;
+            padding: 8px;
             font-size: 11px;
           }
         }
